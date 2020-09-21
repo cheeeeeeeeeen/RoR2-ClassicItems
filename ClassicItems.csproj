@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,72 +9,60 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="classicitems_assets" />
+    <EmbeddedResource Include="chensclassicitems_assets" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\REF\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\REF\BepInEx\core\BepInEx.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="ItemStats">
       <HintPath>lib\ItemStats.dll</HintPath>
     </Reference>
     <Reference Include="MMHOOK_Assembly-CSharp">
-      <HintPath>..\REF\BepInEx\plugins\R2API\MMHOOK_Assembly-CSharp.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\MMHOOK_Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
-      <HintPath>..\REF\BepInEx\core\Mono.Cecil.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="MonoMod.Utils">
-      <HintPath>..\REF\BepInEx\core\MonoMod.Utils.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\MonoMod.Utils.dll</HintPath>
     </Reference>
     <Reference Include="R2API">
-      <HintPath>..\REF\BepInEx\plugins\R2API\R2API.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\R2API.dll</HintPath>
     </Reference>
     <Reference Include="ShareSuite">
       <HintPath>lib\ShareSuite.dll</HintPath>
     </Reference>
     <Reference Include="TILER2">
-      <HintPath>..\TILER2\bin\Release\netstandard2.0\TILER2.dll</HintPath>
+      <HintPath>lib\TILER2.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Postprocessing.Runtime">
       <HintPath>lib\Unity.Postprocessing.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\REF\Managed\Unity.TextMeshPro.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\REF\Managed\UnityEngine.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>..\REF\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\REF\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Networking">
-      <HintPath>..\REF\Managed\UnityEngine.Networking.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\UnityEngine.Networking.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
       <HintPath>lib\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>..\REF\Managed\UnityEngine.PhysicsModule.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>lib\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>lib\UnityEngine.UI.dll</HintPath>
