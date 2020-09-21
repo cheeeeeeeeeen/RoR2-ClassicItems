@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassicItems", "ClassicItems.csproj", "{BA49B1EE-4AD9-4DF5-A478-7A29AE5C6A58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChensClassicItems", "ChensClassicItems.csproj", "{BA49B1EE-4AD9-4DF5-A478-7A29AE5C6A58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,14 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7DB11B80-F2E9-4BF4-A1B1-DBBADCE8FA92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7DB11B80-F2E9-4BF4-A1B1-DBBADCE8FA92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7DB11B80-F2E9-4BF4-A1B1-DBBADCE8FA92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7DB11B80-F2E9-4BF4-A1B1-DBBADCE8FA92}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CC8C360E-9B4B-4868-8492-04109DAACFF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC8C360E-9B4B-4868-8492-04109DAACFF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CC8C360E-9B4B-4868-8492-04109DAACFF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CC8C360E-9B4B-4868-8492-04109DAACFF1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BA49B1EE-4AD9-4DF5-A478-7A29AE5C6A58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BA49B1EE-4AD9-4DF5-A478-7A29AE5C6A58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA49B1EE-4AD9-4DF5-A478-7A29AE5C6A58}.Release|Any CPU.ActiveCfg = Release|Any CPU
