@@ -2,7 +2,7 @@
 
 ## Description
 
-An extension mod for ThinkInvis.ClassicItems!
+An extension mod for **ThinkInvis.ClassicItems**!
 
 The goal is the same: Add items from Risk of Rain 1 that did not make it to Risk of Rain 2.
 
@@ -21,7 +21,9 @@ Use **r2modman** mod manager to install this mod.
 ### More Information
 
 Check out the original ClassicItems made by ThinkInvisible.
+
 Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
+
 GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog

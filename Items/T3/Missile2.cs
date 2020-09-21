@@ -31,13 +31,29 @@ namespace Chen.ClassicItems
         [AutoItemConfig("Damage coefficient of each missile.", AutoItemConfigFlags.None, 0f, 1000f)]
         public float dmgCoefficient { get; private set; } = 3f;
 
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Stack amount of Damage coefficient. Linear.", AutoItemConfigFlags.None, 0f, 1000f)]
+        public float dmgStack { get; private set; } = 0f;
+
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Number of missiles", AutoItemConfigFlags.None, 1, 100)]
+        public int missileAmount { get; private set; } = 3;
+
         protected override string NewLangName(string langid = null) => displayName;
 
-        protected override string NewLangPickup(string langid = null) => "Chance to fire 3 missiles.";
+        protected override string NewLangPickup(string langid = null) => $"Chance to fire {missileAmount} missiles.";
 
-        protected override string NewLangDesc(string langid = null) => "<style=cIsDamage>" + Pct(procChance, 0, 1) + "</style> <style=cStack>(+" + Pct(stackChance, 0, 1) + " per stack, up to " + Pct(capChance, 0, 1) + ")</style> chance to fire 3 missiles that deal <style=cIsDamage>" + Pct(dmgCoefficient, 0) + "</style> each. Affected by proc coefficient.";
+        protected override string NewLangDesc(string langid = null) =>
+            $"<style=cIsDamage>{Pct(procChance, 0, 1)}</style> <style=cStack>(+{Pct(stackChance, 0, 1)} per stack, up to {Pct(capChance, 0, 1)})</style> " +
+            $"chance to fire {missileAmount} missiles that deal <style=cIsDamage>{Pct(dmgCoefficient, 0)}</style> " +
+            $"<style=cStack>(+{dmgStack} per stack)</style> each. Affected by proc coefficient.";
 
-        protected override string NewLangLore(string langid = null) => "A relic of times long past (ChensClassicItems mod)";
+        protected override string NewLangLore(string langid = null) =>
+            "I do not understand. They're all [REDACTED]. Whatever, use them.\n\n" +
+            "You don't sound so convincing. The [REDACTED] is [REDACTED] [REDACTED]. I mean it. [REDACTED].\n\n" +
+            "Alright, soldier, stop speaking the [REDACTED] language.\n\n" +
+            "... but it IS [REDACTED].\n\n" +
+            "I give up. To your positions.";
 
         public Missile2()
         {
@@ -90,19 +106,20 @@ namespace Chen.ClassicItems
             if (m2Proc > capChance) m2Proc = capChance;
             if (!Util.CheckRoll(m2Proc * damageInfo.procCoefficient, chrm)) return;
 
-            for (int t = 0; t < 3; t++)
+            for (int t = 0; t < missileAmount; t++)
             {
-                ProcMissile(t, body, damageInfo.procChainMask, victim, damageInfo);
+                ProcMissile(t, body, damageInfo.procChainMask, victim, damageInfo, icnt);
             }
         }
 
-        private void ProcMissile(int mNum, CharacterBody attackerBody, ProcChainMask procChainMask, GameObject victim, DamageInfo damageInfo)
+        private void ProcMissile(int mNum, CharacterBody attackerBody, ProcChainMask procChainMask, GameObject victim, DamageInfo damageInfo, int stack)
         {
             GameObject gameObject = attackerBody.gameObject;
             InputBankTest component = gameObject.GetComponent<InputBankTest>();
             Vector3 position = component ? component.aimOrigin : gameObject.transform.position;
 
-            float damage = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, dmgCoefficient);
+            float dmgCoef = dmgCoefficient + (dmgStack * stack);
+            float damage = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, dmgCoef);
             ProcChainMask procChainMask2 = procChainMask;
             procChainMask2.AddProc(ProcType.Missile);
             FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
@@ -123,16 +140,8 @@ namespace Chen.ClassicItems
 
         private Vector3 DetermineFacing(int missileNumber)
         {
-            switch (missileNumber)
-            {
-                case 0:
-                case 2:
-                    return new Vector3(Random.Range(-.5f, .5f), Random.Range(1.5f, .5f), 0);
-
-                case 1:
-                default:
-                    return (Vector3.up);
-            }
+            if (missileNumber % 2 == 0) return new Vector3(Random.Range(-.5f, .5f), Random.Range(1.5f, .5f), 0);
+            else return (Vector3.up);
         }
     }
 }
