@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
-using static BetterUI.ProcItemsCatalog;
 using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
@@ -28,15 +27,15 @@ namespace Chen.ClassicItems
         public float capChance { get; private set; } = 100f;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Damage coefficient of each missile.", AutoItemConfigFlags.None, 0f, 1000f)]
+        [AutoItemConfig("Damage coefficient of each missile.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float dmgCoefficient { get; private set; } = 3f;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Stack amount of Damage coefficient. Linear.", AutoItemConfigFlags.None, 0f, 1000f)]
+        [AutoItemConfig("Stack amount of Damage coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float dmgStack { get; private set; } = 0f;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Number of missiles", AutoItemConfigFlags.None, 1, 100)]
+        [AutoItemConfig("Number of missiles per proc.", AutoItemConfigFlags.None, 1, int.MaxValue)]
         public int missileAmount { get; private set; } = 3;
 
         protected override string NewLangName(string langid = null) => displayName;
@@ -49,11 +48,11 @@ namespace Chen.ClassicItems
             $"<style=cStack>(+{dmgStack} per stack)</style> each. Affected by proc coefficient.";
 
         protected override string NewLangLore(string langid = null) =>
-            "I do not understand. They're all [REDACTED]. Whatever, use them.\n\n" +
-            "You don't sound so convincing. The [REDACTED] is [REDACTED] [REDACTED]. I mean it. [REDACTED].\n\n" +
-            "Alright, soldier, stop speaking the [REDACTED] language.\n\n" +
-            "... but it IS [REDACTED].\n\n" +
-            "I give up. To your positions.";
+            "\"I do not understand. They're all [REDACTED]. Whatever, use them.\"\n\n" +
+            "\"You don't sound so convincing. The [REDACTED] is [REDACTED] [REDACTED]. I mean it. [REDACTED].\"\n\n" +
+            "\"Alright, soldier, stop speaking the [REDACTED] language.\"\n\n" +
+            "\"... but it IS [REDACTED].\"\n\n" +
+            "\"I give up. To your positions.\"";
 
         public Missile2()
         {
@@ -65,10 +64,6 @@ namespace Chen.ClassicItems
                         ((count, inv, master) => { return Mathf.Min(procChance + stackChance * (count - 1), capChance); },
                         (value, inv, master) => { return $"Firing Chance: {Pct(value, 0, 1)}"; }
                     ));
-                }
-                if (Compat_BetterUI.enabled)
-                {
-                    AddEffect(regItem.ItemDef.itemIndex, ProcEffect.Chance, procChance, stackChance, Stacking.Linear);
                 }
             };
         }
