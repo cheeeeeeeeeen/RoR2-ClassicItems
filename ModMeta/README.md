@@ -14,7 +14,7 @@ Use **r2modman** mod manager to install this mod.
 #### Tier 1
 - Coming soon!
 #### Tier 2
-- Coming soon!
+- Panic Mines
 #### Tier 3
 - AtG Missile Mk. 2
 
@@ -27,6 +27,10 @@ Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
 GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
+
+**1.0.0**
+- Implement Panic Mines!
+- Fix grammar errors found on AtG Missile Mk. 2
 
 **0.0.1**
 - Initial version. Adds the AtG Missile Mk. 2 item. Configurable.
