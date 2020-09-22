@@ -6,6 +6,7 @@ using BepInEx.Configuration;
 using R2API;
 using R2API.Utils;
 using RoR2;
+using RoR2.Projectile;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -22,7 +23,7 @@ namespace Chen.ClassicItems
     [BepInDependency(ThinkInvisCI.ClassicItemsPlugin.ModGuid, ThinkInvisCI.ClassicItemsPlugin.ModVer)]
     [BepInDependency("com.funkfrog_sipondo.sharesuite", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("dev.ontrigger.itemstats", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("com.xoxfaby.BetterUI", BepInDependency.DependencyFlags.SoftDependency)]
+    //[BepInDependency("com.xoxfaby.BetterUI", BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [R2APISubmoduleDependency(nameof(ItemAPI), nameof(LanguageAPI), nameof(ResourcesAPI), nameof(PlayerAPI), nameof(PrefabAPI), nameof(BuffAPI), nameof(LoadoutAPI))]
     public class ClassicItemsPlugin : BaseUnityPlugin
@@ -86,6 +87,8 @@ namespace Chen.ClassicItems
         }
 
 #endif
+
+        public static GameObject panicMinePrefab;
 
         private void Awake()
         {
@@ -180,6 +183,12 @@ namespace Chen.ClassicItems
             {
                 x.SetupBehavior();
             }
+
+            Logger.LogDebug("Cloning needed prefabs...");
+
+            GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
+            panicMinePrefab = engiMinePrefab.InstantiateClone("PanicMine");
+            Destroy(panicMinePrefab.GetComponent<ProjectileDeployToOwner>());
 
             Logger.LogDebug("Initial setup done!");
         }

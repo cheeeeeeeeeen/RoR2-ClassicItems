@@ -79,7 +79,6 @@
     <Folder Include="Items\EqpLunar\" />
     <Folder Include="Items\Eqp\" />
     <Folder Include="Items\T1\" />
-    <Folder Include="Items\T2\" />
     <Folder Include="Items\TBoss\" />
     <Folder Include="Items\TLunar\" />
   </ItemGroup>
