@@ -28,7 +28,7 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
 
-**1.0.0**
+**0.0.2**
 - Implement Panic Mines!
 - Fix grammar errors found on AtG Missile Mk. 2
 

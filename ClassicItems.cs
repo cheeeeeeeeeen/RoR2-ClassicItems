@@ -1,5 +1,5 @@
 ﻿// Based from ThinkInvis.ClassicItems
-//#define DEBUG
+// #define DEBUGNOT
 
 using BepInEx;
 using BepInEx.Configuration;
@@ -21,9 +21,6 @@ namespace Chen.ClassicItems
 {
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [BepInDependency(ThinkInvisCI.ClassicItemsPlugin.ModGuid, ThinkInvisCI.ClassicItemsPlugin.ModVer)]
-    [BepInDependency("com.funkfrog_sipondo.sharesuite", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("dev.ontrigger.itemstats", BepInDependency.DependencyFlags.SoftDependency)]
-    //[BepInDependency("com.xoxfaby.BetterUI", BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [R2APISubmoduleDependency(nameof(ItemAPI), nameof(LanguageAPI), nameof(ResourcesAPI), nameof(PlayerAPI), nameof(PrefabAPI), nameof(BuffAPI), nameof(LoadoutAPI))]
     public class ClassicItemsPlugin : BaseUnityPlugin
@@ -32,7 +29,7 @@ namespace Chen.ClassicItems
 #if DEBUG
                 "0." +
 #endif
-            "0.0.1";
+            "0.0.2";
 
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";
