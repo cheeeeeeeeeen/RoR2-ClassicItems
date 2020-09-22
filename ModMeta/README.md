@@ -30,7 +30,8 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 **0.0.2**
 - Implement Panic Mines!
-- Fix grammar errors found on AtG Missile Mk. 2
+- Fix grammar errors found on AtG Missile Mk. 2.
+- Attach the mod to the original ClassicItems *even closer*.
 
 **0.0.1**
 - Initial version. Adds the AtG Missile Mk. 2 item. Configurable.
