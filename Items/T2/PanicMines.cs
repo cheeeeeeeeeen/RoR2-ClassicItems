@@ -87,7 +87,6 @@ namespace Chen.ClassicItems
                 || (!requireHealth && (oldCH - self.combinedHealth) / self.fullCombinedHealth < healthThreshold))
                 return;
 
-            icnt--;
             Vector3 corePos = Util.GetCorePosition(vBody);
             GameObject minePrefab = ClassicItemsPlugin.panicMinePrefab;
 
@@ -123,7 +122,7 @@ namespace Chen.ClassicItems
 
         private float DamageCalculation(float characterDamage, int stack)
         {
-            return characterDamage * (baseDmg + stackDmg * stack);
+            return characterDamage * (baseDmg + stackDmg * (stack - 1));
         }
     }
 }
