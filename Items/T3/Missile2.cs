@@ -65,6 +65,10 @@ namespace Chen.ClassicItems
                         (value, inv, master) => { return $"Firing Chance: {Pct(value, 0, 1)}"; }
                     ));
                 }
+                if (Compat_BetterUI.enabled)
+                {
+                    Compat_BetterUI.AddEffect(regIndex, Compat_BetterUI.ProcEffect.Chance, procChance, stackChance, Compat_BetterUI.Stacking.Linear);
+                }
             };
         }
 
