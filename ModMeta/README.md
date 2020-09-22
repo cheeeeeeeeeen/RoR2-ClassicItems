@@ -28,6 +28,9 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
 
+**0.0.3**
+- Removed DEBUG mode. Woops. My bad.
+
 **0.0.2**
 - Implement Panic Mines!
 - Fix grammar errors found on AtG Missile Mk. 2.

@@ -1,5 +1,5 @@
-﻿// Based from ThinkInvis.ClassicItems
-// #define DEBUGNOT
+﻿#undef DEBUG
+// Based from ThinkInvis.ClassicItems
 
 using BepInEx;
 using BepInEx.Configuration;
@@ -29,7 +29,7 @@ namespace Chen.ClassicItems
 #if DEBUG
                 "0." +
 #endif
-            "0.0.2";
+            "0.0.3";
 
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";
