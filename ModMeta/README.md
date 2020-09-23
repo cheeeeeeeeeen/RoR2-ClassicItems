@@ -29,7 +29,7 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 ## Changelog
 
 **0.0.4**
-- Fix the items' icons added by ChensClassicItems because they displaty as white in the Command Menu.
+- Fix the items' icons added by ChensClassicItems because they display as white in the Command Menu.
 
 **0.0.3**
 - Removed DEBUG mode. Woops. My bad.
