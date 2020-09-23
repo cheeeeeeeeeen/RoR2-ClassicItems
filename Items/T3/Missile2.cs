@@ -42,10 +42,7 @@ namespace Chen.ClassicItems
 
         protected override string NewLangPickup(string langid = null) => $"Chance to fire {missileAmount} missiles.";
 
-        protected override string NewLangDesc(string langid = null) =>
-            $"<style=cIsDamage>{Pct(procChance, 0, 1)}</style> <style=cStack>(+{Pct(stackChance, 0, 1)} per stack, up to {Pct(capChance, 0, 1)})</style> " +
-            $"chance to fire {missileAmount} missiles that deal <style=cIsDamage>{Pct(dmgCoefficient, 0)}</style> " +
-            $"<style=cStack>(+{dmgStack} per stack)</style> each. Affected by proc coefficient.";
+        protected override string NewLangDesc(string langid = null) => FormatNewLangDesc();
 
         protected override string NewLangLore(string langid = null) =>
             "\"I do not understand. They're all [REDACTED]. Whatever, use them.\"\n\n" +
@@ -141,6 +138,16 @@ namespace Chen.ClassicItems
         {
             if (missileNumber % 2 == 0) return new Vector3(Random.Range(-.5f, .5f), Random.Range(1.5f, .5f), 0);
             else return (Vector3.up);
+        }
+
+        private string FormatNewLangDesc()
+        {
+            string desc = $"<style=cIsDamage>{Pct(procChance, 0, 1)}</style>";
+            if (stackChance > 0f) desc += $" <style=cIsDamage>{Pct(procChance, 0, 1)}</style> <style=cStack>(+{Pct(stackChance, 0, 1)} per stack, up to {Pct(capChance, 0, 1)})</style>";
+            desc += $"chance to fire {missileAmount} missiles that deal <style=cIsDamage>{Pct(dmgCoefficient, 0)}</style>";
+            if (dmgStack > 0f) desc += $" <style=cStack>(+{dmgStack} per stack)</style>";
+            desc += " each. Affected by proc coefficient.";
+            return desc;
         }
     }
 }

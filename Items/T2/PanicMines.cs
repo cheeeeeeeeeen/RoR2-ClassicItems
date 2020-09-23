@@ -34,7 +34,7 @@ namespace Chen.ClassicItems
 
         protected override string NewLangPickup(string langid = null) => "Drop mines when taking heavy damage.";
 
-        protected override string NewLangDesc(string langid = null) => "<style=cDeath>When hit for more than " + Pct(healthThreshold) + " max health</style>, drop <style=cStack>1</style> mine <style=cStack>(+1 per stack)</style> with <style=cIsDamage>" + Pct(baseDmg) + "</style> <style=cStack>(+" + Pct(stackDmg) + " per stack)</style> damage.";
+        protected override string NewLangDesc(string langid = null) => FormatNewLangDesc();
 
         protected override string NewLangLore(string langid = null) =>
             "\"Must be strapped onto vehicles, NOT personnel! After taking heavy fire, the automatic dispenser should drop down and arm a mine to make a hasty retreat (Or blow enemies sky-high who are dumb enough to follow.)" +
@@ -123,6 +123,16 @@ namespace Chen.ClassicItems
         private float DamageCalculation(float characterDamage, int stack)
         {
             return characterDamage * (baseDmg + stackDmg * (stack - 1));
+        }
+
+        private string FormatNewLangDesc()
+        {
+            string desc = "<style=cDeath>When hit";
+            if (healthThreshold > 0f) desc += $" for more than {Pct(healthThreshold)} of max health</style>";
+            desc += $", drop <style=cStack>1</style> mine <style=cStack>(+1 per stack)</style> with <style=cIsDamage>{Pct(baseDmg)}</style>";
+            if (stackDmg > 0f) desc += " <style=cStack>(+" + Pct(stackDmg) + " per stack)</style>";
+            desc += " damage.";
+            return desc;
         }
     }
 }
