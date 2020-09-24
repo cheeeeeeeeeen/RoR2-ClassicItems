@@ -34,14 +34,22 @@ namespace Chen.ClassicItems
 
         protected override string NewLangPickup(string langid = null) => "Drop mines when taking heavy damage.";
 
-        protected override string NewLangDesc(string langid = null) => FormatNewLangDesc();
+        protected override string NewLangDesc(string langid = null)
+        {
+            string desc = "<style=cDeath>When hit";
+            if (healthThreshold > 0f) desc += $" for more than {Pct(healthThreshold)} of max health</style>";
+            desc += $", drop <style=cStack>1</style> mine <style=cStack>(+1 per stack)</style> with <style=cIsDamage>{Pct(baseDmg)}</style>";
+            if (stackDmg > 0f) desc += " <style=cStack>(+" + Pct(stackDmg) + " per stack)</style>";
+            desc += " damage.";
+            return desc;
+        }
 
         protected override string NewLangLore(string langid = null) =>
             "\"Must be strapped onto vehicles, NOT personnel! After taking heavy fire, the automatic dispenser should drop down and arm a mine to make a hasty retreat (Or blow enemies sky-high who are dumb enough to follow.)" +
             " Includes smart-fire, but leave the blast radius regardless. The laws of physics don't pick sides. Very high yield for how small it is." +
             " If you want to use it offensively, then... well, just get shot. A lot. Preferably by small arms fire, or you'll die trying to have the mines drop.\"\n\n" +
-            "\"Seriously?\" I said to myself upon reading the details that is attached to what it looked like an odd mine.\n\n" +
-            "But if there is one thing about surviving in this damnable place, then I should trust that this equipment will prove useful.";
+            "\"Seriously?\" I said to myself upon reading the details that is attached to what it looked like an odd proximity mine.\n\n" +
+            "But if there is one thing about surviving in this damnable place, then I should trust that this equipment will prove itself useful.";
 
         public PanicMines()
         {
@@ -123,16 +131,6 @@ namespace Chen.ClassicItems
         private float DamageCalculation(float characterDamage, int stack)
         {
             return characterDamage * (baseDmg + stackDmg * (stack - 1));
-        }
-
-        private string FormatNewLangDesc()
-        {
-            string desc = "<style=cDeath>When hit";
-            if (healthThreshold > 0f) desc += $" for more than {Pct(healthThreshold)} of max health</style>";
-            desc += $", drop <style=cStack>1</style> mine <style=cStack>(+1 per stack)</style> with <style=cIsDamage>{Pct(baseDmg)}</style>";
-            if (stackDmg > 0f) desc += " <style=cStack>(+" + Pct(stackDmg) + " per stack)</style>";
-            desc += " damage.";
-            return desc;
         }
     }
 }
