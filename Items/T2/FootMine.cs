@@ -18,7 +18,7 @@ namespace Chen.ClassicItems
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Fraction of max health required as damage taken to drop a mine.", AutoItemConfigFlags.None, 0f, 1f)]
+        [AutoItemConfig("Fraction of max health required as damage taken to drop a poison mine.", AutoItemConfigFlags.None, 0f, 1f)]
         public float healthThreshold { get; private set; } = 0.1f;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
@@ -44,9 +44,25 @@ namespace Chen.ClassicItems
 
         protected override string NewLangPickup(string langid = null) => "Drop a poison mine when taking heavy damage.";
 
-        protected override string NewLangDesc(string langid = null) => $"<style=cDeath>When hit for more than {Pct(healthThreshold)} max health</style>, drop a poison mine with <style=cIsDamage>{Pct(baseDmg)}</style> <style=cStack>(+{Pct(stackDmg)} per stack)</style> damage per second. Poison lasts for <style=cStack>{baseTicks}</style> <style=cStack>(+{stackTicks} per stack)</style> seconds.";
+        protected override string NewLangDesc(string langid = null)
+        {
+            string desc = $"<style=cDeath>When hit for more than {Pct(healthThreshold)} max health</style>, drop a poison mine with <style=cIsDamage>{Pct(baseDmg)}</style>";
+            if (stackDmg > 0f) desc += $" <style=cStack>(+{Pct(stackDmg)} per stack)</style>";
+            desc += " damage per second. Poison lasts for <style=cStack>{baseTicks}</style>";
+            if (stackTicks > 0) desc += " <style=cStack>(+{stackTicks} per stack)</style>";
+            desc += " seconds.";
+            return desc;
+        }
 
-        protected override string NewLangLore(string langid = null) => "A relic of times long past (ChensClassicItems mod)";
+        protected override string NewLangLore(string langid = null) =>
+            "I feel like my allies are losing it. Truly, this place is hell to begin with. We are always on the brink of our deaths. " +
+            "I can't even believe I find myself writing this journal as all hell is about to break loose any second.\n\n" +
+            "As I look towards a friend who appears to be going insane, he is holding a... foot. A foot!?\n\n" +
+            "I ask, \"Why are you carrying something disgusting and is that Clark's!?\n\n" +
+            "He looked at me while shrugging." +
+            "\"He's dead,\" he told me while sighing, as if he expected it, \"Curiosity killed the cat. Approached one of those hideous bugs, infested him, then he exploded.\"" +
+            "I stayed silent, confused as to what I should really feel at the moment: disgust or sadness? I don't know." +
+            "\"His foot can be a good trap. We need everything in order to survive.\"";
 
         public FootMine()
         {
@@ -59,7 +75,7 @@ namespace Chen.ClassicItems
                         {
                             return baseDmg + (count - 1) * stackDmg;
                         },
-                        (value, inv, master) => { return $"Poison Damage: {Pct(value, 1)}"; }
+                        (value, inv, master) => { return $"Poison Damage/Second: {Pct(value, 1)}"; }
                     ));
                 }
             };
