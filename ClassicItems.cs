@@ -1,5 +1,4 @@
-﻿#define DEBUG
-// Based from ThinkInvis.ClassicItems
+﻿#undef DEBUG
 
 using BepInEx;
 using BepInEx.Configuration;
@@ -29,25 +28,14 @@ namespace Chen.ClassicItems
 #if DEBUG
                 "0." +
 #endif
-            "0.0.4";
+            "0.1.0";
 
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";
 
         private static ConfigFile cfgFile;
 
-        internal static FilingDictionary<ItemBoilerplate> masterItemList = new FilingDictionary<ItemBoilerplate>();
-
-        public class GlobalConfig : AutoItemConfigContainer
-        {
-            // Copy configuration coming from the original ClassicItems by ThinkInvis
-            public bool hideDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.hideDesc;
-
-            public bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
-            public bool spinMod { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.spinMod;
-        }
-
-        public static readonly GlobalConfig globalConfig = new GlobalConfig();
+        internal static FilingDictionary<ItemBoilerplate> chensItemList = new FilingDictionary<ItemBoilerplate>();
 
         private static readonly ReadOnlyDictionary<ItemTier, string> modelNameMap = new ReadOnlyDictionary<ItemTier, string>(new Dictionary<ItemTier, string>{
             {ItemTier.Boss, "BossCard"},
@@ -63,6 +51,8 @@ namespace Chen.ClassicItems
         public static GameObject footMinePrefab;
         public static BuffIndex footPoisonBuff;
         public static DotController.DotIndex footPoisonDot;
+
+        public bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
 
 #if DEBUG
 
@@ -111,18 +101,17 @@ namespace Chen.ClassicItems
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 
             Logger.LogDebug("Loading global configs...");
-
-            globalConfig.BindAll(cfgFile, "ChensClassicItems", "Global");
+            Logger.LogDebug("Skip. Global configs are based on ThinkInvis.ClassicItems.");
 
             Logger.LogDebug("Instantiating item classes...");
-            masterItemList = ItemBoilerplate.InitAll("ChensClassicItems");
+            chensItemList = ItemBoilerplate.InitAll("ChensClassicItems");
 
             Logger.LogDebug("Loading item configs...");
-            foreach (ItemBoilerplate x in masterItemList)
+            foreach (ItemBoilerplate x in chensItemList)
             {
                 x.ConfigEntryChanged += (sender, args) =>
                 {
-                    if ((args.flags & (AutoUpdateEventFlags.InvalidateNameToken | (globalConfig.longDesc ? AutoUpdateEventFlags.InvalidateDescToken : AutoUpdateEventFlags.InvalidatePickupToken))) == 0) return;
+                    if ((args.flags & (AutoUpdateEventFlags.InvalidateNameToken | (longDesc ? AutoUpdateEventFlags.InvalidateDescToken : AutoUpdateEventFlags.InvalidatePickupToken))) == 0) return;
                     if (x.pickupDef != null)
                     {
                         var ctsf = x.pickupDef.displayPrefab?.transform;
@@ -130,7 +119,7 @@ namespace Chen.ClassicItems
                         var cfront = ctsf.Find("cardfront");
                         if (!cfront) return;
 
-                        cfront.Find("carddesc").GetComponent<TextMeshPro>().text = Language.GetString(globalConfig.longDesc ? x.descToken : x.pickupToken);
+                        cfront.Find("carddesc").GetComponent<TextMeshPro>().text = Language.GetString(longDesc ? x.descToken : x.pickupToken);
                         cfront.Find("cardname").GetComponent<TextMeshPro>().text = Language.GetString(x.nameToken);
                     }
                     if (x.logbookEntry != null)
@@ -144,7 +133,7 @@ namespace Chen.ClassicItems
             Logger.LogDebug("Registering item attributes...");
 
             int longestName = 0;
-            foreach (ItemBoilerplate x in masterItemList)
+            foreach (ItemBoilerplate x in chensItemList)
             {
                 string mpnOvr = null;
                 if (x is Item item) mpnOvr = "@ChensClassicItems:Assets/ClassicItems/models/" + modelNameMap[item.itemTier] + ".prefab";
@@ -162,7 +151,7 @@ namespace Chen.ClassicItems
             }
 
             Logger.LogMessage("Index dump follows (pairs of name / index):");
-            foreach (ItemBoilerplate x in masterItemList)
+            foreach (ItemBoilerplate x in chensItemList)
             {
                 if (x is Equipment eqp)
                     Logger.LogMessage("Equipment CCI" + x.itemCodeName.PadRight(longestName) + " / " + ((int)eqp.regIndex).ToString());
@@ -175,7 +164,7 @@ namespace Chen.ClassicItems
             }
 
             Logger.LogDebug("Tweaking vanilla stuff...");
-            Logger.LogDebug("No need. ClassicItems has added the needed actions.");
+            Logger.LogDebug("No need. ThinkInvis.ClassicItems has added the needed actions.");
 
             Logger.LogDebug("Cloning needed prefabs...");
 
@@ -184,7 +173,6 @@ namespace Chen.ClassicItems
             Destroy(panicMinePrefab.GetComponent<ProjectileDeployToOwner>());
             footMinePrefab = engiMinePrefab.InstantiateClone("FootMine");
             Destroy(footMinePrefab.GetComponent<ProjectileDeployToOwner>());
-            // footMinePrefab.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
 
             Logger.LogDebug("Registering buffs...");
 
@@ -211,7 +199,7 @@ namespace Chen.ClassicItems
 
             Logger.LogDebug("Registering item behaviors...");
 
-            foreach (ItemBoilerplate x in masterItemList)
+            foreach (ItemBoilerplate x in chensItemList)
             {
                 x.SetupBehavior();
             }
@@ -225,6 +213,4 @@ namespace Chen.ClassicItems
             Logger.LogDebug("Nothing to perform here.");
         }
     }
-
-    public class SpinModFlag : MonoBehaviour { }
 }
