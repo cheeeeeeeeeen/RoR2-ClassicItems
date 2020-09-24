@@ -48,8 +48,8 @@ namespace Chen.ClassicItems
         {
             string desc = $"<style=cDeath>When hit for more than {Pct(healthThreshold)} max health</style>, drop a poison mine with <style=cIsDamage>{Pct(baseDmg)}</style>";
             if (stackDmg > 0f) desc += $" <style=cStack>(+{Pct(stackDmg)} per stack)</style>";
-            desc += " damage per second. Poison lasts for <style=cStack>{baseTicks}</style>";
-            if (stackTicks > 0) desc += " <style=cStack>(+{stackTicks} per stack)</style>";
+            desc += $" damage per second. Poison lasts for <style=cStack>{baseTicks}</style>";
+            if (stackTicks > 0) desc += $" <style=cStack>(+{stackTicks} per stack)</style>";
             desc += " seconds.";
             return desc;
         }
