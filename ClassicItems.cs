@@ -1,4 +1,4 @@
-﻿#undef DEBUG
+﻿#define DEBUG
 // Based from ThinkInvis.ClassicItems
 
 using BepInEx;
@@ -22,7 +22,7 @@ namespace Chen.ClassicItems
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [BepInDependency(ThinkInvisCI.ClassicItemsPlugin.ModGuid, ThinkInvisCI.ClassicItemsPlugin.ModVer)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
-    [R2APISubmoduleDependency(nameof(ItemAPI), nameof(LanguageAPI), nameof(ResourcesAPI), nameof(PlayerAPI), nameof(PrefabAPI), nameof(BuffAPI), nameof(LoadoutAPI))]
+    [R2APISubmoduleDependency(nameof(DotAPI), nameof(ItemAPI), nameof(LanguageAPI), nameof(ResourcesAPI), nameof(PlayerAPI), nameof(PrefabAPI), nameof(BuffAPI), nameof(LoadoutAPI))]
     public class ClassicItemsPlugin : BaseUnityPlugin
     {
         public const string ModVer =
@@ -59,6 +59,11 @@ namespace Chen.ClassicItems
 
         internal static BepInEx.Logging.ManualLogSource _logger;
 
+        public static GameObject panicMinePrefab;
+        public static GameObject footMinePrefab;
+        public static BuffIndex footPoisonBuff;
+        public static DotController.DotIndex footPoisonDot;
+
 #if DEBUG
 
         public void Update()
@@ -84,8 +89,6 @@ namespace Chen.ClassicItems
         }
 
 #endif
-
-        public static GameObject panicMinePrefab;
 
         private void Awake()
         {
@@ -162,17 +165,49 @@ namespace Chen.ClassicItems
             foreach (ItemBoilerplate x in masterItemList)
             {
                 if (x is Equipment eqp)
-                    Logger.LogMessage("Equipment CI" + x.itemCodeName.PadRight(longestName) + " / " + ((int)eqp.regIndex).ToString());
+                    Logger.LogMessage("Equipment CCI" + x.itemCodeName.PadRight(longestName) + " / " + ((int)eqp.regIndex).ToString());
                 else if (x is Item item)
-                    Logger.LogMessage("     Item CI" + x.itemCodeName.PadRight(longestName) + " / " + ((int)item.regIndex).ToString());
+                    Logger.LogMessage("     Item CCI" + x.itemCodeName.PadRight(longestName) + " / " + ((int)item.regIndex).ToString());
                 else if (x is Artifact afct)
-                    Logger.LogMessage(" Artifact CI" + x.itemCodeName.PadRight(longestName) + " / " + ((int)afct.regIndex).ToString());
+                    Logger.LogMessage(" Artifact CCI" + x.itemCodeName.PadRight(longestName) + " / " + ((int)afct.regIndex).ToString());
                 else
-                    Logger.LogMessage("    Other CI" + x.itemCodeName.PadRight(longestName) + " / N/A");
+                    Logger.LogMessage("    Other CCI" + x.itemCodeName.PadRight(longestName) + " / N/A");
             }
 
             Logger.LogDebug("Tweaking vanilla stuff...");
             Logger.LogDebug("No need. ClassicItems has added the needed actions.");
+
+            Logger.LogDebug("Cloning needed prefabs...");
+
+            GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
+            panicMinePrefab = engiMinePrefab.InstantiateClone("PanicMine");
+            Destroy(panicMinePrefab.GetComponent<ProjectileDeployToOwner>());
+            footMinePrefab = engiMinePrefab.InstantiateClone("FootMine");
+            Destroy(footMinePrefab.GetComponent<ProjectileDeployToOwner>());
+            // footMinePrefab.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
+
+            Logger.LogDebug("Registering buffs...");
+
+            var poisonBuffDef = new CustomBuff(new BuffDef
+            {
+                buffColor = new Color(1, 121, 91),
+                canStack = true,
+                isDebuff = true,
+                name = "CCIFootPoison",
+                iconPath = "@ChensClassicItems:Assets/ClassicItems/icons/deadmansfoot_icon.png"
+            });
+            footPoisonBuff = BuffAPI.Add(poisonBuffDef);
+
+            Logger.LogDebug("Registering DoTs...");
+
+            var poisonDotDef = new DotController.DotDef
+            {
+                interval = 1,
+                damageCoefficient = 1,
+                damageColorIndex = DamageColorIndex.Poison,
+                associatedBuff = footPoisonBuff
+            };
+            footPoisonDot = DotAPI.RegisterDotDef(poisonDotDef);
 
             Logger.LogDebug("Registering item behaviors...");
 
@@ -180,12 +215,6 @@ namespace Chen.ClassicItems
             {
                 x.SetupBehavior();
             }
-
-            Logger.LogDebug("Cloning needed prefabs...");
-
-            GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
-            panicMinePrefab = engiMinePrefab.InstantiateClone("PanicMine");
-            Destroy(panicMinePrefab.GetComponent<ProjectileDeployToOwner>());
 
             Logger.LogDebug("Initial setup done!");
         }

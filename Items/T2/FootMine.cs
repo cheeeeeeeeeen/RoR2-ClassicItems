@@ -1,0 +1,161 @@
+﻿using EntityStates;
+using EntityStates.Engi.EngiWeapon;
+using EntityStates.Engi.Mine;
+using RoR2;
+using RoR2.Projectile;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using TILER2;
+using UnityEngine;
+using static TILER2.MiscUtil;
+
+namespace Chen.ClassicItems
+{
+    public class FootMine : Item<FootMine>
+    {
+        public override string displayName => "Dead Man's Foot";
+        public override ItemTier itemTier => ItemTier.Tier2;
+        public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
+
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Fraction of max health required as damage taken to drop a mine.", AutoItemConfigFlags.None, 0f, 1f)]
+        public float healthThreshold { get; private set; } = 0.1f;
+
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Base poison damage coefficient dealt to affected enemies.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        public float baseDmg { get; private set; } = 1.5f;
+
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Stack amount for the poison damage coefficient.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        public float stackDmg { get; private set; } = 0f;
+
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Number of poison ticks.", AutoItemConfigFlags.None, 0, int.MaxValue)]
+        public int baseTicks { get; private set; } = 4;
+
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Stack increase of poison ticks.", AutoItemConfigFlags.None, 0, int.MaxValue)]
+        public int stackTicks { get; private set; } = 1;
+
+        [AutoItemConfig("If true, damage to shield and barrier (from e.g. Personal Shield Generator, Topaz Brooch) will not count towards triggering Dead Man's Foot.")]
+        public bool requireHealth { get; private set; } = true;
+
+        protected override string NewLangName(string langid = null) => displayName;
+
+        protected override string NewLangPickup(string langid = null) => "Drop a poison mine when taking heavy damage.";
+
+        protected override string NewLangDesc(string langid = null) => $"<style=cDeath>When hit for more than {Pct(healthThreshold)} max health</style>, drop a poison mine with <style=cIsDamage>{Pct(baseDmg)}</style> <style=cStack>(+{Pct(stackDmg)} per stack)</style> damage per second. Poison lasts for <style=cStack>{baseTicks}</style> <style=cStack>(+{stackTicks} per stack)</style> seconds.";
+
+        protected override string NewLangLore(string langid = null) => "A relic of times long past (ChensClassicItems mod)";
+
+        public FootMine()
+        {
+            onBehav += () =>
+            {
+                if (Compat_ItemStats.enabled)
+                {
+                    Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
+                        ((count, inv, master) =>
+                        {
+                            return baseDmg + (count - 1) * stackDmg;
+                        },
+                        (value, inv, master) => { return $"Poison Damage: {Pct(value, 1)}"; }
+                    ));
+                }
+            };
+        }
+
+        protected override void LoadBehavior()
+        {
+            On.RoR2.HealthComponent.TakeDamage += On_HCTakeDamage;
+            On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate += On_ESMineArmingWeak;
+            On.EntityStates.Engi.Mine.Detonate.Explode += On_ESDetonate;
+        }
+
+        protected override void UnloadBehavior()
+        {
+            On.RoR2.HealthComponent.TakeDamage -= On_HCTakeDamage;
+            On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate -= On_ESMineArmingWeak;
+            On.EntityStates.Engi.Mine.Detonate.Explode -= On_ESDetonate;
+        }
+
+        private void On_HCTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)
+        {
+            var oldHealth = self.health;
+            var oldCH = self.combinedHealth;
+            CharacterBody vBody = self.body;
+            GameObject vGameObject = self.gameObject;
+
+            orig(self, di);
+
+            int icnt = GetCount(vBody);
+            if (icnt < 1
+                || (requireHealth && (oldHealth - self.health) / self.fullHealth < healthThreshold)
+                || (!requireHealth && (oldCH - self.combinedHealth) / self.fullCombinedHealth < healthThreshold))
+                return;
+
+            Vector3 corePos = Util.GetCorePosition(vBody);
+            GameObject minePrefab = ClassicItemsPlugin.footMinePrefab;
+
+            Util.PlaySound(FireMines.throwMineSoundString, vGameObject);
+            ProjectileManager.instance.FireProjectile(minePrefab, corePos, MineDropDirection(),
+                                                      vGameObject, icnt, 100f, false,
+                                                      DamageColorIndex.Item, null, -1f);
+        }
+
+        private void On_ESMineArmingWeak(On.EntityStates.Engi.Mine.MineArmingWeak.orig_FixedUpdate orig, MineArmingWeak self)
+        {
+            if (self.outer.name != "FootMine(Clone)") orig(self);
+        }
+
+        private void On_ESDetonate(On.EntityStates.Engi.Mine.Detonate.orig_Explode orig, Detonate self)
+        {
+            if (self.outer.name != "FootMine(Clone)") orig(self);
+            else
+            {
+                List<TeamComponent> teamMembers = new List<TeamComponent>();
+                TeamFilter teamFilter = self.GetComponent<TeamFilter>();
+                float blastRadius = Detonate.blastRadius * 1.2f;
+                float sqrad = blastRadius * blastRadius;
+                bool isFF = FriendlyFireManager.friendlyFireMode != FriendlyFireManager.FriendlyFireMode.Off;
+                GameObject owner = self.projectileController.owner;
+                int icnt = (int)self.GetComponent<ProjectileDamage>().damage; // this is actually the stack number
+
+                if (isFF || teamFilter.teamIndex != TeamIndex.Monster) teamMembers.AddRange(TeamComponent.GetTeamMembers(TeamIndex.Monster));
+                if (isFF || teamFilter.teamIndex != TeamIndex.Neutral) teamMembers.AddRange(TeamComponent.GetTeamMembers(TeamIndex.Neutral));
+                if (isFF || teamFilter.teamIndex != TeamIndex.Player) teamMembers.AddRange(TeamComponent.GetTeamMembers(TeamIndex.Player));
+                teamMembers.Remove(owner.GetComponent<TeamComponent>());
+
+                foreach (TeamComponent tcpt in teamMembers)
+                {
+                    if ((tcpt.transform.position - self.transform.position).sqrMagnitude <= sqrad)
+                    {
+                        if (tcpt.body && tcpt.body.mainHurtBox && tcpt.body.isActiveAndEnabled)
+                        {
+                            DotController.InflictDot(tcpt.gameObject, owner, ClassicItemsPlugin.footPoisonDot, baseTicks + stackTicks * (icnt - 1), baseDmg + stackDmg * (icnt - 1));
+                        }
+                    }
+                }
+                if (Detonate.explosionEffectPrefab)
+                {
+                    EffectManager.SpawnEffect(Detonate.explosionEffectPrefab, new EffectData
+                    {
+                        origin = self.transform.position,
+                        rotation = self.transform.rotation,
+                        scale = blastRadius
+                    }, true);
+                }
+                EntityState.Destroy(self.gameObject);
+            }
+        }
+
+        private Quaternion MineDropDirection()
+        {
+            return Util.QuaternionSafeLookRotation(
+                new Vector3(Random.Range(-1f, 1f),
+                            -1f,
+                            Random.Range(-1f, 1f))
+            );
+        }
+    }
+}
