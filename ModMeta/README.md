@@ -14,6 +14,7 @@ Use **r2modman** mod manager to install this mod.
 #### Tier 1
 - Coming soon!
 #### Tier 2
+- Dead Man's Foot
 - Panic Mines
 #### Tier 3
 - AtG Missile Mk. 2
@@ -27,6 +28,10 @@ Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
 GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
+
+**0.1.0**
+- Implement Dead Man's Foot!
+- Improve and clean code.
 
 **0.0.4**
 - Fix the items' icons added by ChensClassicItems because they display as white in the Command Menu.
