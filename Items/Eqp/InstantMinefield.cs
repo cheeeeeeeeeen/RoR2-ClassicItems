@@ -2,6 +2,7 @@
 using EntityStates.Engi.Mine;
 using RoR2;
 using RoR2.Projectile;
+using ThinkInvisible.ClassicItems;
 using TILER2;
 using UnityEngine;
 using static TILER2.MiscUtil;
@@ -45,6 +46,10 @@ namespace Chen.ClassicItems
 
         public InstantMinefield()
         {
+            onBehav += () =>
+            {
+                Embryo.instance.Compat_Register(regIndex);
+            };
         }
 
         protected override void LoadBehavior()
@@ -67,29 +72,29 @@ namespace Chen.ClassicItems
             GameObject gameObject = body.gameObject;
             Util.PlaySound(FireMines.throwMineSoundString, gameObject);
             DropMines(body, gameObject);
-            //if (instance.CheckEmbryoProc(body)) DropMines(body, gameObject);
+            if (instance.CheckEmbryoProc(body)) DropMines(body, gameObject, .7f);
 
             return true;
         }
 
-        private void DropMines(CharacterBody userBody, GameObject userGameObject)
+        private void DropMines(CharacterBody userBody, GameObject userGameObject, float yMult = 1f)
         {
             Vector3 corePos = Util.GetCorePosition(userBody);
             GameObject minePrefab = ClassicItemsPlugin.instantMinePrefab;
             for (int n = 0; n < mineNumber; n++)
             {
-                ProjectileManager.instance.FireProjectile(minePrefab, corePos, MineDropDirection(),
+                ProjectileManager.instance.FireProjectile(minePrefab, corePos, MineDropDirection(yMult),
                                                           userGameObject, userBody.damage * mineDamage,
                                                           400f, Util.CheckRoll(userBody.crit, userBody.master),
                                                           DamageColorIndex.Item, null, -1f);
             }
         }
 
-        private Quaternion MineDropDirection()
+        private Quaternion MineDropDirection(float yMultiplier)
         {
             return Util.QuaternionSafeLookRotation(
                 new Vector3(Random.Range(-1f, 1f),
-                            -0.3f,
+                            -0.4f * yMultiplier,
                             Random.Range(-1f, 1f))
             );
         }
