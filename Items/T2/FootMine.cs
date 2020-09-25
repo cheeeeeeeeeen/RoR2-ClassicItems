@@ -50,7 +50,7 @@ namespace Chen.ClassicItems
             if (stackDmg > 0f) desc += $" <style=cStack>(+{Pct(stackDmg)} per stack)</style>";
             desc += $" damage per second. Poison lasts for <style=cStack>{baseTicks}</style>";
             if (stackTicks > 0) desc += $" <style=cStack>(+{stackTicks} per stack)</style>";
-            desc += " seconds.";
+            desc += " seconds. <style=cIsDamage>Poison</style> is stackable.";
             return desc;
         }
 
@@ -115,7 +115,7 @@ namespace Chen.ClassicItems
 
             Util.PlaySound(FireMines.throwMineSoundString, vGameObject);
             ProjectileManager.instance.FireProjectile(minePrefab, corePos, MineDropDirection(),
-                                                      vGameObject, icnt, 100f, false,
+                                                      vGameObject, icnt, 50f, false,
                                                       DamageColorIndex.Item, null, -1f);
         }
 
