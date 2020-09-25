@@ -51,6 +51,7 @@ namespace Chen.ClassicItems
         public static GameObject footMinePrefab;
         public static BuffIndex footPoisonBuff;
         public static DotController.DotIndex footPoisonDot;
+        public static GameObject instantMinePrefab;
 
         public bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
 
@@ -171,8 +172,15 @@ namespace Chen.ClassicItems
             GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
             panicMinePrefab = engiMinePrefab.InstantiateClone("PanicMine");
             Destroy(panicMinePrefab.GetComponent<ProjectileDeployToOwner>());
+            //Recolor(panicMinePrefab, Color.gray);
+
             footMinePrefab = engiMinePrefab.InstantiateClone("FootMine");
             Destroy(footMinePrefab.GetComponent<ProjectileDeployToOwner>());
+            //Recolor(footMinePrefab, new Color(1, 121, 91));
+
+            instantMinePrefab = engiMinePrefab.InstantiateClone("InstantMine");
+            Destroy(instantMinePrefab.GetComponent<ProjectileDeployToOwner>());
+            //Recolor(instantMinePrefab, Color.black);
 
             Logger.LogDebug("Registering buffs...");
 
@@ -212,5 +220,30 @@ namespace Chen.ClassicItems
             Logger.LogDebug("Performing late setup:");
             Logger.LogDebug("Nothing to perform here.");
         }
+
+        //private void Recolor(GameObject prefab, Color color)
+        //{
+        //    Logger.LogDebug("Starting recolor...");
+        //    SkinnedMeshRenderer[] meshes = prefab.GetComponentsInChildren<SkinnedMeshRenderer>();
+        //    CharacterModel.RendererInfo[] infos = new CharacterModel.RendererInfo[meshes.Length];
+        //    Material material;
+
+        //    Logger.LogDebug("Starting loop...");
+        //    for (int i = 0; i < meshes.Length; i++)
+        //    {
+        //        material = Instantiate(Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost").GetComponentInChildren<CharacterModel>().baseRendererInfos[0].defaultMaterial);
+        //        material.SetColor("_Color", color);
+
+        //        infos[i] = new CharacterModel.RendererInfo
+        //        {
+        //            defaultMaterial = material,
+        //            renderer = meshes[i],
+        //            defaultShadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On,
+        //            ignoreOverlays = false
+        //        };
+        //    }
+        //    Logger.LogDebug("Starting assignment of render infos...");
+        //    prefab.GetComponentInChildren<CharacterModel>().baseRendererInfos = infos;
+        //}
     }
 }
