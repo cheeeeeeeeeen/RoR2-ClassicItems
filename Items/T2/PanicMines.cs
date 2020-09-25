@@ -113,7 +113,7 @@ namespace Chen.ClassicItems
             if (self.outer.name != "PanicMine(Clone)") orig(self);
             else
             {
-                if (self.blastRadiusScale != 1.5f) self.blastRadiusScale = 1.2f;
+                if (self.blastRadiusScale != 1.2f) self.blastRadiusScale = 1.2f;
                 if (self.forceScale != 1f) self.forceScale = 1f;
                 if (self.damageScale != 1f) self.damageScale = 1f;
             }
