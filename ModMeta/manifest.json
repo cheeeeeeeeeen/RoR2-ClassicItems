@@ -1,9 +1,9 @@
 {
   "name": "ChensClassicItems",
-  "version_number": "0.2.0",
+  "version_number": "0.2.1",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "Instant Minefield now joins Classic Items! This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "Instant Minefield with Beating Embryo support now joins Classic Items! This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
   "dependencies": [
-    "ThinkInvis-ClassicItems-4.5.3"
+    "ThinkInvis-ClassicItems-4.5.4"
   ]
 }

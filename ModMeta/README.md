@@ -30,6 +30,10 @@ Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
 GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
+
+**0.2.1**
+- Add Beating Embryo support for Instant Minefield.
+
 **0.2.0**
 - Implement Instant Minefield!
 - It's filled with mines nowadays.
