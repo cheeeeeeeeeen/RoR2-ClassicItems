@@ -28,7 +28,7 @@ namespace Chen.ClassicItems
 #if DEBUG
                 "0." +
 #endif
-            "0.1.0";
+            "0.2.0";
 
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";

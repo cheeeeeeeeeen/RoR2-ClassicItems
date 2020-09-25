@@ -11,6 +11,8 @@ The goal is the same: Add items from Risk of Rain 1 that did not make it to Risk
 Use **r2modman** mod manager to install this mod.
 
 ### Current Additions
+#### Equipment
+- Instant Minefield
 #### Tier 1
 - Coming soon!
 #### Tier 2
@@ -28,6 +30,9 @@ Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
 GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
+**0.2.0**
+- Implement Instant Minefield!
+- It's filled with mines nowadays.
 
 **0.1.0**
 - Implement Dead Man's Foot!
