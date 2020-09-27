@@ -190,7 +190,7 @@ namespace Chen.ClassicItems
                 canStack = true,
                 isDebuff = true,
                 name = "CCIFootPoison",
-                iconPath = "@ChensClassicItems:Assets/ClassicItems/icons/deadmansfoot_icon.png"
+                iconPath = "@ChensClassicItems:Assets/ClassicItems/icons/footmine_buff_icon.png"
             });
             footPoisonBuff = BuffAPI.Add(poisonBuffDef);
 
