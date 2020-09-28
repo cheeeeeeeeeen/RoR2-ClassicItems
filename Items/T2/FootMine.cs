@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using TILER2;
 using UnityEngine;
+using UnityEngine.Networking;
 using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
@@ -48,9 +49,9 @@ namespace Chen.ClassicItems
         {
             string desc = $"<style=cDeath>When hit for more than {Pct(healthThreshold)} max health</style>, drop a poison mine with <style=cIsDamage>{Pct(baseDmg)}</style>";
             if (stackDmg > 0f) desc += $" <style=cStack>(+{Pct(stackDmg)} per stack)</style>";
-            desc += $" damage per second. Poison lasts for <style=cStack>{baseTicks}</style>";
+            desc += $" damage per second. Poison lasts for <style=cStack>{baseTicks - 1}</style>";
             if (stackTicks > 0) desc += $" <style=cStack>(+{stackTicks} per stack)</style>";
-            desc += " seconds. <style=cIsDamage>Poison</style> is stackable.";
+            desc += " seconds. <style=cIsDamage>Poison</style> is stackable. The mine will be destroyed shortly after the owner dies.";
             return desc;
         }
 
@@ -122,12 +123,28 @@ namespace Chen.ClassicItems
         private void On_ESMineArmingWeak(On.EntityStates.Engi.Mine.MineArmingWeak.orig_FixedUpdate orig, MineArmingWeak self)
         {
             if (self.outer.name != "FootMine(Clone)") orig(self);
+            else if (NetworkServer.active)
+            {
+                if (!self.projectileController.owner)
+                {
+                    if (Detonate.explosionEffectPrefab)
+                    {
+                        EffectManager.SpawnEffect(Detonate.explosionEffectPrefab, new EffectData
+                        {
+                            origin = self.transform.position,
+                            rotation = self.transform.rotation,
+                            scale = Detonate.blastRadius * 0.3f
+                        }, true);
+                    }
+                    EntityState.Destroy(self.gameObject);
+                }
+            }
         }
 
         private void On_ESDetonate(On.EntityStates.Engi.Mine.Detonate.orig_Explode orig, Detonate self)
         {
             if (self.outer.name != "FootMine(Clone)") orig(self);
-            else
+            else if (NetworkServer.active)
             {
                 List<TeamComponent> teamMembers = new List<TeamComponent>();
                 TeamFilter teamFilter = self.GetComponent<TeamFilter>();
@@ -140,7 +157,7 @@ namespace Chen.ClassicItems
                 if (isFF || teamFilter.teamIndex != TeamIndex.Monster) teamMembers.AddRange(TeamComponent.GetTeamMembers(TeamIndex.Monster));
                 if (isFF || teamFilter.teamIndex != TeamIndex.Neutral) teamMembers.AddRange(TeamComponent.GetTeamMembers(TeamIndex.Neutral));
                 if (isFF || teamFilter.teamIndex != TeamIndex.Player) teamMembers.AddRange(TeamComponent.GetTeamMembers(TeamIndex.Player));
-                teamMembers.Remove(owner.GetComponent<TeamComponent>());
+                if (owner) teamMembers.Remove(owner.GetComponent<TeamComponent>());
 
                 foreach (TeamComponent tcpt in teamMembers)
                 {
@@ -151,15 +168,6 @@ namespace Chen.ClassicItems
                             DotController.InflictDot(tcpt.gameObject, owner, ClassicItemsPlugin.footPoisonDot, baseTicks + stackTicks * (icnt - 1), baseDmg + stackDmg * (icnt - 1));
                         }
                     }
-                }
-                if (Detonate.explosionEffectPrefab)
-                {
-                    EffectManager.SpawnEffect(Detonate.explosionEffectPrefab, new EffectData
-                    {
-                        origin = self.transform.position,
-                        rotation = self.transform.rotation,
-                        scale = blastRadius
-                    }, true);
                 }
                 EntityState.Destroy(self.gameObject);
             }

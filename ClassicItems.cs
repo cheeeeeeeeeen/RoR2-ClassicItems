@@ -89,6 +89,7 @@ namespace Chen.ClassicItems
 
 #if DEBUG
             Logger.LogWarning("Running test build with debug enabled! If you're seeing this after downloading the mod from Thunderstore, please panic.");
+            On.RoR2.Networking.GameNetworkManager.OnClientConnect += (self, user, t) => { };
 #endif
 
             Logger.LogDebug("Loading assets...");
@@ -167,20 +168,18 @@ namespace Chen.ClassicItems
             Logger.LogDebug("Tweaking vanilla stuff...");
             Logger.LogDebug("No need. ThinkInvis.ClassicItems has added the needed actions.");
 
+            Logger.LogDebug("Creating new prefabs...");
+
             Logger.LogDebug("Cloning needed prefabs...");
 
             GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
+
             panicMinePrefab = engiMinePrefab.InstantiateClone("PanicMine");
             Destroy(panicMinePrefab.GetComponent<ProjectileDeployToOwner>());
-            //Recolor(panicMinePrefab, Color.gray);
-
             footMinePrefab = engiMinePrefab.InstantiateClone("FootMine");
             Destroy(footMinePrefab.GetComponent<ProjectileDeployToOwner>());
-            //Recolor(footMinePrefab, new Color(1, 121, 91));
-
             instantMinePrefab = engiMinePrefab.InstantiateClone("InstantMine");
             Destroy(instantMinePrefab.GetComponent<ProjectileDeployToOwner>());
-            //Recolor(instantMinePrefab, Color.black);
 
             Logger.LogDebug("Registering buffs...");
 
@@ -220,30 +219,5 @@ namespace Chen.ClassicItems
             Logger.LogDebug("Performing late setup:");
             Logger.LogDebug("Nothing to perform here.");
         }
-
-        //private void Recolor(GameObject prefab, Color color)
-        //{
-        //    Logger.LogDebug("Starting recolor...");
-        //    SkinnedMeshRenderer[] meshes = prefab.GetComponentsInChildren<SkinnedMeshRenderer>();
-        //    CharacterModel.RendererInfo[] infos = new CharacterModel.RendererInfo[meshes.Length];
-        //    Material material;
-
-        //    Logger.LogDebug("Starting loop...");
-        //    for (int i = 0; i < meshes.Length; i++)
-        //    {
-        //        material = Instantiate(Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost").GetComponentInChildren<CharacterModel>().baseRendererInfos[0].defaultMaterial);
-        //        material.SetColor("_Color", color);
-
-        //        infos[i] = new CharacterModel.RendererInfo
-        //        {
-        //            defaultMaterial = material,
-        //            renderer = meshes[i],
-        //            defaultShadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On,
-        //            ignoreOverlays = false
-        //        };
-        //    }
-        //    Logger.LogDebug("Starting assignment of render infos...");
-        //    prefab.GetComponentInChildren<CharacterModel>().baseRendererInfos = infos;
-        //}
     }
 }
