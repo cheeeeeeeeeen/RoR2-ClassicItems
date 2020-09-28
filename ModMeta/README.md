@@ -33,6 +33,7 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 **0.2.2**
 - Fix buff icon of Dead Man's Foot.
+- Fix the exceptions being raised on Dead Man's Foot detonation.
 
 **0.2.1**
 - Add Beating Embryo support for Instant Minefield.
