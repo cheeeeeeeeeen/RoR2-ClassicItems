@@ -1,9 +1,11 @@
 ﻿using RoR2;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
+using Object = UnityEngine.Object;
 
 namespace Chen.ClassicItems
 {
@@ -12,14 +14,6 @@ namespace Chen.ClassicItems
         public override string displayName => "Gradius' Option";
         public override ItemTier itemTier => ItemTier.Tier3;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Utility });
-
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("How far the Option/Multiple entities are from each other. Higher number could have a performance impact.", AutoItemConfigFlags.None, 0, 100)]
-        public int distanceInterval { get; private set; } = 12;
-
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Determines the smoothness of the Option/Multiple movement. Higher number means crispier movement. Lower number means slow but smooth.", AutoItemConfigFlags.None, 0f, 1f)]
-        public float crispMoveRate { get; private set; } = 0.95f;
 
         protected override string NewLangName(string langid = null) => displayName;
 
@@ -52,31 +46,61 @@ namespace Chen.ClassicItems
             if (GetCount(self) > 0)
             {
                 GameObject gameObject = self.gameObject;
-                self.master.minionOwnership.
-
-                OptionTracker ot = gameObject.GetComponent<OptionTracker>() ?? gameObject.AddComponent<OptionTracker>();
-                ot.distanceInterval = distanceInterval;
-                int oldCount = ot.optionItemCount;
+                OptionTracker optionTracker = gameObject.GetComponent<OptionTracker>() ?? gameObject.AddComponent<OptionTracker>();
+                int oldCount = optionTracker.optionItemCount;
                 int newCount = GetCount(self);
-                ot.optionItemCount = newCount;
 
                 if (newCount - oldCount > 0)
                 {
-                    GameObject option = Object.Instantiate(ClassicItemsPlugin.gradiusOptionPrefab, gameObject.transform.position, gameObject.transform.rotation);
-                    OptionBehavior behavior = option.GetComponent<OptionBehavior>();
-                    behavior.master = behavior.owner = gameObject;
-                    behavior.numbering = newCount;
-                    ot.existingOptions.Add(option);
-
-                    NetworkServer.Spawn(option);
+                    LoopAllMinionOwnerships(self.master, (minion) =>
+                    {
+                        SpawnOption(gameObject, minion, newCount);
+                    });
                 }
-                else
+                else if (newCount - oldCount < 0)
                 {
-                    NetworkServer.Destroy(ot.existingOptions[oldCount - 1]);
-                    Object.Destroy(ot.existingOptions[oldCount - 1]);
-                    ot.existingOptions.RemoveAt(ot.existingOptions.Count - 1);
+                    LoopAllMinionOwnerships(self.master, (minion) =>
+                    {
+                        OptionTracker minionOptionTracker = minion.GetComponent<OptionTracker>();
+                        if (minionOptionTracker) DestroyOption(optionTracker, oldCount);
+                    });
                 }
             }
+        }
+
+        private void LoopAllMinionOwnerships(CharacterMaster ownerMaster, Action<GameObject> actionToRun)
+        {
+            MinionOwnership[] minionOwnerships = Object.FindObjectsOfType<MinionOwnership>();
+            foreach (MinionOwnership minionOwnership in minionOwnerships)
+            {
+                if (minionOwnership.ownerMaster == ownerMaster)
+                {
+                    GameObject minion = minionOwnership.GetComponent<CharacterMaster>().GetBody().gameObject;
+                    actionToRun(minion);
+                }
+            }
+        }
+
+        private void SpawnOption(GameObject master, GameObject owner, int itemCount, OptionTracker optionTracker = null)
+        {
+            if (!optionTracker) optionTracker = owner.GetComponent<OptionTracker>() ?? owner.AddComponent<OptionTracker>();
+            optionTracker.optionItemCount = itemCount;
+            GameObject option = Object.Instantiate(ClassicItemsPlugin.gradiusOptionPrefab, owner.transform.position, owner.transform.rotation);
+            OptionBehavior behavior = option.GetComponent<OptionBehavior>();
+            behavior.owner = owner;
+            behavior.master = master;
+            behavior.numbering = optionTracker.optionItemCount;
+            optionTracker.existingOptions.Add(option);
+            NetworkServer.Spawn(option);
+        }
+
+        private void DestroyOption(OptionTracker optionTracker, int optionNumber)
+        {
+            int index = optionTracker.optionItemCount = optionNumber - 1;
+            GameObject option = optionTracker.existingOptions[index];
+            NetworkServer.Destroy(option);
+            optionTracker.existingOptions.RemoveAt(index);
+            Object.Destroy(option);
         }
     }
 
@@ -85,7 +109,8 @@ namespace Chen.ClassicItems
         public GameObject owner;
         public GameObject master;
         public int numbering = 0;
-        public float crispMoveRate = .95f;
+        
+        readonly float crispMoveRate = .95f;
 
         Transform t;
         OptionTracker ot;
@@ -122,8 +147,8 @@ namespace Chen.ClassicItems
     {
         public List<Vector3> flightPath { get; private set; } = new List<Vector3>();
         public List<GameObject> existingOptions { get; private set; } = new List<GameObject>();
+        public int distanceInterval { get; private set; } = 5;
         public int optionItemCount = 0;
-        public int distanceInterval = 20;
 
         Vector3 previousPosition = new Vector3();
         bool init = true;

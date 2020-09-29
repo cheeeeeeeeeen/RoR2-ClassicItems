@@ -181,7 +181,7 @@ namespace Chen.ClassicItems
             aPrefab.AddComponent<MeshRenderer>();
             aPrefab.AddComponent<NetworkIdentity>();
             aPrefab.AddComponent<OptionBehavior>();
-            aPrefab.transform.localScale = new Vector3(.4f, .4f, .4f);
+            aPrefab.transform.localScale = new Vector3(.7f, .7f, .7f);
             gradiusOptionPrefab = aPrefab.InstantiateClone("GradiusOption");
             Destroy(aPrefab);
 
