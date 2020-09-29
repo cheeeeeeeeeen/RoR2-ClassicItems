@@ -36,9 +36,9 @@ namespace Chen.ClassicItems
 
         protected override string NewLangDesc(string langid = null)
         {
-            string desc = $"Drop {mineNumber} mine";
+            string desc = $"Drop <style=cIsDamage>{mineNumber}</style> mine";
             if (mineNumber != 1) desc += "s";
-            desc += $", each dealing {Pct(mineDamage)} damage.";
+            desc += $", each dealing <style=cIsDamage>{Pct(mineDamage)}</style> damage.";
             return desc;
         }
 

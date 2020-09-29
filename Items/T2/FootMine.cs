@@ -51,7 +51,7 @@ namespace Chen.ClassicItems
             if (stackDmg > 0f) desc += $" <style=cStack>(+{Pct(stackDmg)} per stack)</style>";
             desc += $" damage per second. Poison lasts for <style=cStack>{baseTicks - 1}</style>";
             if (stackTicks > 0) desc += $" <style=cStack>(+{stackTicks} per stack)</style>";
-            desc += " seconds. <style=cIsDamage>Poison</style> is stackable. The mine will be destroyed shortly after the owner dies.";
+            desc += " seconds. <style=cIsDamage>Poison</style> is stackable. <style=cDeath>The mine will be destroyed shortly after the owner dies.</style>";
             return desc;
         }
 

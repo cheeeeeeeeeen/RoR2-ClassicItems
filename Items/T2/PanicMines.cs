@@ -38,7 +38,7 @@ namespace Chen.ClassicItems
         {
             string desc = "<style=cDeath>When hit";
             if (healthThreshold > 0f) desc += $" for more than {Pct(healthThreshold)} of max health</style>";
-            desc += $", drop <style=cStack>1</style> mine <style=cStack>(+1 per stack)</style> with <style=cIsDamage>{Pct(baseDmg)}</style>";
+            desc += $", drop <style=cIsDamage>1</style> mine <style=cStack>(+1 per stack)</style> with <style=cIsDamage>{Pct(baseDmg)}</style>";
             if (stackDmg > 0f) desc += " <style=cStack>(+" + Pct(stackDmg) + " per stack)</style>";
             desc += " damage.";
             return desc;
