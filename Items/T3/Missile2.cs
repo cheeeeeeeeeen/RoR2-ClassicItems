@@ -45,8 +45,8 @@ namespace Chen.ClassicItems
         protected override string NewLangDesc(string langid = null)
         {
             string desc = $"<style=cIsDamage>{Pct(procChance, 0, 1)}</style>";
-            if (stackChance > 0f) desc += $" <style=cIsDamage>{Pct(procChance, 0, 1)}</style> <style=cStack>(+{Pct(stackChance, 0, 1)} per stack, up to {Pct(capChance, 0, 1)})</style>";
-            desc += $"chance to fire {missileAmount} missiles that deal <style=cIsDamage>{Pct(dmgCoefficient, 0)}</style>";
+            if (stackChance > 0f) desc += $" <style=cStack>(+{Pct(stackChance, 0, 1)} per stack, up to {Pct(capChance, 0, 1)})</style>";
+            desc += $" chance to fire <style=cIsDamage>{missileAmount}</style> missiles that deal <style=cIsDamage>{Pct(dmgCoefficient, 0)}</style>";
             if (dmgStack > 0f) desc += $" <style=cStack>(+{dmgStack} per stack)</style>";
             desc += " each. Affected by proc coefficient.";
             return desc;
