@@ -1,11 +1,9 @@
 ﻿using RoR2;
-using RoR2.Projectile;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
-using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
@@ -54,6 +52,7 @@ namespace Chen.ClassicItems
             if (GetCount(self) > 0)
             {
                 GameObject gameObject = self.gameObject;
+                self.master.minionOwnership.
 
                 OptionTracker ot = gameObject.GetComponent<OptionTracker>() ?? gameObject.AddComponent<OptionTracker>();
                 ot.distanceInterval = distanceInterval;
@@ -63,18 +62,7 @@ namespace Chen.ClassicItems
 
                 if (newCount - oldCount > 0)
                 {
-                    GameObject gradiusOptionPrefab = new GameObject("GradiusOption");
-                    MeshFilter mf = gradiusOptionPrefab.AddComponent<MeshFilter>();
-                    GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    Mesh m = sphere.GetComponent<MeshFilter>().sharedMesh;
-                    mf.sharedMesh = m;
-                    Object.Destroy(sphere);
-                    gradiusOptionPrefab.AddComponent<MeshRenderer>();
-                    gradiusOptionPrefab.transform.localScale = new Vector3(.4f, .4f, .4f);
-                    gradiusOptionPrefab.AddComponent<NetworkIdentity>();
-                    gradiusOptionPrefab.AddComponent<OptionBehavior>();
-
-                    GameObject option = Object.Instantiate(gradiusOptionPrefab, gameObject.transform.position, gameObject.transform.rotation);
+                    GameObject option = Object.Instantiate(ClassicItemsPlugin.gradiusOptionPrefab, gameObject.transform.position, gameObject.transform.rotation);
                     OptionBehavior behavior = option.GetComponent<OptionBehavior>();
                     behavior.master = behavior.owner = gameObject;
                     behavior.numbering = newCount;
@@ -103,11 +91,13 @@ namespace Chen.ClassicItems
         OptionTracker ot;
         bool init = true;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
         {
             t = gameObject.transform;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Update()
         {
             if (init && owner && master)
@@ -117,6 +107,7 @@ namespace Chen.ClassicItems
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
             if (!init)
@@ -140,11 +131,13 @@ namespace Chen.ClassicItems
 
         Transform t;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
         {
             t = gameObject.transform;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Update()
         {
             if (init && optionItemCount > 0)
@@ -170,6 +163,7 @@ namespace Chen.ClassicItems
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
             if (!init)

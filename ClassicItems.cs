@@ -1,4 +1,4 @@
-﻿#undef DEBUG
+﻿#define DEBUG
 
 using BepInEx;
 using BepInEx.Configuration;
@@ -12,6 +12,7 @@ using System.Reflection;
 using TILER2;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using static TILER2.MiscUtil;
 using Path = System.IO.Path;
 using ThinkInvisCI = ThinkInvisible.ClassicItems;
@@ -52,6 +53,7 @@ namespace Chen.ClassicItems
         public static BuffIndex footPoisonBuff;
         public static DotController.DotIndex footPoisonDot;
         public static GameObject instantMinePrefab;
+        public static GameObject gradiusOptionPrefab;
 
         public bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
 
@@ -170,6 +172,19 @@ namespace Chen.ClassicItems
 
             Logger.LogDebug("Creating new prefabs...");
 
+            GameObject aPrefab = new GameObject();
+            MeshFilter mf = aPrefab.AddComponent<MeshFilter>();
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            Mesh m = sphere.GetComponent<MeshFilter>().sharedMesh;
+            mf.sharedMesh = m;
+            Destroy(sphere);
+            aPrefab.AddComponent<MeshRenderer>();
+            aPrefab.AddComponent<NetworkIdentity>();
+            aPrefab.AddComponent<OptionBehavior>();
+            aPrefab.transform.localScale = new Vector3(.4f, .4f, .4f);
+            gradiusOptionPrefab = aPrefab.InstantiateClone("GradiusOption");
+            Destroy(aPrefab);
+
             Logger.LogDebug("Cloning needed prefabs...");
 
             GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
@@ -180,6 +195,8 @@ namespace Chen.ClassicItems
             Destroy(footMinePrefab.GetComponent<ProjectileDeployToOwner>());
             instantMinePrefab = engiMinePrefab.InstantiateClone("InstantMine");
             Destroy(instantMinePrefab.GetComponent<ProjectileDeployToOwner>());
+
+            Destroy(engiMinePrefab);
 
             Logger.LogDebug("Registering buffs...");
 
