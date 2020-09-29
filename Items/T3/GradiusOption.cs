@@ -52,6 +52,7 @@ namespace Chen.ClassicItems
 
                 if (newCount - oldCount > 0)
                 {
+                    SpawnOption(gameObject, gameObject, newCount);
                     LoopAllMinionOwnerships(self.master, (minion) =>
                     {
                         SpawnOption(gameObject, minion, newCount);
@@ -109,8 +110,6 @@ namespace Chen.ClassicItems
         public GameObject owner;
         public GameObject master;
         public int numbering = 0;
-        
-        readonly float crispMoveRate = .95f;
 
         Transform t;
         OptionTracker ot;
@@ -125,20 +124,20 @@ namespace Chen.ClassicItems
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Update()
         {
-            if (init && owner && master)
+            if (!init)
             {
-                init = false;
-                ot = owner.GetComponent<OptionTracker>();
+                t.position = ot.flightPath[numbering * ot.distanceInterval - 1];
+                gameObject.transform.rotation = owner.transform.rotation;
             }
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
-            if (!init)
+            if (init && owner && master)
             {
-                t.position = (crispMoveRate * t.position) + ((1f - crispMoveRate) * ot.flightPath[numbering * ot.distanceInterval - 1]);
-                gameObject.transform.rotation = owner.transform.rotation;
+                init = false;
+                ot = owner.GetComponent<OptionTracker>();
             }
         }
     }
@@ -147,7 +146,7 @@ namespace Chen.ClassicItems
     {
         public List<Vector3> flightPath { get; private set; } = new List<Vector3>();
         public List<GameObject> existingOptions { get; private set; } = new List<GameObject>();
-        public int distanceInterval { get; private set; } = 5;
+        public int distanceInterval { get; private set; } = 20;
         public int optionItemCount = 0;
 
         Vector3 previousPosition = new Vector3();
@@ -164,6 +163,23 @@ namespace Chen.ClassicItems
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Update()
+        {
+            if (!init)
+            {
+                if (previousPosition != t.position)
+                {
+                    flightPath.Insert(0, t.position);
+                    if (flightPath.Count > optionItemCount * distanceInterval)
+                    {
+                        flightPath.RemoveAt(flightPath.Count - 1);
+                    }
+                }
+                previousPosition = t.position;
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
+        private void FixedUpdate()
         {
             if (init && optionItemCount > 0)
             {
@@ -185,23 +201,6 @@ namespace Chen.ClassicItems
                 init = true;
                 flightPath.Clear();
                 previousOptionItemCount = 0;
-            }
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
-        private void FixedUpdate()
-        {
-            if (!init)
-            {
-                if (previousPosition != t.position)
-                {
-                    flightPath.Insert(0, t.position);
-                    if (flightPath.Count > optionItemCount * distanceInterval)
-                    {
-                        flightPath.RemoveAt(flightPath.Count - 1);
-                    }
-                }
-                previousPosition = t.position;
             }
         }
 
