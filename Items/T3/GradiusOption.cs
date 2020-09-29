@@ -60,10 +60,11 @@ namespace Chen.ClassicItems
                 }
                 else if (newCount - oldCount < 0)
                 {
+                    DestroyOption(optionTracker, oldCount);
                     LoopAllMinionOwnerships(self.master, (minion) =>
                     {
                         OptionTracker minionOptionTracker = minion.GetComponent<OptionTracker>();
-                        if (minionOptionTracker) DestroyOption(optionTracker, oldCount);
+                        if (minionOptionTracker) DestroyOption(minionOptionTracker, oldCount);
                     });
                 }
             }
