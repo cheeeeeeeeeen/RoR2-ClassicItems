@@ -120,7 +120,6 @@ namespace Chen.ClassicItems
                     if (self.stopwatch >= self.entryDuration && !self.hasBegunFlamethrower)
                     {
                         Util.PlaySound(MageWeapon.Flamethrower.startAttackSoundString, option);
-                        EntityState.Destroy(option.GetComponent<OptionBehavior>().flamethrowerTransform);
                     }
                 });
             }
@@ -136,20 +135,6 @@ namespace Chen.ClassicItems
                     if (self.stopwatch >= self.entryDuration && !self.hasBegunFlamethrower)
                     {
                         Util.PlaySound(MageWeapon.Flamethrower.startAttackSoundString, option);
-                        Transform flamethrowerTransform = Object.Instantiate(self.flamethrowerEffectPrefab, option.transform).transform;
-                        option.GetComponent<OptionBehavior>().flamethrowerTransform = flamethrowerTransform;
-                        if (flamethrowerTransform)
-                        {
-                            flamethrowerTransform.GetComponent<ScaleParticleSystemDuration>().newDuration = self.flamethrowerDuration;
-                        }
-                    }
-                    if (self.hasBegunFlamethrower)
-                    {
-                        Transform flamethrowerTransform = option.GetComponent<OptionBehavior>().flamethrowerTransform;
-                        if (flamethrowerTransform)
-                        {
-                            flamethrowerTransform.forward = (target.transform.position - option.transform.position).normalized;
-                        }
                     }
                 });
             }
@@ -173,6 +158,7 @@ namespace Chen.ClassicItems
                             minSpread = 0f,
                             damage = self.tickDamageCoefficient * self.damageStat,
                             force = MageWeapon.Flamethrower.force,
+                            tracerEffectPrefab = FireGatling.tracerEffectPrefab,
                             muzzleName = muzzleString,
                             hitEffectPrefab = MageWeapon.Flamethrower.impactEffectPrefab,
                             isCrit = self.isCrit,
