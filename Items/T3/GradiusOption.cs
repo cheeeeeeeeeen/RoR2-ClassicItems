@@ -47,6 +47,8 @@ namespace Chen.ClassicItems
             On.EntityStates.Mage.Weapon.Flamethrower.FireGauntlet += Flamethrower_FireGauntlet;
             On.EntityStates.Mage.Weapon.Flamethrower.OnExit += Flamethrower_OnExit;
             On.EntityStates.Mage.Weapon.Flamethrower.FixedUpdate += Flamethrower_FixedUpdate;
+            On.EntityStates.Drone.DroneWeapon.HealBeam.OnEnter += HealBeam_OnEnter;
+            On.EntityStates.Drone.DroneWeapon.HealBeam.OnExit += HealBeam_OnExit;
         }
 
         protected override void UnloadBehavior()
@@ -61,6 +63,8 @@ namespace Chen.ClassicItems
             On.EntityStates.Mage.Weapon.Flamethrower.FireGauntlet -= Flamethrower_FireGauntlet;
             On.EntityStates.Mage.Weapon.Flamethrower.OnExit -= Flamethrower_OnExit;
             On.EntityStates.Mage.Weapon.Flamethrower.FixedUpdate -= Flamethrower_FixedUpdate;
+            On.EntityStates.Drone.DroneWeapon.HealBeam.OnEnter -= HealBeam_OnEnter;
+            On.EntityStates.Drone.DroneWeapon.HealBeam.OnExit -= HealBeam_OnExit;
         }
 
         private CharacterBody CharacterMaster_SpawnBody(On.RoR2.CharacterMaster.orig_SpawnBody orig, CharacterMaster self, GameObject bodyPrefab, Vector3 position, Quaternion rotation)
@@ -108,6 +112,42 @@ namespace Chen.ClassicItems
                     });
                 }
             }
+        }
+
+        private void HealBeam_OnEnter(On.EntityStates.Drone.DroneWeapon.HealBeam.orig_OnEnter orig, HealBeam self)
+        {
+            orig(self);
+            FireForAllMinions(self, (option, target) =>
+            {
+                float healRate = HealBeam.healCoefficient * self.damageStat / self.duration;
+                Ray aimRay = self.GetAimRay();
+                Transform transform = option.transform;
+                if (NetworkServer.active)
+                {
+                    if (transform && self.target)
+                    {
+                        GameObject gameObject = Object.Instantiate(HealBeam.healBeamPrefab, transform);
+                        HealBeamController hbc = option.GetComponent<OptionBehavior>().healBeamController = gameObject.GetComponent<HealBeamController>();
+                        hbc.healRate = healRate;
+                        hbc.target = self.target;
+                        hbc.ownership.ownerObject = self.gameObject;
+                        NetworkServer.Spawn(gameObject);
+                    }
+                }
+            });
+        }
+
+        private void HealBeam_OnExit(On.EntityStates.Drone.DroneWeapon.HealBeam.orig_OnExit orig, HealBeam self)
+        {
+            orig(self);
+            FireForAllMinions(self, (option, target) =>
+            {
+                OptionBehavior behavior = option.GetComponent<OptionBehavior>();
+                if (behavior && behavior.healBeamController)
+                {
+                    behavior.healBeamController.BreakServer();
+                }
+            });
         }
 
         private void Flamethrower_OnExit(On.EntityStates.Mage.Weapon.Flamethrower.orig_OnExit orig, MageWeapon.Flamethrower self)
@@ -385,6 +425,7 @@ namespace Chen.ClassicItems
         public GameObject master;
         public int numbering = 0;
         public Transform flamethrowerTransform;
+        public HealBeamController healBeamController;
 
         Transform t;
         OptionTracker ot;
