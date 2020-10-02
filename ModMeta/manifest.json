@@ -2,7 +2,7 @@
   "name": "ChensClassicItems",
   "version_number": "1.0.1",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "The mod now has Gradius' Option item, a powerful weapon from the Gradius Federation. This update fixes some exceptions on other items. Refer to changelog. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1 as well as from other games.",
+  "description": "The mod now has Gradius' Option item. This update fixes some exceptions. Refer to changelog. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1 as well as from other games.",
   "dependencies": [
     "ThinkInvis-ClassicItems-4.5.4"
   ]
