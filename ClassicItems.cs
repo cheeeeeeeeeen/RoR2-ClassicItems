@@ -1,4 +1,4 @@
-﻿#define DEBUG
+﻿#undef DEBUG
 
 using BepInEx;
 using BepInEx.Configuration;
@@ -29,7 +29,7 @@ namespace Chen.ClassicItems
 #if DEBUG
                 "0." +
 #endif
-            "0.2.2";
+            "1.0.0";
 
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";

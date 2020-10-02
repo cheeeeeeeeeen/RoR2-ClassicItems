@@ -4,7 +4,9 @@
 
 An extension mod for **ThinkInvis.ClassicItems**!
 
-The goal is the same: Add items from Risk of Rain 1 that did not make it to Risk of Rain 2.
+This mod also adds items from Risk of Rain 1 that did not make it to Risk of Rain 2.
+
+Not only that, but this mod will also add classic items from different games.
 
 ## Installation
 
@@ -12,14 +14,15 @@ Use **r2modman** mod manager to install this mod.
 
 ### Current Additions
 #### Equipment
-- Instant Minefield
+- [RoR1] Instant Minefield
 #### Tier 1
 - Coming soon!
 #### Tier 2
-- Dead Man's Foot
-- Panic Mines
+- [RoR1] Dead Man's Foot
+- [RoR1] Panic Mines
 #### Tier 3
-- AtG Missile Mk. 2
+- [RoR1] AtG Missile Mk. 2
+- [Gradius] Gradius' Option
 
 ### More Information
 
@@ -30,6 +33,10 @@ Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
 GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
+
+**1.0.0**
+- Implement Gradius' Option!
+- Update mod icon to highlight the new item.
 
 **0.2.2**
 - Fix buff icon of Dead Man's Foot.
