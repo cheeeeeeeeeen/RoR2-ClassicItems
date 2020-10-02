@@ -34,6 +34,11 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
 
+**1.0.1**
+- Fix some random exceptions found in mines related to animations.
+- Add lore and better description for Gradius' Option.
+- Allow Instant Minefield mines to only explode when landing.
+
 **1.0.0**
 - Implement Gradius' Option!
 - Update mod icon to highlight the new item.
