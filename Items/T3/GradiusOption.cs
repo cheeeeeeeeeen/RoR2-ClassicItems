@@ -20,6 +20,10 @@ namespace Chen.ClassicItems
         public override ItemTier itemTier => ItemTier.Tier3;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Utility });
 
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Set to true for Options/Multiples of Flame Drones to generate a flamethrower sound. WARNING: Turning this on may cause earrape.", AutoItemConfigFlags.None)]
+        public bool flamethrowerSoundCopy { get; private set; } = false;
+
         protected override string NewLangName(string langid = null) => displayName;
 
         protected override string NewLangPickup(string langid = null) => $"Deploy the Option, an ultimate weapon from the Gradius Federation, for each owned Drone.";
@@ -30,6 +34,20 @@ namespace Chen.ClassicItems
         }
 
         protected override string NewLangLore(string langid = null) => "An item from a different world (ChensClassicItems)";
+
+        private static List<string> DronesList = new List<string>
+        {
+            "BackupDrone",
+            "BackupDroneOld",
+            "Drone1",
+            "Drone2",
+            "EmergencyDrone",
+            //"EquipmentDrone",
+            "FlameDrone",
+            "MegaDrone",
+            "DroneMissile",
+            "Turret1"
+        };
 
         public GradiusOption()
         {
@@ -49,6 +67,8 @@ namespace Chen.ClassicItems
             On.EntityStates.Mage.Weapon.Flamethrower.FixedUpdate += Flamethrower_FixedUpdate;
             On.EntityStates.Drone.DroneWeapon.HealBeam.OnEnter += HealBeam_OnEnter;
             On.EntityStates.Drone.DroneWeapon.HealBeam.OnExit += HealBeam_OnExit;
+            On.EntityStates.Drone.DroneWeapon.StartHealBeam.OnEnter += StartHealBeam_OnEnter;
+            On.RoR2.MasterSummon.Perform += MasterSummon_Perform;
         }
 
         protected override void UnloadBehavior()
@@ -65,20 +85,38 @@ namespace Chen.ClassicItems
             On.EntityStates.Mage.Weapon.Flamethrower.FixedUpdate -= Flamethrower_FixedUpdate;
             On.EntityStates.Drone.DroneWeapon.HealBeam.OnEnter -= HealBeam_OnEnter;
             On.EntityStates.Drone.DroneWeapon.HealBeam.OnExit -= HealBeam_OnExit;
+            On.EntityStates.Drone.DroneWeapon.StartHealBeam.OnEnter -= StartHealBeam_OnEnter;
+            On.RoR2.MasterSummon.Perform -= MasterSummon_Perform;
+        }
+
+        private CharacterMaster MasterSummon_Perform(On.RoR2.MasterSummon.orig_Perform orig, MasterSummon self)
+        {
+            CharacterMaster result = orig(self);
+            if (result && FilterDrones(result.name) && NetworkServer.active)
+            {
+                CharacterBody minionBody = result.GetBody();
+                CharacterBody masterBody = result.minionOwnership.ownerMaster.GetBody();
+                if (minionBody && masterBody)
+                {
+                    int currentCount = GetCount(masterBody);
+                    for (int t = 1; t <= currentCount; t++)
+                    {
+                        SpawnOption(masterBody.gameObject, minionBody.gameObject, t);
+                    }
+                }
+            }
+            return result;
         }
 
         private CharacterBody CharacterMaster_SpawnBody(On.RoR2.CharacterMaster.orig_SpawnBody orig, CharacterMaster self, GameObject bodyPrefab, Vector3 position, Quaternion rotation)
         {
             CharacterBody result = orig(self, bodyPrefab, position, rotation);
-            if (result)
+            if (result && FilterDrones(result.name) && self.minionOwnership && self.minionOwnership.ownerMaster)
             {
                 int currentCount = GetCount(result);
-                if (currentCount > 0)
+                for (int t = 1; t <= currentCount; t++)
                 {
-                    GameObject owner;
-                    if (self.minionOwnership && self.minionOwnership.ownerMaster) owner = self.minionOwnership.ownerMaster.gameObject;
-                    else owner = self.gameObject;
-                    SpawnOption(self.gameObject, owner, currentCount);
+                    SpawnOption(self.minionOwnership.ownerMaster.GetBody().gameObject, self.GetBody().gameObject, t);
                 }
             }
             return result;
@@ -87,28 +125,39 @@ namespace Chen.ClassicItems
         private void CharacterBody_OnInventoryChanged(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
         {
             orig(self);
-            if (self.master && GetCount(self) > 0)
+            int newCount = GetCount(self);
+            if (self.master && newCount > 0)
             {
                 GameObject gameObject = self.gameObject;
                 OptionTracker optionTracker = gameObject.GetComponent<OptionTracker>() ?? gameObject.AddComponent<OptionTracker>();
                 int oldCount = optionTracker.optionItemCount;
-                int newCount = GetCount(self);
 
                 if (newCount - oldCount > 0)
                 {
-                    SpawnOption(gameObject, gameObject, newCount);
+                    for (int t = oldCount + 1; t <= newCount; t++)
+                    {
+                        SpawnOption(gameObject, gameObject, t);
+                    }
                     LoopAllMinionOwnerships(self.master, (minion) =>
                     {
-                        SpawnOption(gameObject, minion, newCount);
+                        for (int t = oldCount + 1; t <= newCount; t++)
+                        {
+                            SpawnOption(gameObject, minion, t);
+                        }
                     });
                 }
                 else if (newCount - oldCount < 0)
                 {
-                    DestroyOption(optionTracker, oldCount);
                     LoopAllMinionOwnerships(self.master, (minion) =>
                     {
                         OptionTracker minionOptionTracker = minion.GetComponent<OptionTracker>();
-                        if (minionOptionTracker) DestroyOption(minionOptionTracker, oldCount);
+                        if (minionOptionTracker)
+                        {
+                            for (int t = oldCount; t > newCount; t--)
+                            {
+                                DestroyOption(minionOptionTracker, t);
+                            }
+                        }
                     });
                 }
             }
@@ -130,7 +179,7 @@ namespace Chen.ClassicItems
                         HealBeamController hbc = option.GetComponent<OptionBehavior>().healBeamController = gameObject.GetComponent<HealBeamController>();
                         hbc.healRate = healRate;
                         hbc.target = self.target;
-                        hbc.ownership.ownerObject = self.gameObject;
+                        hbc.ownership.ownerObject = option.gameObject;
                         NetworkServer.Spawn(gameObject);
                     }
                 }
@@ -150,16 +199,47 @@ namespace Chen.ClassicItems
             });
         }
 
+        private void StartHealBeam_OnEnter(On.EntityStates.Drone.DroneWeapon.StartHealBeam.orig_OnEnter orig, StartHealBeam self)
+        {
+            orig(self);
+            FireForAllMinions(self, (option, target) =>
+            {
+                if (NetworkServer.active)
+                {
+                    if (HealBeamController.GetHealBeamCountForOwner(self.gameObject) >= self.maxSimultaneousBeams)
+                    {
+                        return;
+                    }
+                    if (self.targetHurtBox)
+                    {
+                        Transform transform = option.transform;
+                        if (transform)
+                        {
+                            GameObject gameObject = Object.Instantiate(self.healBeamPrefab, transform);
+                            HealBeamController hbc = option.GetComponent<OptionBehavior>().healBeamController = gameObject.GetComponent<HealBeamController>();
+                            hbc.healRate = self.healRateCoefficient * self.damageStat * self.attackSpeedStat;
+                            hbc.target = self.targetHurtBox;
+                            hbc.ownership.ownerObject = option.gameObject;
+                            gameObject.AddComponent<DestroyOnTimer>().duration = self.duration;
+                            NetworkServer.Spawn(gameObject);
+                        }
+                    }
+                }
+            });
+        }
+
         private void Flamethrower_OnExit(On.EntityStates.Mage.Weapon.Flamethrower.orig_OnExit orig, MageWeapon.Flamethrower self)
         {
             orig(self);
-            if (self.characterBody.name == "FlameDroneBody(Clone)" && self.characterBody.master.name == "FlameDroneMaster(Clone)")
+            if (self.characterBody.name.Contains("FlameDrone") && self.characterBody.master.name.Contains("FlameDrone"))
             {
                 FireForAllMinions(self, (option, target) =>
                 {
-                    if (self.stopwatch >= self.entryDuration && !self.hasBegunFlamethrower)
+                    if (flamethrowerSoundCopy) Util.PlaySound(MageWeapon.Flamethrower.endAttackSoundString, option);
+                    OptionBehavior behavior = option.GetComponent<OptionBehavior>();
+                    if (behavior && behavior.flamethrower)
                     {
-                        Util.PlaySound(MageWeapon.Flamethrower.startAttackSoundString, option);
+                        EntityState.Destroy(behavior.flamethrower);
                     }
                 });
             }
@@ -167,14 +247,28 @@ namespace Chen.ClassicItems
 
         private void Flamethrower_FixedUpdate(On.EntityStates.Mage.Weapon.Flamethrower.orig_FixedUpdate orig, MageWeapon.Flamethrower self)
         {
+            bool oldBegunFlamethrower = self.hasBegunFlamethrower;
             orig(self);
-            if (self.characterBody.name == "FlameDroneBody(Clone)" && self.characterBody.master.name == "FlameDroneMaster(Clone)")
+            if (self.characterBody.name.Contains("FlameDrone") && self.characterBody.master.name.Contains("FlameDrone"))
             {
                 FireForAllMinions(self, (option, target) =>
                 {
-                    if (self.stopwatch >= self.entryDuration && !self.hasBegunFlamethrower)
+                    bool perMinionOldBegunFlamethrower = oldBegunFlamethrower;
+                    OptionBehavior behavior = option.GetComponent<OptionBehavior>();
+                    Vector3 direction = (target.transform.position - option.transform.position).normalized;
+                    if (self.stopwatch >= self.entryDuration && !perMinionOldBegunFlamethrower)
                     {
-                        Util.PlaySound(MageWeapon.Flamethrower.startAttackSoundString, option);
+                        perMinionOldBegunFlamethrower = true;
+                        if (behavior)
+                        {
+                            if (flamethrowerSoundCopy) Util.PlaySound(MageWeapon.Flamethrower.startAttackSoundString, option);
+                            behavior.flamethrower = Object.Instantiate(self.flamethrowerEffectPrefab, option.transform);
+                            behavior.flamethrower.GetComponent<ScaleParticleSystemDuration>().newDuration = self.flamethrowerDuration;
+                        }
+                    }
+                    if (perMinionOldBegunFlamethrower)
+                    {
+                        behavior.flamethrower.transform.forward = direction;
                     }
                 });
             }
@@ -183,7 +277,7 @@ namespace Chen.ClassicItems
         private void Flamethrower_FireGauntlet(On.EntityStates.Mage.Weapon.Flamethrower.orig_FireGauntlet orig, MageWeapon.Flamethrower self, string muzzleString)
         {
             orig(self, muzzleString);
-            if (self.characterBody.name == "FlameDroneBody(Clone)" && self.characterBody.master.name == "FlameDroneMaster(Clone)")
+            if (self.characterBody.name.Contains("FlameDrone") && self.characterBody.master.name.Contains("FlameDrone"))
             {
                 FireForAllMinions(self, (option, target) =>
                 {
@@ -191,14 +285,13 @@ namespace Chen.ClassicItems
                     {
                         new BulletAttack
                         {
-                            owner = option,
+                            owner = self.gameObject,
                             weapon = option,
                             origin = option.transform.position,
                             aimVector = (target.transform.position - option.transform.position).normalized,
                             minSpread = 0f,
                             damage = self.tickDamageCoefficient * self.damageStat,
                             force = MageWeapon.Flamethrower.force,
-                            tracerEffectPrefab = FireGatling.tracerEffectPrefab,
                             muzzleName = muzzleString,
                             hitEffectPrefab = MageWeapon.Flamethrower.impactEffectPrefab,
                             isCrit = self.isCrit,
@@ -207,7 +300,6 @@ namespace Chen.ClassicItems
                             stopperMask = LayerIndex.world.mask,
                             procCoefficient = MageWeapon.Flamethrower.procCoefficientPerTick,
                             maxDistance = self.maxDistance,
-                            smartCollision = true,
                             damageType = (Util.CheckRoll(MageWeapon.Flamethrower.ignitePercentChance, self.characterBody.master) ? DamageType.IgniteOnHit : DamageType.Generic)
                         }.Fire();
                     }
@@ -229,7 +321,7 @@ namespace Chen.ClassicItems
                 {
                     new BulletAttack
                     {
-                        owner = option,
+                        owner = self.gameObject,
                         weapon = option,
                         origin = option.transform.position,
                         aimVector = (target.transform.position - option.transform.position).normalized,
@@ -260,7 +352,7 @@ namespace Chen.ClassicItems
                 {
                     new BulletAttack
                     {
-                        owner = option,
+                        owner = self.gameObject,
                         weapon = option,
                         origin = option.transform.position,
                         aimVector = (target.transform.position - option.transform.position).normalized,
@@ -291,7 +383,7 @@ namespace Chen.ClassicItems
                 {
                     new BulletAttack
                     {
-                        owner = option,
+                        owner = self.gameObject,
                         weapon = option,
                         origin = option.transform.position,
                         aimVector = (target.transform.position - option.transform.position).normalized,
@@ -374,8 +466,12 @@ namespace Chen.ClassicItems
             {
                 if (minionOwnership.ownerMaster == ownerMaster)
                 {
-                    GameObject minion = minionOwnership.GetComponent<CharacterMaster>().GetBody().gameObject;
-                    actionToRun(minion);
+                    CharacterMaster minionMaster = minionOwnership.GetComponent<CharacterMaster>();
+                    if (minionMaster && FilterDrones(minionMaster.name))
+                    {
+                        GameObject minion = minionMaster.GetBody().gameObject;
+                        actionToRun(minion);
+                    }
                 }
             }
         }
@@ -396,16 +492,17 @@ namespace Chen.ClassicItems
             }
         }
 
-        private void SpawnOption(GameObject master, GameObject owner, int itemCount, OptionTracker optionTracker = null)
+        private void SpawnOption(GameObject master, GameObject owner, int itemCount)
         {
-            if (!optionTracker) optionTracker = owner.GetComponent<OptionTracker>() ?? owner.AddComponent<OptionTracker>();
-            optionTracker.optionItemCount = itemCount;
+            OptionTracker masterOptionTracker = master.GetComponent<OptionTracker>() ?? master.AddComponent<OptionTracker>();
+            OptionTracker ownerOptionTracker = owner.GetComponent<OptionTracker>() ?? owner.AddComponent<OptionTracker>();
+            masterOptionTracker.optionItemCount = ownerOptionTracker.optionItemCount = itemCount;
             GameObject option = Object.Instantiate(ClassicItemsPlugin.gradiusOptionPrefab, owner.transform.position, owner.transform.rotation);
             OptionBehavior behavior = option.GetComponent<OptionBehavior>();
             behavior.owner = owner;
             behavior.master = master;
-            behavior.numbering = optionTracker.optionItemCount;
-            optionTracker.existingOptions.Add(option);
+            behavior.numbering = ownerOptionTracker.optionItemCount;
+            ownerOptionTracker.existingOptions.Add(option);
             NetworkServer.Spawn(option);
         }
 
@@ -417,6 +514,8 @@ namespace Chen.ClassicItems
             optionTracker.existingOptions.RemoveAt(index);
             Object.Destroy(option);
         }
+
+        private bool FilterDrones(string name) => DronesList.Exists((item) => name.Contains(item));
     }
 
     public class OptionBehavior : MonoBehaviour
@@ -424,19 +523,17 @@ namespace Chen.ClassicItems
         public GameObject owner;
         public GameObject master;
         public int numbering = 0;
-        public Transform flamethrowerTransform;
+        public GameObject flamethrower;
         public HealBeamController healBeamController;
 
         Transform t;
         OptionTracker ot;
-        TeamComponent tc, otc;
         bool init = true;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
         {
             t = gameObject.transform;
-            tc = gameObject.GetComponent<TeamComponent>();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
@@ -444,8 +541,11 @@ namespace Chen.ClassicItems
         {
             if (!init)
             {
-                t.position = ot.flightPath[numbering * ot.distanceInterval - 1];
-                gameObject.transform.rotation = owner.transform.rotation;
+                if (owner && ot)
+                {
+                    t.position = ot.flightPath[numbering * ot.distanceInterval - 1];
+                    gameObject.transform.rotation = owner.transform.rotation;
+                }
             }
         }
 
@@ -456,12 +556,6 @@ namespace Chen.ClassicItems
             {
                 init = false;
                 ot = owner.GetComponent<OptionTracker>();
-                otc = owner.GetComponent<TeamComponent>();
-                tc.teamIndex = otc.teamIndex;
-            }
-            else if (!init && tc.teamIndex != otc.teamIndex)
-            {
-                tc.teamIndex = otc.teamIndex;
             }
         }
     }
@@ -546,6 +640,74 @@ namespace Chen.ClassicItems
                     flightPath.RemoveAt(flightPath.Count - 1);
                 }
             }
+        }
+    }
+
+    public class Flicker : MonoBehaviour
+    {
+        // Child Objects in Order:
+        // 0. sphere1: Light
+        // 1. sphere2: Light
+        // 2. sphere3: Light
+        // 3. sphere4: MeshRenderer, MeshFilter
+
+        readonly float baseValue = 1f;
+        readonly float amplitude = .25f;
+        readonly float phase = 0f;
+        readonly float frequency = 1f;
+
+        readonly Light[] lightObjects = new Light[3];
+        readonly float[] originalRange = new float[3];
+        readonly float[] ampMultiplier = new float[4] { 1.2f, 1f, .8f, .4f };
+        private Vector3 originalLocalScale;
+        private GameObject meshObject;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
+        private void Awake()
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                GameObject child = transform.GetChild(i).gameObject;
+                Light childLight = child.GetComponent<Light>();
+                switch (child.name)
+                {
+                    case "sphere1":
+                        originalRange[0] = childLight.range;
+                        lightObjects[0] = childLight;
+                        break;
+                    case "sphere2":
+                        originalRange[1] = childLight.range;
+                        lightObjects[1] = childLight;
+                        break;
+                    case "sphere3":
+                        originalRange[2] = childLight.range;
+                        lightObjects[2] = childLight;
+                        break;
+                    case "sphere4":
+                        originalLocalScale = child.transform.localScale;
+                        meshObject = child;
+                        break;
+                }
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
+        private void Update()
+        {
+            for (int i = 0; i < lightObjects.Length; i++)
+            {
+                lightObjects[i].range = originalRange[i] * Wave(ampMultiplier[i]);
+            }
+            meshObject.transform.localScale = originalLocalScale * Wave(ampMultiplier[3]);
+        }
+
+        private float Wave(float ampMultiplier)
+        {
+            float x = (Time.time + phase) * frequency;
+            x -= Mathf.Floor(x);
+            float y = Mathf.Sin(x * 2 * Mathf.PI);
+
+            return (y * amplitude * ampMultiplier) + baseValue;
         }
     }
 }

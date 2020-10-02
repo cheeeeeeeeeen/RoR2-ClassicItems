@@ -172,32 +172,28 @@ namespace Chen.ClassicItems
 
             Logger.LogDebug("Creating new prefabs...");
 
-            GameObject aPrefab = new GameObject();
-            MeshFilter mf = aPrefab.AddComponent<MeshFilter>();
-            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            Mesh m = sphere.GetComponent<MeshFilter>().sharedMesh;
-            mf.sharedMesh = m;
-            Destroy(sphere);
-            aPrefab.AddComponent<MeshRenderer>();
-            aPrefab.AddComponent<NetworkIdentity>();
-            aPrefab.AddComponent<OptionBehavior>();
-            aPrefab.AddComponent<TeamComponent>();
-            aPrefab.transform.localScale = new Vector3(.7f, .7f, .7f);
-            gradiusOptionPrefab = aPrefab.InstantiateClone("GradiusOption");
-            Destroy(aPrefab);
+
+            GameObject aPrefab = Resources.Load<GameObject>("@ChensClassicItems:assets/option/optionorb.prefab");
+            if (aPrefab)
+            {
+                aPrefab.AddComponent<NetworkIdentity>();
+                aPrefab.AddComponent<OptionBehavior>();
+                aPrefab.AddComponent<Flicker>();
+                gradiusOptionPrefab = aPrefab.InstantiateClone("GradiusOption");
+                Logger.LogDebug("Successfully created GradiusOption prefab.");
+                Destroy(aPrefab);
+            }
+            else Logger.LogError("Failed to create GradiusOption: Resource not found or is null.");
 
             Logger.LogDebug("Cloning needed prefabs...");
 
             GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
-
             panicMinePrefab = engiMinePrefab.InstantiateClone("PanicMine");
             Destroy(panicMinePrefab.GetComponent<ProjectileDeployToOwner>());
             footMinePrefab = engiMinePrefab.InstantiateClone("FootMine");
             Destroy(footMinePrefab.GetComponent<ProjectileDeployToOwner>());
             instantMinePrefab = engiMinePrefab.InstantiateClone("InstantMine");
             Destroy(instantMinePrefab.GetComponent<ProjectileDeployToOwner>());
-
-            Destroy(engiMinePrefab);
 
             Logger.LogDebug("Registering buffs...");
 
