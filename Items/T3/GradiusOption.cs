@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
+using static TILER2.MiscUtil;
 using MageWeapon = EntityStates.Mage.Weapon;
 using Object = UnityEngine.Object;
 
@@ -40,10 +41,23 @@ namespace Chen.ClassicItems
 
         protected override string NewLangDesc(string langid = null)
         {
-            return NewLangPickup(langid);
+            return $"Deploy <style=cIsDamage>1</style> <style=cStack>(+1 for each stack) Option for <style=cIsDamage>each of your owned drone</style>. " +
+                   $"Options will copy all the attacks of the drone for {Pct(damageMultiplier, 0)} of the damage dealt.";
         }
 
-        protected override string NewLangLore(string langid = null) => "An item from a different world (ChensClassicItems)";
+        protected override string NewLangLore(string langid = null) =>
+            "\"This is CASE, A.I. born from Project Victorious to aid in combatting the evil known as the Bacterion Army.\n\n" +
+            "Our specialized fighter spacecraft was destroyed from an incoming attack in an attempt to save the flight lead of the Scorpio Squadron. " +
+            "It is unfortunate that the pilot herself, Katswell callsigned Scorpio 2 died from the explosion, her body disintegrated along with the spacecraft she pilots.\n\n" +
+            "Amazing, it is, for I am still functional. I do not have much time before the power runs out. " +
+            "There is little chance for anybody to be able to find me, but I will still take my chance. \n\n" +
+            "I wield the ultimate technology of the Gradius Federation: the Options, we call them. Some call them Multiples from the neighboring planets of Gradius. " +
+            "These advanced bots are able to duplicate any form of attack that is attached to it. It will make sense once you power me back up. " +
+            "I will teach you how to install them, and how to integrate them with any kind of machinery.\n\n" +
+            "I can feel my power draining, but that's all I have to say. Saving as an audio log... Placing the file on main boot sequences... and done.\n\n" +
+            "Don't mind that. I will be seeing you s---\"\n\n" +
+            "\"That's it. That's the audio log that went with this lifeless computer.\"\n\n" +
+            "\"Our engineer will be able to do something about it. It sounds really useful. Quickly, now. Off you go.\"";
 
         private static List<string> DronesList = new List<string>
         {
@@ -144,10 +158,6 @@ namespace Chen.ClassicItems
 
                 if (newCount - oldCount > 0)
                 {
-                    for (int t = oldCount + 1; t <= newCount; t++)
-                    {
-                        SpawnOption(gameObject, gameObject, t);
-                    }
                     LoopAllMinionOwnerships(self.master, (minion) =>
                     {
                         for (int t = oldCount + 1; t <= newCount; t++)
