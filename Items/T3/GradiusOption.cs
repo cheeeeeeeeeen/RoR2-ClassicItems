@@ -21,8 +21,18 @@ namespace Chen.ClassicItems
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Utility });
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Damage multiplier of Options/Multiples. Also applies for Healing Drones. 1 = 100%.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        public float damageMultiplier { get; private set; } = 1f;
+
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Set to true for Options/Multiples of Flame Drones to generate a flamethrower sound. WARNING: Turning this on may cause earrape.", AutoItemConfigFlags.None)]
         public bool flamethrowerSoundCopy { get; private set; } = false;
+
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Set to true for Options/Multiples of Gatling Turrets to generate a firing sound. WARNING: Turning this on may cause earrape.", AutoItemConfigFlags.None)]
+        public bool gatlingSoundCopy { get; private set; } = false;
+
+        public override bool itemAIB { get; protected set; } = true;
 
         protected override string NewLangName(string langid = null) => displayName;
 
@@ -168,7 +178,7 @@ namespace Chen.ClassicItems
             orig(self);
             FireForAllMinions(self, (option, target) =>
             {
-                float healRate = HealBeam.healCoefficient * self.damageStat / self.duration;
+                float healRate = (HealBeam.healCoefficient * self.damageStat / self.duration) * damageMultiplier;
                 Ray aimRay = self.GetAimRay();
                 Transform transform = option.transform;
                 if (NetworkServer.active)
@@ -217,7 +227,7 @@ namespace Chen.ClassicItems
                         {
                             GameObject gameObject = Object.Instantiate(self.healBeamPrefab, transform);
                             HealBeamController hbc = option.GetComponent<OptionBehavior>().healBeamController = gameObject.GetComponent<HealBeamController>();
-                            hbc.healRate = self.healRateCoefficient * self.damageStat * self.attackSpeedStat;
+                            hbc.healRate = self.healRateCoefficient * self.damageStat * self.attackSpeedStat * damageMultiplier;
                             hbc.target = self.targetHurtBox;
                             hbc.ownership.ownerObject = option.gameObject;
                             gameObject.AddComponent<DestroyOnTimer>().duration = self.duration;
@@ -290,8 +300,8 @@ namespace Chen.ClassicItems
                             origin = option.transform.position,
                             aimVector = (target.transform.position - option.transform.position).normalized,
                             minSpread = 0f,
-                            damage = self.tickDamageCoefficient * self.damageStat,
-                            force = MageWeapon.Flamethrower.force,
+                            damage = self.tickDamageCoefficient * self.damageStat * damageMultiplier,
+                            force = MageWeapon.Flamethrower.force * damageMultiplier,
                             muzzleName = muzzleString,
                             hitEffectPrefab = MageWeapon.Flamethrower.impactEffectPrefab,
                             isCrit = self.isCrit,
@@ -312,7 +322,7 @@ namespace Chen.ClassicItems
             orig(self);
             FireForAllMinions(self, (option, target) =>
             {
-                Util.PlaySound(FireGatling.fireGatlingSoundString, option);
+                if (gatlingSoundCopy) Util.PlaySound(FireGatling.fireGatlingSoundString, option);
                 if (FireGatling.effectPrefab)
                 {
                     EffectManager.SimpleMuzzleFlash(FireGatling.effectPrefab, option, "Muzzle", false);
@@ -327,8 +337,8 @@ namespace Chen.ClassicItems
                         aimVector = (target.transform.position - option.transform.position).normalized,
                         minSpread = FireGatling.minSpread,
                         maxSpread = FireGatling.maxSpread,
-                        damage = FireGatling.damageCoefficient * self.damageStat,
-                        force = FireGatling.force,
+                        damage = FireGatling.damageCoefficient * self.damageStat * damageMultiplier,
+                        force = FireGatling.force * damageMultiplier,
                         tracerEffectPrefab = FireGatling.tracerEffectPrefab,
                         muzzleName = "Muzzle",
                         hitEffectPrefab = FireGatling.hitEffectPrefab,
@@ -358,8 +368,8 @@ namespace Chen.ClassicItems
                         aimVector = (target.transform.position - option.transform.position).normalized,
                         minSpread = FireTurret.minSpread,
                         maxSpread = FireTurret.maxSpread,
-                        damage = FireTurret.damageCoefficient * self.damageStat,
-                        force = FireTurret.force,
+                        damage = FireTurret.damageCoefficient * self.damageStat * damageMultiplier,
+                        force = FireTurret.force * damageMultiplier,
                         tracerEffectPrefab = FireTurret.tracerEffectPrefab,
                         muzzleName = "Muzzle",
                         hitEffectPrefab = FireTurret.hitEffectPrefab,
@@ -389,8 +399,8 @@ namespace Chen.ClassicItems
                         aimVector = (target.transform.position - option.transform.position).normalized,
                         minSpread = FireMegaTurret.minSpread,
                         maxSpread = FireMegaTurret.maxSpread,
-                        damage = FireMegaTurret.damageCoefficient * self.damageStat,
-                        force = FireMegaTurret.force,
+                        damage = FireMegaTurret.damageCoefficient * self.damageStat * damageMultiplier,
+                        force = FireMegaTurret.force * damageMultiplier,
                         tracerEffectPrefab = FireMegaTurret.tracerEffectPrefab,
                         muzzleName = muzzleString,
                         hitEffectPrefab = FireMegaTurret.hitEffectPrefab,
@@ -424,8 +434,8 @@ namespace Chen.ClassicItems
                     Vector3 forward = Quaternion.AngleAxis(angle, up) * (Quaternion.AngleAxis(angle2, axis) * aimRay.direction);
                     ProjectileManager.instance.FireProjectile(FireMissileBarrage.projectilePrefab, option.transform.position,
                                                               Util.QuaternionSafeLookRotation(forward), self.gameObject,
-                                                              self.damageStat * FireMissileBarrage.damageCoefficient, 0f,
-                                                              Util.CheckRoll(self.critStat, self.characterBody.master),
+                                                              self.damageStat * FireMissileBarrage.damageCoefficient * damageMultiplier,
+                                                              0f, Util.CheckRoll(self.critStat, self.characterBody.master),
                                                               DamageColorIndex.Default, null, -1f);
                 }
             });
@@ -452,8 +462,9 @@ namespace Chen.ClassicItems
                     }
                     ProjectileManager.instance.FireProjectile(FireTwinRocket.projectilePrefab, position,
                                                               Util.QuaternionSafeLookRotation(forward),
-                                                              self.gameObject, self.damageStat * FireTwinRocket.damageCoefficient,
-                                                              FireTwinRocket.force, Util.CheckRoll(self.critStat, self.characterBody.master),
+                                                              self.gameObject, self.damageStat * FireTwinRocket.damageCoefficient * damageMultiplier,
+                                                              FireTwinRocket.force * damageMultiplier,
+                                                              Util.CheckRoll(self.critStat, self.characterBody.master),
                                                               DamageColorIndex.Default, null, -1f);
                 }
             });
@@ -526,9 +537,9 @@ namespace Chen.ClassicItems
         public GameObject flamethrower;
         public HealBeamController healBeamController;
 
-        Transform t;
-        OptionTracker ot;
-        bool init = true;
+        private Transform t;
+        private OptionTracker ot;
+        private bool init = true;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
@@ -567,11 +578,11 @@ namespace Chen.ClassicItems
         public int distanceInterval { get; private set; } = 20;
         public int optionItemCount = 0;
 
-        Vector3 previousPosition = new Vector3();
-        bool init = true;
-        int previousOptionItemCount = 0;
+        private Vector3 previousPosition = new Vector3();
+        private bool init = true;
+        private int previousOptionItemCount = 0;
 
-        Transform t;
+        private Transform t;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
@@ -651,14 +662,14 @@ namespace Chen.ClassicItems
         // 2. sphere3: Light
         // 3. sphere4: MeshRenderer, MeshFilter
 
-        readonly float baseValue = 1f;
-        readonly float amplitude = .25f;
-        readonly float phase = 0f;
-        readonly float frequency = 1f;
+        private readonly float baseValue = 1f;
+        private readonly float amplitude = .25f;
+        private readonly float phase = 0f;
+        private readonly float frequency = 1f;
 
-        readonly Light[] lightObjects = new Light[3];
-        readonly float[] originalRange = new float[3];
-        readonly float[] ampMultiplier = new float[4] { 1.2f, 1f, .8f, .4f };
+        private readonly Light[] lightObjects = new Light[3];
+        private readonly float[] originalRange = new float[3];
+        private readonly float[] ampMultiplier = new float[4] { 1.2f, 1f, .8f, .4f };
         private Vector3 originalLocalScale;
         private GameObject meshObject;
 
@@ -675,14 +686,17 @@ namespace Chen.ClassicItems
                         originalRange[0] = childLight.range;
                         lightObjects[0] = childLight;
                         break;
+
                     case "sphere2":
                         originalRange[1] = childLight.range;
                         lightObjects[1] = childLight;
                         break;
+
                     case "sphere3":
                         originalRange[2] = childLight.range;
                         lightObjects[2] = childLight;
                         break;
+
                     case "sphere4":
                         originalLocalScale = child.transform.localScale;
                         meshObject = child;

@@ -27,7 +27,7 @@ namespace Chen.ClassicItems
     {
         public const string ModVer =
 #if DEBUG
-                "0." +
+            "0." +
 #endif
             "1.0.0";
 
@@ -171,7 +171,6 @@ namespace Chen.ClassicItems
             Logger.LogDebug("No need. ThinkInvis.ClassicItems has added the needed actions.");
 
             Logger.LogDebug("Creating new prefabs...");
-
 
             GameObject aPrefab = Resources.Load<GameObject>("@ChensClassicItems:assets/option/optionorb.prefab");
             if (aPrefab)
