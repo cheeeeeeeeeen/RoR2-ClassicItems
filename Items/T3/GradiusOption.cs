@@ -48,7 +48,7 @@ namespace Chen.ClassicItems
         protected override string NewLangLore(string langid = null) =>
             "\"This is CASE, A.I. born from Project Victorious to aid in combatting the evil known as the Bacterion Army.\n\n" +
             "Our specialized fighter spacecraft was destroyed from an incoming attack in an attempt to save the flight lead of the Scorpio Squadron. " +
-            "It is unfortunate that the pilot herself, Katswell callsigned Scorpio 2 died from the explosion, her body disintegrated along with the spacecraft she pilots.\n\n" +
+            "It is unfortunate that the pilot herself, Katswell callsigned Scorpio 2, died from the explosion... her body disintegrated along with the spacecraft she pilots.\n\n" +
             "Amazing, it is, for I am still functional. I do not have much time before the power runs out. " +
             "There is little chance for anybody to be able to find me, but I will still take my chance. \n\n" +
             "I wield the ultimate technology of the Gradius Federation: the Options, we call them. Some call them Multiples from the neighboring planets of Gradius. " +
@@ -135,50 +135,56 @@ namespace Chen.ClassicItems
         private CharacterBody CharacterMaster_SpawnBody(On.RoR2.CharacterMaster.orig_SpawnBody orig, CharacterMaster self, GameObject bodyPrefab, Vector3 position, Quaternion rotation)
         {
             CharacterBody result = orig(self, bodyPrefab, position, rotation);
-            if (result && FilterDrones(result.name) && self.minionOwnership && self.minionOwnership.ownerMaster)
-            {
-                int currentCount = GetCount(result);
-                for (int t = 1; t <= currentCount; t++)
-                {
-                    SpawnOption(self.minionOwnership.ownerMaster.GetBody().gameObject, self.GetBody().gameObject, t);
-                }
-            }
+            //if (result && FilterDrones(result.name) && self.minionOwnership && self.minionOwnership.ownerMaster)
+            //{
+            //    int currentCount = GetCount(result);
+            //    for (int t = 1; t <= currentCount; t++)
+            //    {
+            //        SpawnOption(self.minionOwnership.ownerMaster.GetBody().gameObject, self.GetBody().gameObject, t);
+            //    }
+            //}
             return result;
         }
 
         private void CharacterBody_OnInventoryChanged(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
         {
             orig(self);
-            int newCount = GetCount(self);
-            if (self.master && newCount > 0)
+            if (self)
             {
-                GameObject gameObject = self.gameObject;
-                OptionTracker optionTracker = gameObject.GetComponent<OptionTracker>() ?? gameObject.AddComponent<OptionTracker>();
-                int oldCount = optionTracker.optionItemCount;
+                int newCount = GetCount(self);
+                if (self.master && newCount > 0)
+                {
+                    GameObject gameObject = self.gameObject;
+                    OptionTracker optionTracker = gameObject.GetComponent<OptionTracker>() ?? gameObject.AddComponent<OptionTracker>();
+                    int oldCount = optionTracker.optionItemCount;
 
-                if (newCount - oldCount > 0)
-                {
-                    LoopAllMinionOwnerships(self.master, (minion) =>
+                    if (newCount - oldCount > 0)
                     {
-                        for (int t = oldCount + 1; t <= newCount; t++)
+                        ClassicItemsPlugin._logger.LogDebug("Spawning.");
+                        LoopAllMinionOwnerships(self.master, (minion) =>
                         {
-                            SpawnOption(gameObject, minion, t);
-                        }
-                    });
-                }
-                else if (newCount - oldCount < 0)
-                {
-                    LoopAllMinionOwnerships(self.master, (minion) =>
-                    {
-                        OptionTracker minionOptionTracker = minion.GetComponent<OptionTracker>();
-                        if (minionOptionTracker)
-                        {
-                            for (int t = oldCount; t > newCount; t--)
+                            ClassicItemsPlugin._logger.LogDebug($"Looping... OldCount: {oldCount}, NewCount: {newCount}");
+                            for (int t = oldCount + 1; t <= newCount; t++)
                             {
-                                DestroyOption(minionOptionTracker, t);
+                                SpawnOption(gameObject, minion, t);
                             }
-                        }
-                    });
+                        });
+                    }
+                    else if (newCount - oldCount < 0)
+                    {
+                        ClassicItemsPlugin._logger.LogDebug("Destroying.");
+                        LoopAllMinionOwnerships(self.master, (minion) =>
+                        {
+                            OptionTracker minionOptionTracker = minion.GetComponent<OptionTracker>();
+                            if (minionOptionTracker)
+                            {
+                                for (int t = oldCount; t > newCount; t--)
+                                {
+                                    DestroyOption(minionOptionTracker, t);
+                                }
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -482,18 +488,33 @@ namespace Chen.ClassicItems
 
         private void LoopAllMinionOwnerships(CharacterMaster ownerMaster, Action<GameObject> actionToRun)
         {
+            ClassicItemsPlugin._logger.LogDebug("Starting LoopMinionOwnerships.");
             MinionOwnership[] minionOwnerships = Object.FindObjectsOfType<MinionOwnership>();
+            ClassicItemsPlugin._logger.LogDebug("Looping minionOwnerships...");
             foreach (MinionOwnership minionOwnership in minionOwnerships)
             {
-                if (minionOwnership.ownerMaster == ownerMaster)
+                if (minionOwnership && minionOwnership.ownerMaster)
                 {
-                    CharacterMaster minionMaster = minionOwnership.GetComponent<CharacterMaster>();
-                    if (minionMaster && FilterDrones(minionMaster.name))
+                    ClassicItemsPlugin._logger.LogDebug("Checking if minion is owned by a specific player...");
+                    if (minionOwnership.ownerMaster == ownerMaster)
                     {
-                        GameObject minion = minionMaster.GetBody().gameObject;
-                        actionToRun(minion);
+                        ClassicItemsPlugin._logger.LogDebug("This minion is owned by this specified player.");
+                        CharacterMaster minionMaster = minionOwnership.GetComponent<CharacterMaster>();
+                        if (minionMaster && FilterDrones(minionMaster.name))
+                        {
+                            CharacterBody minionBody = minionMaster.GetBody();
+                            if (minionBody)
+                            {
+                                GameObject minion = minionBody.gameObject;
+                                actionToRun(minion);
+                            }
+                            else ClassicItemsPlugin._logger.LogDebug("Minion has no body. Skipping.");
+                        }
+                        else ClassicItemsPlugin._logger.LogDebug("Minion has no CharacterMaster component. Skipping.");
                     }
+                    else ClassicItemsPlugin._logger.LogDebug("Different entity owns this minion. Skip.");
                 }
+                else ClassicItemsPlugin._logger.LogDebug("minionOwnership or minionOwnership.ownerMaster is null.");
             }
         }
 
