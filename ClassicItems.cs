@@ -27,7 +27,7 @@ namespace Chen.ClassicItems
     {
         public const string ModVer =
 #if DEBUG
-            "debug." +
+            "0." +
 #endif
             "1.0.2";
 
