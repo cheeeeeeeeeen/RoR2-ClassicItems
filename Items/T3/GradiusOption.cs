@@ -1,5 +1,7 @@
 ﻿using EntityStates;
 using EntityStates.Drone.DroneWeapon;
+using R2API.Networking;
+using R2API.Networking.Interfaces;
 using RoR2;
 using RoR2.CharacterAI;
 using RoR2.Projectile;
@@ -32,6 +34,16 @@ namespace Chen.ClassicItems
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Set to true for Options/Multiples of Gatling Turrets to generate a firing sound. WARNING: Turning this on may cause earrape.", AutoItemConfigFlags.None)]
         public bool gatlingSoundCopy { get; private set; } = false;
+
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Amount of time in seconds for server to send Option data to clients. Increase this if the Options are not appearing on clients. DO NOT SET TO 0.", 
+                        AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        public float syncSeconds { get; private set; } = 1f;
+
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("The distance between each Option when following the flight path. Higher value means farther trails (and possibly more processing power needed).",
+                        AutoItemConfigFlags.None, 1, int.MaxValue)]
+        public int distanceInterval { get; private set; } = 20;
 
         public override bool itemAIB { get; protected set; } = true;
 
@@ -93,7 +105,7 @@ namespace Chen.ClassicItems
             On.EntityStates.Drone.DroneWeapon.HealBeam.OnEnter += HealBeam_OnEnter;
             On.EntityStates.Drone.DroneWeapon.HealBeam.OnExit += HealBeam_OnExit;
             On.EntityStates.Drone.DroneWeapon.StartHealBeam.OnEnter += StartHealBeam_OnEnter;
-            On.RoR2.MasterSummon.Perform += MasterSummon_Perform;
+            //On.RoR2.MasterSummon.Perform += MasterSummon_Perform;
         }
 
         protected override void UnloadBehavior()
@@ -111,53 +123,52 @@ namespace Chen.ClassicItems
             On.EntityStates.Drone.DroneWeapon.HealBeam.OnEnter -= HealBeam_OnEnter;
             On.EntityStates.Drone.DroneWeapon.HealBeam.OnExit -= HealBeam_OnExit;
             On.EntityStates.Drone.DroneWeapon.StartHealBeam.OnEnter -= StartHealBeam_OnEnter;
-            On.RoR2.MasterSummon.Perform -= MasterSummon_Perform;
+            //On.RoR2.MasterSummon.Perform -= MasterSummon_Perform;
         }
 
-        private CharacterMaster MasterSummon_Perform(On.RoR2.MasterSummon.orig_Perform orig, MasterSummon self)
-        {
-            CharacterMaster result = orig(self);
-            if (result && FilterDrones(result.name) && NetworkServer.active)
-            {
-                CharacterBody minionBody = result.GetBody();
-                CharacterMaster masterMaster = result.minionOwnership.ownerMaster;
-                if (minionBody && masterMaster)
-                {
-                    OptionMasterTracker masterTracker = masterMaster.GetComponent<OptionMasterTracker>();
-                    if (masterTracker)
-                    {
-                        int currentCount = masterTracker.optionItemCount;
-                        for (int t = 1; t <= currentCount; t++)
-                        {
-                            SpawnOption(minionBody.gameObject, t);
-                        }
-                        ClassicItemsPlugin._logger.LogDebug("Option creation for new drone: Done and done.");
-                    }
-                    else ClassicItemsPlugin._logger.LogDebug("Option creation for new drone: Skipped due to masterTracker being non-existent.");
-                }
-                else ClassicItemsPlugin._logger.LogDebug("Option creation for new drone: Skipped due to minionBody and masterMaster being null.");
-            }
-            return result;
-        }
+        //private CharacterMaster MasterSummon_Perform(On.RoR2.MasterSummon.orig_Perform orig, MasterSummon self)
+        //{
+        //    // This hook only runs in the server.
+        //    CharacterMaster result = orig(self);
+        //    if (result && FilterDrones(result.name))
+        //    {
+        //        CharacterBody minionBody = result.GetBody();
+        //        CharacterMaster masterMaster = result.minionOwnership.ownerMaster;
+        //        if (minionBody && masterMaster)
+        //        {
+        //            OptionMasterTracker masterTracker = OptionMasterTracker.GetOrCreateComponent(masterMaster, syncSeconds);
+        //            int currentCount = masterTracker.optionItemCount;
+        //            NetworkInstanceId characterMasterObjectNetId = result.gameObject.GetComponent<NetworkIdentity>().netId;
+        //            ClassicItemsPlugin._logger.LogDebug($"characterMasterObjectNetId is {characterMasterObjectNetId}");
+        //            for (int t = 1; t <= currentCount; t++)
+        //            {
+        //                OptionMasterTracker.SpawnOption(minionBody.gameObject, t);
+        //                masterTracker.netIds.Add(Tuple.Create(characterMasterObjectNetId, (short)t, false));
+        //            }
+        //            ClassicItemsPlugin._logger.LogDebug("Option creation for new drone: Done and done.");
+        //        }
+        //        else ClassicItemsPlugin._logger.LogDebug("Option creation for new drone: Skipped due to minionBody and masterMaster being null.");
+        //    }
+        //    return result;
+        //}
 
         private CharacterBody CharacterMaster_SpawnBody(On.RoR2.CharacterMaster.orig_SpawnBody orig, CharacterMaster self, GameObject bodyPrefab, Vector3 position, Quaternion rotation)
         {
+            // This hook is only ran in the server.
             CharacterBody result = orig(self, bodyPrefab, position, rotation);
             if (result && FilterDrones(result.name) && self.minionOwnership)
             {
                 CharacterMaster masterMaster = self.minionOwnership.ownerMaster;
                 if (masterMaster)
                 {
-                    OptionMasterTracker masterTracker = masterMaster.GetComponent<OptionMasterTracker>();
-                    if (masterTracker)
+                    OptionMasterTracker masterTracker = OptionMasterTracker.GetOrCreateComponent(masterMaster, syncSeconds);
+                    int currentCount = masterTracker.optionItemCount;
+                    NetworkInstanceId characterBodyObjectNetId = result.gameObject.GetComponent<NetworkIdentity>().netId;
+                    for (int t = 1; t <= currentCount; t++)
                     {
-                        int currentCount = masterTracker.optionItemCount;
-                        for (int t = 1; t <= currentCount; t++)
-                        {
-                            SpawnOption(result.gameObject, t);
-                        }
+                        OptionMasterTracker.SpawnOption(result.gameObject, t);
+                        masterTracker.netIds.Add(Tuple.Create(characterBodyObjectNetId, (short)t, true));
                     }
-                    else ClassicItemsPlugin._logger.LogDebug("SpawnBody: masterTracker is Null.");
                 }
                 else ClassicItemsPlugin._logger.LogDebug("SpawnBody: masterMaster is Null.");
             }
@@ -173,7 +184,7 @@ namespace Chen.ClassicItems
             if (self.master && newCount > 0)
             {
                 GameObject masterObject = self.master.gameObject;
-                OptionMasterTracker masterTracker = masterObject.GetComponent<OptionMasterTracker>() ?? masterObject.AddComponent<OptionMasterTracker>();
+                OptionMasterTracker masterTracker = OptionMasterTracker.GetOrCreateComponent(masterObject, syncSeconds);
                 int oldCount = masterTracker.optionItemCount;
                 int diff = newCount - oldCount;
                 masterTracker.optionItemCount = newCount;
@@ -185,7 +196,7 @@ namespace Chen.ClassicItems
                         ClassicItemsPlugin._logger.LogDebug($"OnInventoryChanged: Looping... OldCount: {oldCount}, NewCount: {newCount}");
                         for (int t = oldCount + 1; t <= newCount; t++)
                         {
-                            SpawnOption(minion, t);
+                            OptionMasterTracker.SpawnOption(minion, t);
                         }
                     });
                 }
@@ -199,7 +210,7 @@ namespace Chen.ClassicItems
                         {
                             for (int t = oldCount; t > newCount; t--)
                             {
-                                DestroyOption(minionOptionTracker, t);
+                                OptionMasterTracker.DestroyOption(minionOptionTracker, t);
                             }
                         }
                     });
@@ -552,260 +563,79 @@ namespace Chen.ClassicItems
             }
         }
 
-        private void SpawnOption(GameObject owner, int itemCount)
-        {
-            OptionTracker ownerOptionTracker = owner.GetComponent<OptionTracker>() ?? owner.AddComponent<OptionTracker>();
-            GameObject option = Object.Instantiate(ClassicItemsPlugin.gradiusOptionPrefab, owner.transform.position, owner.transform.rotation);
-            OptionBehavior behavior = option.GetComponent<OptionBehavior>();
-            behavior.owner = owner;
-            behavior.numbering = itemCount;
-            ownerOptionTracker.existingOptions.Add(option);
-        }
-
-        private void DestroyOption(OptionTracker optionTracker, int optionNumber)
-        {
-            int index = optionNumber - 1;
-            GameObject option = optionTracker.existingOptions[index];
-            optionTracker.existingOptions.RemoveAt(index);
-            Object.Destroy(option);
-        }
-
         private bool FilterDrones(string name) => DronesList.Exists((item) => name.Contains(item));
     }
 
-    public class OptionBehavior : MonoBehaviour
+    public class SpawnOptionsForClients : INetMessage
     {
-        public GameObject owner;
-        public int numbering = 0;
-        public GameObject flamethrower;
-        public HealBeamController healBeamController;
+        private NetworkInstanceId ownerId;
+        private short numbering;
+        private bool bodyOrMaster;
 
-        private Transform t;
-        private OptionTracker ot;
-        private bool init = true;
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
-        private void Awake()
+        public SpawnOptionsForClients()
         {
-            t = gameObject.transform;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
-        private void Update()
+        public SpawnOptionsForClients(NetworkInstanceId ownerId, short numbering, bool bodyOrMaster)
         {
-            if (!init)
+            this.ownerId = ownerId;
+            this.numbering = numbering;
+            this.bodyOrMaster = bodyOrMaster;
+        }
+
+        public void Serialize(NetworkWriter writer)
+        {
+            writer.Write(ownerId);
+            writer.Write(numbering);
+            writer.Write(bodyOrMaster);
+        }
+
+        public void Deserialize(NetworkReader reader)
+        {
+            ownerId = reader.ReadNetworkId();
+            numbering = reader.ReadInt16();
+            bodyOrMaster = reader.ReadBoolean();
+        }
+
+        public void OnReceived()
+        {
+            if (!NetworkServer.active)
             {
-                if (owner && ot)
+                ClassicItemsPlugin._logger.LogDebug($"SpawnOptionsForClients: Received a request to spawn options from server. ownerId = {ownerId}, numbering = {numbering}");
+                GameObject ownerObject = Util.FindNetworkObject(ownerId);
+                if (ownerObject)
                 {
-                    t.position = ot.flightPath[numbering * ot.distanceInterval - 1];
-                    gameObject.transform.rotation = owner.transform.rotation;
-                }
-                else
-                {
-                    ClassicItemsPlugin._logger.LogDebug($"OptionBehavior.Update: Lost owner or ot. Destroying this option.");
-                    if (NetworkServer.active)
+                    if (bodyOrMaster)
                     {
-                        NetworkServer.Destroy(gameObject);
-                        Destroy(gameObject);
+                        ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: BODY MODE - Getting CharacterBody...");
+                        TrySpawnOption(ownerObject.GetComponent<CharacterBody>());
                     }
-                }
-            }
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
-        private void FixedUpdate()
-        {
-            if (init && owner)
-            {
-                init = false;
-                ot = owner.GetComponent<OptionTracker>();
-            }
-        }
-    }
-
-    public class OptionTracker : MonoBehaviour
-    {
-        public List<Vector3> flightPath { get; private set; } = new List<Vector3>();
-        public List<GameObject> existingOptions { get; private set; } = new List<GameObject>();
-        public int distanceInterval { get; private set; } = 20;
-        public CharacterMaster masterCharacterMaster { get; private set; }
-        public OptionMasterTracker masterOptionTracker { get; private set; }
-        public CharacterMaster characterMaster { get; private set; }
-        public CharacterBody characterBody { get; private set; }
-
-        private Vector3 previousPosition = new Vector3();
-        private bool init = true;
-        private int previousOptionItemCount = 0;
-
-        private Transform t;
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
-        private void Awake()
-        {
-            t = gameObject.transform;
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
-        private void Update()
-        {
-            if (!init && masterOptionTracker)
-            {
-                if (previousPosition != t.position)
-                {
-                    flightPath.Insert(0, t.position);
-                    if (flightPath.Count > masterOptionTracker.optionItemCount * distanceInterval)
+                    else
                     {
-                        flightPath.RemoveAt(flightPath.Count - 1);
-                    }
-                }
-                previousPosition = t.position;
-            }
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
-        private void FixedUpdate()
-        {
-            if (!masterOptionTracker)
-            {
-                characterBody = gameObject.GetComponent<CharacterBody>();
-                if (characterBody)
-                {
-                    characterMaster = characterBody.master;
-                    if (characterMaster)
-                    {
-                        masterCharacterMaster = characterMaster.minionOwnership.ownerMaster;
-                        if (masterCharacterMaster)
+                        ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: MASTER MODE - Getting CharacterMaster...");
+                        CharacterMaster ownerMaster = ownerObject.GetComponent<CharacterMaster>();
+                        if (ownerMaster)
                         {
-                            masterOptionTracker = masterCharacterMaster.gameObject.GetComponent<OptionMasterTracker>();
-                            if (masterOptionTracker) ClassicItemsPlugin._logger.LogDebug("In Initialization of OptionTracker: masterOptionTracker is set.");
-                            else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: masterOptionTracker is NULL.");
+                            ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Getting CharacterBody...");
+                            TrySpawnOption(ownerMaster.GetBody());
                         }
-                        else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: masterCharacterMaster does not exist!");
+                        else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: ownerMaster is null.");
                     }
-                    else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: characterMaster does not exist!");
                 }
-                else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: characterBody does not exist!");
+                else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: ownerObject is null.");
             }
-            if (init && masterOptionTracker.optionItemCount > 0)
-            {
-                init = false;
-                previousPosition = t.position;
-                ManageFlightPath(1);
-            }
-            else if (!init && masterOptionTracker.optionItemCount > 0)
-            {
-                int diff = masterOptionTracker.optionItemCount - previousOptionItemCount;
-                if (diff > 0 || diff < 0)
-                {
-                    previousOptionItemCount = masterOptionTracker.optionItemCount;
-                    ManageFlightPath(diff);
-                }
-            }
-            else if (!init && masterOptionTracker.optionItemCount <= 0)
-            {
-                init = true;
-                flightPath.Clear();
-                previousOptionItemCount = 0;
-            }
+            else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Host got this request. Skip.");
         }
 
-        private void ManageFlightPath(int difference)
+        private void TrySpawnOption(CharacterBody ownerBody)
         {
-            ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: difference is {difference}");
-            int flightPathCap = masterOptionTracker.optionItemCount * distanceInterval;
-            ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: Pre-computed flightPathCap = {flightPathCap}");
-            if (difference > 0)
+            if (ownerBody)
             {
-                while (flightPath.Count < flightPathCap)
-                {
-                    ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: Inserting entry!");
-                    flightPath.Add(t.position);
-                }
+                ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Preparations complete. Firing SpawnOption method.");
+                OptionMasterTracker.SpawnOption(ownerBody.gameObject, numbering);
+                ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Option is good to go.");
             }
-            else if (difference < 0)
-            {
-                while (flightPath.Count >= flightPathCap)
-                {
-                    ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: Removing entry.");
-                    flightPath.RemoveAt(flightPath.Count - 1);
-                }
-            }
-        }
-    }
-
-    public class OptionMasterTracker : MonoBehaviour
-    {
-        public int optionItemCount = 0;
-    }
-
-    public class Flicker : MonoBehaviour
-    {
-        // Child Objects in Order:
-        // 0. sphere1: Light
-        // 1. sphere2: Light
-        // 2. sphere3: Light
-        // 3. sphere4: MeshRenderer, MeshFilter
-
-        private readonly float baseValue = 1f;
-        private readonly float amplitude = .25f;
-        private readonly float phase = 0f;
-        private readonly float frequency = 1f;
-
-        private readonly Light[] lightObjects = new Light[3];
-        private readonly float[] originalRange = new float[3];
-        private readonly float[] ampMultiplier = new float[4] { 1.2f, 1f, .8f, .4f };
-        private Vector3 originalLocalScale;
-        private GameObject meshObject;
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
-        private void Awake()
-        {
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                GameObject child = transform.GetChild(i).gameObject;
-                Light childLight = child.GetComponent<Light>();
-                switch (child.name)
-                {
-                    case "sphere1":
-                        originalRange[0] = childLight.range;
-                        lightObjects[0] = childLight;
-                        break;
-
-                    case "sphere2":
-                        originalRange[1] = childLight.range;
-                        lightObjects[1] = childLight;
-                        break;
-
-                    case "sphere3":
-                        originalRange[2] = childLight.range;
-                        lightObjects[2] = childLight;
-                        break;
-
-                    case "sphere4":
-                        originalLocalScale = child.transform.localScale;
-                        meshObject = child;
-                        break;
-                }
-            }
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
-        private void Update()
-        {
-            for (int i = 0; i < lightObjects.Length; i++)
-            {
-                lightObjects[i].range = originalRange[i] * Wave(ampMultiplier[i]);
-            }
-            meshObject.transform.localScale = originalLocalScale * Wave(ampMultiplier[3]);
-        }
-
-        private float Wave(float ampMultiplier)
-        {
-            float x = (Time.time + phase) * frequency;
-            x -= Mathf.Floor(x);
-            float y = Mathf.Sin(x * 2 * Mathf.PI);
-
-            return (y * amplitude * ampMultiplier) + baseValue;
+            else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: ownerBody is null.");
         }
     }
 }

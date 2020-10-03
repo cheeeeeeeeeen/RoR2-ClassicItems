@@ -3,6 +3,7 @@
 using BepInEx;
 using BepInEx.Configuration;
 using R2API;
+using R2API.Networking;
 using R2API.Utils;
 using RoR2;
 using RoR2.Projectile;
@@ -22,7 +23,8 @@ namespace Chen.ClassicItems
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [BepInDependency(ThinkInvisCI.ClassicItemsPlugin.ModGuid, ThinkInvisCI.ClassicItemsPlugin.ModVer)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
-    [R2APISubmoduleDependency(nameof(DotAPI), nameof(ItemAPI), nameof(LanguageAPI), nameof(ResourcesAPI), nameof(PlayerAPI), nameof(PrefabAPI), nameof(BuffAPI), nameof(LoadoutAPI))]
+    [R2APISubmoduleDependency(nameof(NetworkingAPI), nameof(DotAPI), nameof(ItemAPI), nameof(LanguageAPI), nameof(ResourcesAPI),
+                              nameof(PlayerAPI), nameof(PrefabAPI), nameof(BuffAPI), nameof(LoadoutAPI))]
     public class ClassicItemsPlugin : BaseUnityPlugin
     {
         public const string ModVer =
@@ -223,6 +225,10 @@ namespace Chen.ClassicItems
             {
                 x.SetupBehavior();
             }
+
+            Logger.LogDebug("Registering custom network messages...");
+
+            NetworkingAPI.RegisterMessageType<SpawnOptionsForClients>();
 
             Logger.LogDebug("Initial setup done!");
         }
