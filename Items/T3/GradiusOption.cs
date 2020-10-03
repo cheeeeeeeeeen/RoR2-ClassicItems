@@ -221,24 +221,33 @@ namespace Chen.ClassicItems
 
         private void HealBeam_OnEnter(On.EntityStates.Drone.DroneWeapon.HealBeam.orig_OnEnter orig, HealBeam self)
         {
+            ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: Healing Drone healing commence.");
             orig(self);
             FireForAllMinions(self, (option, target) =>
             {
+                ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: Calculating heal values.");
                 float healRate = (HealBeam.healCoefficient * self.damageStat / self.duration) * damageMultiplier;
                 Transform transform = option.transform;
                 if (NetworkServer.active)
                 {
-                    if (transform && self.target)
+                    if (transform)
                     {
-                        GameObject gameObject = Object.Instantiate(HealBeam.healBeamPrefab, transform);
-                        HealBeamController hbc = option.GetComponent<OptionBehavior>().healBeamController = gameObject.GetComponent<HealBeamController>();
-                        hbc.healRate = healRate;
-                        hbc.target = self.target;
-                        hbc.ownership.ownerObject = option.gameObject;
-                        NetworkServer.Spawn(gameObject);
+                        if (self.target)
+                        {
+                            ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: Target acquired.");
+                            GameObject gameObject = Object.Instantiate(HealBeam.healBeamPrefab, transform);
+                            HealBeamController hbc = option.GetComponent<OptionBehavior>().healBeamController = gameObject.GetComponent<HealBeamController>();
+                            hbc.healRate = healRate;
+                            hbc.target = self.target;
+                            hbc.ownership.ownerObject = option.gameObject;
+                            NetworkServer.Spawn(gameObject);
+                        }
+                        else ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: self.target is null.");
                     }
+                    else ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: transform is null.");
                 }
-            });
+                else ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: Not a server. Cancel.");
+            }, false);
         }
 
         private void HealBeam_OnExit(On.EntityStates.Drone.DroneWeapon.HealBeam.orig_OnExit orig, HealBeam self)
@@ -249,9 +258,10 @@ namespace Chen.ClassicItems
                 OptionBehavior behavior = option.GetComponent<OptionBehavior>();
                 if (behavior && behavior.healBeamController)
                 {
+                    ClassicItemsPlugin._logger.LogDebug("HealBeam_OnExit: Healing done.");
                     behavior.healBeamController.BreakServer();
                 }
-            });
+            }, false);
         }
 
         private void StartHealBeam_OnEnter(On.EntityStates.Drone.DroneWeapon.StartHealBeam.orig_OnEnter orig, StartHealBeam self)
@@ -280,7 +290,7 @@ namespace Chen.ClassicItems
                         }
                     }
                 }
-            });
+            }, false);
         }
 
         private void Flamethrower_OnExit(On.EntityStates.Mage.Weapon.Flamethrower.orig_OnExit orig, MageWeapon.Flamethrower self)
@@ -547,19 +557,20 @@ namespace Chen.ClassicItems
             }
         }
 
-        private void FireForAllMinions(BaseState self, Action<GameObject, GameObject> actionToRun)
+        private void FireForAllMinions(BaseState self, Action<GameObject, GameObject> actionToRun, bool needTarget = true)
         {
             OptionTracker optionTracker = self.characterBody.GetComponent<OptionTracker>();
-            if (optionTracker)
+            if (!optionTracker) return;
+
+            GameObject target = null;
+            if (needTarget)
             {
-                GameObject target = self.characterBody.master.gameObject.GetComponent<BaseAI>().currentEnemy.gameObject;
-                if (target)
-                {
-                    foreach (GameObject option in optionTracker.existingOptions)
-                    {
-                        actionToRun(option, target);
-                    }
-                }
+                target = self.characterBody.master.gameObject.GetComponent<BaseAI>().currentEnemy.gameObject;
+                if (!target) return;
+            }
+            foreach (GameObject option in optionTracker.existingOptions)
+            {
+                actionToRun(option, target);
             }
         }
 
