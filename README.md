@@ -34,6 +34,10 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
 
+**1.0.2**
+- Fix the Drones with Options hard crashing the game when entering bazaar.
+- Fix the Options being duplicated when the player is revived in a stage by any means.
+
 **1.0.1**
 - Fix some random exceptions found in mines related to animations.
 - Add lore and better description for Gradius' Option.
