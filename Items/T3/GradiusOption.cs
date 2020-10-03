@@ -70,6 +70,7 @@ namespace Chen.ClassicItems
             "FlameDrone",
             "MegaDrone",
             "DroneMissile",
+            "MissileDrone",
             "Turret1"
         };
 
@@ -119,15 +120,22 @@ namespace Chen.ClassicItems
             if (result && FilterDrones(result.name) && NetworkServer.active)
             {
                 CharacterBody minionBody = result.GetBody();
-                CharacterBody masterBody = result.minionOwnership.ownerMaster.GetBody();
-                if (minionBody && masterBody)
+                CharacterMaster masterMaster = result.minionOwnership.ownerMaster;
+                if (minionBody && masterMaster)
                 {
-                    int currentCount = GetCount(masterBody);
-                    for (int t = 1; t <= currentCount; t++)
+                    OptionMasterTracker masterTracker = masterMaster.GetComponent<OptionMasterTracker>();
+                    if (masterTracker)
                     {
-                        SpawnOption(masterBody.gameObject, minionBody.gameObject, t);
+                        int currentCount = masterTracker.optionItemCount;
+                        for (int t = 1; t <= currentCount; t++)
+                        {
+                            SpawnOption(minionBody.gameObject, t);
+                        }
+                        ClassicItemsPlugin._logger.LogDebug("Option creation for new drone: Done and done.");
                     }
+                    else ClassicItemsPlugin._logger.LogDebug("Option creation for new drone: Skipped due to masterTracker being non-existent.");
                 }
+                else ClassicItemsPlugin._logger.LogDebug("Option creation for new drone: Skipped due to minionBody and masterMaster being null.");
             }
             return result;
         }
@@ -135,58 +143,68 @@ namespace Chen.ClassicItems
         private CharacterBody CharacterMaster_SpawnBody(On.RoR2.CharacterMaster.orig_SpawnBody orig, CharacterMaster self, GameObject bodyPrefab, Vector3 position, Quaternion rotation)
         {
             CharacterBody result = orig(self, bodyPrefab, position, rotation);
-            //if (result && FilterDrones(result.name) && self.minionOwnership && self.minionOwnership.ownerMaster)
-            //{
-            //    int currentCount = GetCount(result);
-            //    for (int t = 1; t <= currentCount; t++)
-            //    {
-            //        SpawnOption(self.minionOwnership.ownerMaster.GetBody().gameObject, self.GetBody().gameObject, t);
-            //    }
-            //}
+            if (result && FilterDrones(result.name) && self.minionOwnership)
+            {
+                CharacterMaster masterMaster = self.minionOwnership.ownerMaster;
+                if (masterMaster)
+                {
+                    OptionMasterTracker masterTracker = masterMaster.GetComponent<OptionMasterTracker>();
+                    if (masterTracker)
+                    {
+                        int currentCount = masterTracker.optionItemCount;
+                        for (int t = 1; t <= currentCount; t++)
+                        {
+                            SpawnOption(result.gameObject, t);
+                        }
+                    }
+                    else ClassicItemsPlugin._logger.LogDebug("SpawnBody: masterTracker is Null.");
+                }
+                else ClassicItemsPlugin._logger.LogDebug("SpawnBody: masterMaster is Null.");
+            }
             return result;
         }
 
         private void CharacterBody_OnInventoryChanged(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
         {
             orig(self);
-            if (self)
+            ClassicItemsPlugin._logger.LogDebug("OnInventoryChanged: Change detected, the CharacterBody self is present. Commencing.");
+            int newCount = GetCount(self);
+            if (self.master && newCount > 0)
             {
-                int newCount = GetCount(self);
-                if (self.master && newCount > 0)
+                GameObject masterObject = self.master.gameObject;
+                OptionMasterTracker masterTracker = masterObject.GetComponent<OptionMasterTracker>() ?? masterObject.AddComponent<OptionMasterTracker>();
+                int oldCount = masterTracker.optionItemCount;
+                int diff = newCount - oldCount;
+                masterTracker.optionItemCount = newCount;
+                if (diff > 0)
                 {
-                    GameObject gameObject = self.gameObject;
-                    OptionTracker optionTracker = gameObject.GetComponent<OptionTracker>() ?? gameObject.AddComponent<OptionTracker>();
-                    int oldCount = optionTracker.optionItemCount;
-
-                    if (newCount - oldCount > 0)
+                    ClassicItemsPlugin._logger.LogDebug("OnInventoryChanged: Spawning Options.");
+                    LoopAllMinionOwnerships(self.master, (minion) =>
                     {
-                        ClassicItemsPlugin._logger.LogDebug("Spawning.");
-                        LoopAllMinionOwnerships(self.master, (minion) =>
+                        ClassicItemsPlugin._logger.LogDebug($"OnInventoryChanged: Looping... OldCount: {oldCount}, NewCount: {newCount}");
+                        for (int t = oldCount + 1; t <= newCount; t++)
                         {
-                            ClassicItemsPlugin._logger.LogDebug($"Looping... OldCount: {oldCount}, NewCount: {newCount}");
-                            for (int t = oldCount + 1; t <= newCount; t++)
-                            {
-                                SpawnOption(gameObject, minion, t);
-                            }
-                        });
-                    }
-                    else if (newCount - oldCount < 0)
+                            SpawnOption(minion, t);
+                        }
+                    });
+                }
+                else if (diff < 0)
+                {
+                    ClassicItemsPlugin._logger.LogDebug("OnInventoryChanged: Destroying Options.");
+                    LoopAllMinionOwnerships(self.master, (minion) =>
                     {
-                        ClassicItemsPlugin._logger.LogDebug("Destroying.");
-                        LoopAllMinionOwnerships(self.master, (minion) =>
+                        OptionTracker minionOptionTracker = minion.GetComponent<OptionTracker>();
+                        if (minionOptionTracker)
                         {
-                            OptionTracker minionOptionTracker = minion.GetComponent<OptionTracker>();
-                            if (minionOptionTracker)
+                            for (int t = oldCount; t > newCount; t--)
                             {
-                                for (int t = oldCount; t > newCount; t--)
-                                {
-                                    DestroyOption(minionOptionTracker, t);
-                                }
+                                DestroyOption(minionOptionTracker, t);
                             }
-                        });
-                    }
+                        }
+                    });
                 }
             }
+            else ClassicItemsPlugin._logger.LogDebug("OnInventoryChanged: No Gradius' Option items possessed, or CharacterMaster of self does not exist. Cancelling.");
         }
 
         private void HealBeam_OnEnter(On.EntityStates.Drone.DroneWeapon.HealBeam.orig_OnEnter orig, HealBeam self)
@@ -195,7 +213,6 @@ namespace Chen.ClassicItems
             FireForAllMinions(self, (option, target) =>
             {
                 float healRate = (HealBeam.healCoefficient * self.damageStat / self.duration) * damageMultiplier;
-                Ray aimRay = self.GetAimRay();
                 Transform transform = option.transform;
                 if (NetworkServer.active)
                 {
@@ -534,23 +551,20 @@ namespace Chen.ClassicItems
             }
         }
 
-        private void SpawnOption(GameObject master, GameObject owner, int itemCount)
+        private void SpawnOption(GameObject owner, int itemCount)
         {
-            OptionTracker masterOptionTracker = master.GetComponent<OptionTracker>() ?? master.AddComponent<OptionTracker>();
             OptionTracker ownerOptionTracker = owner.GetComponent<OptionTracker>() ?? owner.AddComponent<OptionTracker>();
-            masterOptionTracker.optionItemCount = ownerOptionTracker.optionItemCount = itemCount;
             GameObject option = Object.Instantiate(ClassicItemsPlugin.gradiusOptionPrefab, owner.transform.position, owner.transform.rotation);
             OptionBehavior behavior = option.GetComponent<OptionBehavior>();
             behavior.owner = owner;
-            behavior.master = master;
-            behavior.numbering = ownerOptionTracker.optionItemCount;
+            behavior.numbering = itemCount;
             ownerOptionTracker.existingOptions.Add(option);
             NetworkServer.Spawn(option);
         }
 
         private void DestroyOption(OptionTracker optionTracker, int optionNumber)
         {
-            int index = optionTracker.optionItemCount = optionNumber - 1;
+            int index = optionNumber - 1;
             GameObject option = optionTracker.existingOptions[index];
             NetworkServer.Destroy(option);
             optionTracker.existingOptions.RemoveAt(index);
@@ -563,7 +577,6 @@ namespace Chen.ClassicItems
     public class OptionBehavior : MonoBehaviour
     {
         public GameObject owner;
-        public GameObject master;
         public int numbering = 0;
         public GameObject flamethrower;
         public HealBeamController healBeamController;
@@ -588,13 +601,22 @@ namespace Chen.ClassicItems
                     t.position = ot.flightPath[numbering * ot.distanceInterval - 1];
                     gameObject.transform.rotation = owner.transform.rotation;
                 }
+                else
+                {
+                    ClassicItemsPlugin._logger.LogDebug($"OptionBehavior.Update: Lost owner or ot. Destroying this option.");
+                    if (NetworkServer.active)
+                    {
+                        NetworkServer.Destroy(gameObject);
+                        Destroy(gameObject);
+                    }
+                }
             }
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
-            if (init && owner && master)
+            if (init && owner)
             {
                 init = false;
                 ot = owner.GetComponent<OptionTracker>();
@@ -607,7 +629,10 @@ namespace Chen.ClassicItems
         public List<Vector3> flightPath { get; private set; } = new List<Vector3>();
         public List<GameObject> existingOptions { get; private set; } = new List<GameObject>();
         public int distanceInterval { get; private set; } = 20;
-        public int optionItemCount = 0;
+        public CharacterMaster masterCharacterMaster { get; private set; }
+        public OptionMasterTracker masterOptionTracker { get; private set; }
+        public CharacterMaster characterMaster { get; private set; }
+        public CharacterBody characterBody { get; private set; }
 
         private Vector3 previousPosition = new Vector3();
         private bool init = true;
@@ -624,12 +649,12 @@ namespace Chen.ClassicItems
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Update()
         {
-            if (!init)
+            if (!init && masterOptionTracker)
             {
                 if (previousPosition != t.position)
                 {
                     flightPath.Insert(0, t.position);
-                    if (flightPath.Count > optionItemCount * distanceInterval)
+                    if (flightPath.Count > masterOptionTracker.optionItemCount * distanceInterval)
                     {
                         flightPath.RemoveAt(flightPath.Count - 1);
                     }
@@ -641,22 +666,43 @@ namespace Chen.ClassicItems
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
-            if (init && optionItemCount > 0)
+            if (!masterOptionTracker)
+            {
+                characterBody = gameObject.GetComponent<CharacterBody>();
+                if (characterBody)
+                {
+                    characterMaster = characterBody.master;
+                    if (characterMaster)
+                    {
+                        masterCharacterMaster = characterMaster.minionOwnership.ownerMaster;
+                        if (masterCharacterMaster)
+                        {
+                            masterOptionTracker = masterCharacterMaster.gameObject.GetComponent<OptionMasterTracker>();
+                            if (masterOptionTracker) ClassicItemsPlugin._logger.LogDebug("In Initialization of OptionTracker: masterOptionTracker is set.");
+                            else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: masterOptionTracker is NULL.");
+                        }
+                        else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: masterCharacterMaster does not exist!");
+                    }
+                    else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: characterMaster does not exist!");
+                }
+                else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: characterBody does not exist!");
+            }
+            if (init && masterOptionTracker.optionItemCount > 0)
             {
                 init = false;
                 previousPosition = t.position;
                 ManageFlightPath(1);
             }
-            else if (!init && optionItemCount > 0)
+            else if (!init && masterOptionTracker.optionItemCount > 0)
             {
-                int diff = optionItemCount - previousOptionItemCount;
+                int diff = masterOptionTracker.optionItemCount - previousOptionItemCount;
                 if (diff > 0 || diff < 0)
                 {
-                    previousOptionItemCount = optionItemCount;
+                    previousOptionItemCount = masterOptionTracker.optionItemCount;
                     ManageFlightPath(diff);
                 }
             }
-            else if (!init && optionItemCount <= 0)
+            else if (!init && masterOptionTracker.optionItemCount <= 0)
             {
                 init = true;
                 flightPath.Clear();
@@ -666,23 +712,31 @@ namespace Chen.ClassicItems
 
         private void ManageFlightPath(int difference)
         {
+            ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: difference is {difference}");
+            int flightPathCap = masterOptionTracker.optionItemCount * distanceInterval;
+            ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: Pre-computed flightPathCap = {flightPathCap}");
             if (difference > 0)
             {
-                int flightPathCap = optionItemCount * distanceInterval;
                 while (flightPath.Count < flightPathCap)
                 {
-                    flightPath.Add(previousPosition);
+                    ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: Inserting entry!");
+                    flightPath.Add(t.position);
                 }
             }
             else if (difference < 0)
             {
-                int flightPathCap = optionItemCount * distanceInterval;
                 while (flightPath.Count >= flightPathCap)
                 {
+                    ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: Removing entry.");
                     flightPath.RemoveAt(flightPath.Count - 1);
                 }
             }
         }
+    }
+
+    public class OptionMasterTracker : MonoBehaviour
+    {
+        public int optionItemCount = 0;
     }
 
     public class Flicker : MonoBehaviour
