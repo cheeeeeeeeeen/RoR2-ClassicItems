@@ -166,6 +166,7 @@ namespace Chen.ClassicItems
 
         private void CharacterBody_OnInventoryChanged(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
         {
+            // This hook runs on Client and on Server
             orig(self);
             ClassicItemsPlugin._logger.LogDebug("OnInventoryChanged: Change detected, the CharacterBody self is present. Commencing.");
             int newCount = GetCount(self);
@@ -559,14 +560,12 @@ namespace Chen.ClassicItems
             behavior.owner = owner;
             behavior.numbering = itemCount;
             ownerOptionTracker.existingOptions.Add(option);
-            NetworkServer.Spawn(option);
         }
 
         private void DestroyOption(OptionTracker optionTracker, int optionNumber)
         {
             int index = optionNumber - 1;
             GameObject option = optionTracker.existingOptions[index];
-            NetworkServer.Destroy(option);
             optionTracker.existingOptions.RemoveAt(index);
             Object.Destroy(option);
         }
