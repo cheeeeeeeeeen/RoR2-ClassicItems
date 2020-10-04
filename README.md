@@ -37,6 +37,12 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 **1.0.2**
 - Fix the Drones with Options hard crashing the game when entering bazaar.
 - Fix the Options being duplicated when the player is revived in a stage by any means.
+- Fix Multiplayer desync issues regarding the Option Spawning upon item pickup of Gradius' Option.
+- Implement a queueing system for syncing to lessen desync and lessen bandwidth usage.
+- Improve the code by letting linear behavior into client sided execution to lessen bandwidth usage.
+- Allow destruction of Options upon losing the owner.
+- Fix the flamethrower effect of Options to sync in multiplayer.
+- Add a config for sync time to allow Options to behave properly in Multiplayer at the cost of delay through the queueing system.
 
 **1.0.1**
 - Fix some random exceptions found in mines related to animations.
