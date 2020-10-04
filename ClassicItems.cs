@@ -1,4 +1,4 @@
-﻿#define DEBUG
+﻿#undef DEBUG
 
 using BepInEx;
 using BepInEx.Configuration;
@@ -56,6 +56,7 @@ namespace Chen.ClassicItems
         public static DotController.DotIndex footPoisonDot;
         public static GameObject instantMinePrefab;
         public static GameObject gradiusOptionPrefab;
+        public static GameObject flamethrowerEffectPrefab;
 
         public bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
 
@@ -196,6 +197,8 @@ namespace Chen.ClassicItems
             instantMinePrefab = engiMinePrefab.InstantiateClone("InstantMine");
             Destroy(instantMinePrefab.GetComponent<ProjectileDeployToOwner>());
 
+            flamethrowerEffectPrefab = Resources.Load<GameObject>("prefabs/effects/DroneFlamethrowerEffect");
+
             Logger.LogDebug("Registering buffs...");
 
             var poisonBuffDef = new CustomBuff(new BuffDef
@@ -229,6 +232,7 @@ namespace Chen.ClassicItems
             Logger.LogDebug("Registering custom network messages...");
 
             NetworkingAPI.RegisterMessageType<SpawnOptionsForClients>();
+            NetworkingAPI.RegisterMessageType<SyncFlamethrowerEffectForClients>();
 
             Logger.LogDebug("Initial setup done!");
         }

@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using static Chen.ClassicItems.SyncFlamethrowerEffectForClients;
 
 namespace Chen.ClassicItems
 {
@@ -39,11 +40,7 @@ namespace Chen.ClassicItems
                 else
                 {
                     ClassicItemsPlugin._logger.LogDebug($"OptionBehavior.Update: Lost owner or ot. Destroying this option.");
-                    if (NetworkServer.active)
-                    {
-                        NetworkServer.Destroy(gameObject);
-                        Destroy(gameObject);
-                    }
+                    Destroy(gameObject);
                 }
             }
         }
@@ -68,6 +65,8 @@ namespace Chen.ClassicItems
         public OptionMasterTracker masterOptionTracker { get; private set; }
         public CharacterMaster characterMaster { get; private set; }
         public CharacterBody characterBody { get; private set; }
+        public List<Tuple<MessageType, NetworkInstanceId, short, float, Vector3>> flamethrowerEffectNetIds { get; private set; } =
+            new List<Tuple<MessageType, NetworkInstanceId, short, float, Vector3>>();
 
         private Vector3 previousPosition = new Vector3();
         private bool init = true;
@@ -143,6 +142,29 @@ namespace Chen.ClassicItems
                 flightPath.Clear();
                 previousOptionItemCount = 0;
             }
+            SyncFlamethrowerEffects();
+        }
+
+        private void SyncFlamethrowerEffects()
+        {
+            if (NetworkServer.active && flamethrowerEffectNetIds.Count > 0)
+            {
+                ClassicItemsPlugin._logger.LogDebug($"Server Sync Attempt: New flamethrowerEffectNetIds found. Trying to sync.");
+                for (int i = 0; i < flamethrowerEffectNetIds.Count;)
+                {
+                    StartCoroutine(QueueSending(flamethrowerEffectNetIds[i].Item1, flamethrowerEffectNetIds[i].Item2,
+                                                flamethrowerEffectNetIds[i].Item3, flamethrowerEffectNetIds[i].Item4,
+                                                flamethrowerEffectNetIds[i].Item5));
+                    flamethrowerEffectNetIds.RemoveAt(i);
+                }
+            }
+        }
+
+        private IEnumerator QueueSending(MessageType createOrDestroy, NetworkInstanceId netId, short numbering, float duration, Vector3 direction)
+        {
+            yield return new WaitForSeconds(GradiusOption.instance.syncSeconds);
+            new SyncFlamethrowerEffectForClients(createOrDestroy, netId, numbering, duration, direction).Send(NetworkDestination.Clients);
+            ClassicItemsPlugin._logger.LogDebug($"Server Sync Attempt: Sent data <{createOrDestroy}, {netId}, {numbering}> (flamethrower effect)");
         }
 
         private void ManageFlightPath(int difference)
@@ -168,16 +190,15 @@ namespace Chen.ClassicItems
             }
         }
 
-        public static OptionTracker GetOrCreateComponent(GameObject me, int interval = 20)
+        public static OptionTracker GetOrCreateComponent(GameObject me)
         {
             OptionTracker tracker = me.GetComponent<OptionTracker>() ?? me.AddComponent<OptionTracker>();
-            tracker.distanceInterval = interval;
             return tracker;
         }
 
-        public static OptionTracker GetOrCreateComponent(CharacterBody me, int interval = 20)
+        public static OptionTracker GetOrCreateComponent(CharacterBody me)
         {
-            return GetOrCreateComponent(me.gameObject, interval);
+            return GetOrCreateComponent(me.gameObject);
         }
     }
 
@@ -185,8 +206,6 @@ namespace Chen.ClassicItems
     {
         public int optionItemCount = 0;
         public List<Tuple<NetworkInstanceId, short, bool>> netIds { get; private set; } = new List<Tuple<NetworkInstanceId, short, bool>>();
-
-        private float syncSeconds = 1f;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
@@ -204,26 +223,25 @@ namespace Chen.ClassicItems
 
         private IEnumerator QueueSending(NetworkInstanceId netId, short numbering, bool bodyOrMaster)
         {
-            yield return new WaitForSeconds(syncSeconds);
+            yield return new WaitForSeconds(GradiusOption.instance.syncSeconds);
             new SpawnOptionsForClients(netId, numbering, bodyOrMaster).Send(NetworkDestination.Clients);
-            ClassicItemsPlugin._logger.LogDebug($"Server Sync Attempt: Sent data <{netId}, {numbering}, {bodyOrMaster}>");
+            ClassicItemsPlugin._logger.LogDebug($"Server Sync Attempt: Sent data <{netId}, {numbering}, {bodyOrMaster}> (option spawn)");
         }
 
-        public static OptionMasterTracker GetOrCreateComponent(CharacterMaster me, float syncSeconds = 1f)
+        public static OptionMasterTracker GetOrCreateComponent(CharacterMaster me)
         {
-            return GetOrCreateComponent(me.gameObject, syncSeconds);
+            return GetOrCreateComponent(me.gameObject);
         }
 
-        public static OptionMasterTracker GetOrCreateComponent(GameObject me, float syncSeconds = 1f)
+        public static OptionMasterTracker GetOrCreateComponent(GameObject me)
         {
             OptionMasterTracker tracker = me.GetComponent<OptionMasterTracker>() ?? me.AddComponent<OptionMasterTracker>();
-            tracker.syncSeconds = syncSeconds;
             return tracker;
         }
 
-        public static void SpawnOption(GameObject owner, int itemCount, int interval = 20)
+        public static void SpawnOption(GameObject owner, int itemCount)
         {
-            OptionTracker ownerOptionTracker = OptionTracker.GetOrCreateComponent(owner, interval);
+            OptionTracker ownerOptionTracker = OptionTracker.GetOrCreateComponent(owner);
             GameObject option = Instantiate(ClassicItemsPlugin.gradiusOptionPrefab, owner.transform.position, owner.transform.rotation);
             OptionBehavior behavior = option.GetComponent<OptionBehavior>();
             behavior.owner = owner;

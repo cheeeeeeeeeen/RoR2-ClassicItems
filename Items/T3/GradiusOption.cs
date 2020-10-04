@@ -1,7 +1,5 @@
 ﻿using EntityStates;
 using EntityStates.Drone.DroneWeapon;
-using R2API.Networking;
-using R2API.Networking.Interfaces;
 using RoR2;
 using RoR2.CharacterAI;
 using RoR2.Projectile;
@@ -11,6 +9,7 @@ using System.Collections.ObjectModel;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
+using static Chen.ClassicItems.SyncFlamethrowerEffectForClients;
 using static TILER2.MiscUtil;
 using MageWeapon = EntityStates.Mage.Weapon;
 using Object = UnityEngine.Object;
@@ -28,22 +27,26 @@ namespace Chen.ClassicItems
         public float damageMultiplier { get; private set; } = 1f;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Set to true for Options/Multiples of Flame Drones to generate a flamethrower sound. WARNING: Turning this on may cause earrape.", AutoItemConfigFlags.None)]
+        [AutoItemConfig("Set to true for Options/Multiples of Flame Drones to generate a flamethrower sound. Client only. WARNING: Turning this on may cause earrape.",
+                        AutoItemConfigFlags.None)]
         public bool flamethrowerSoundCopy { get; private set; } = false;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Set to true for Options/Multiples of Gatling Turrets to generate a firing sound. WARNING: Turning this on may cause earrape.", AutoItemConfigFlags.None)]
+        [AutoItemConfig("Set to true for Options/Multiples of Gatling Turrets to generate a firing sound. Client only. WARNING: Turning this on may cause earrape.",
+                        AutoItemConfigFlags.None)]
         public bool gatlingSoundCopy { get; private set; } = false;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Amount of time in seconds for server to send Option data to clients. Increase this if the Options are not appearing on clients. DO NOT SET TO 0.", 
+        [AutoItemConfig("Amount of time in seconds for server to send Option data to clients. Increase this if the Options are not appearing on clients. " +
+                        "Option Effects such as flamethrower effects of Options are also affected by this setting. Server only.", 
                         AutoItemConfigFlags.None, 0f, float.MaxValue)]
-        public float syncSeconds { get; private set; } = 1f;
+        public float syncSeconds { get; private set; } = 0f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("The distance between each Option when following the flight path. Higher value means farther trails (and possibly more processing power needed).",
-                        AutoItemConfigFlags.None, 1, int.MaxValue)]
-        public int distanceInterval { get; private set; } = 20;
+        //[AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        //[AutoItemConfig("The distance between each Option when following the flight path. Higher value means farther trails (and possibly more processing power needed). " +
+        //                "THIS SETTING IS NOT SYNCED THROUGH CLIENTS, SO BE SURE TO HAVE THE SAME VALUE AS THE SERVER.",
+        //                AutoItemConfigFlags.None, 1, int.MaxValue)]
+        //public static int distanceInterval { get; private set; } = 20;
 
         public override bool itemAIB { get; protected set; } = true;
 
@@ -71,7 +74,7 @@ namespace Chen.ClassicItems
             "\"That's it. That's the audio log that went with this lifeless computer.\"\n\n" +
             "\"Our engineer will be able to do something about it. It sounds really useful. Quickly, now. Off you go.\"";
 
-        private static List<string> DronesList = new List<string>
+        private static readonly List<string> DronesList = new List<string>
         {
             "BackupDrone",
             "BackupDroneOld",
@@ -161,7 +164,7 @@ namespace Chen.ClassicItems
                 CharacterMaster masterMaster = self.minionOwnership.ownerMaster;
                 if (masterMaster)
                 {
-                    OptionMasterTracker masterTracker = OptionMasterTracker.GetOrCreateComponent(masterMaster, syncSeconds);
+                    OptionMasterTracker masterTracker = OptionMasterTracker.GetOrCreateComponent(masterMaster);
                     int currentCount = masterTracker.optionItemCount;
                     NetworkInstanceId characterBodyObjectNetId = result.gameObject.GetComponent<NetworkIdentity>().netId;
                     for (int t = 1; t <= currentCount; t++)
@@ -184,7 +187,7 @@ namespace Chen.ClassicItems
             if (self.master && newCount > 0)
             {
                 GameObject masterObject = self.master.gameObject;
-                OptionMasterTracker masterTracker = OptionMasterTracker.GetOrCreateComponent(masterObject, syncSeconds);
+                OptionMasterTracker masterTracker = OptionMasterTracker.GetOrCreateComponent(masterObject);
                 int oldCount = masterTracker.optionItemCount;
                 int diff = newCount - oldCount;
                 masterTracker.optionItemCount = newCount;
@@ -223,30 +226,32 @@ namespace Chen.ClassicItems
         {
             ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: Healing Drone healing commence.");
             orig(self);
+            if (!NetworkServer.active)
+            {
+                ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: Not a server. Cancel.");
+                return;
+            }
             FireForAllMinions(self, (option, target) =>
             {
                 ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: Calculating heal values.");
                 float healRate = (HealBeam.healCoefficient * self.damageStat / self.duration) * damageMultiplier;
                 Transform transform = option.transform;
-                if (NetworkServer.active)
+                
+                if (transform)
                 {
-                    if (transform)
+                    if (self.target)
                     {
-                        if (self.target)
-                        {
-                            ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: Target acquired.");
-                            GameObject gameObject = Object.Instantiate(HealBeam.healBeamPrefab, transform);
-                            HealBeamController hbc = option.GetComponent<OptionBehavior>().healBeamController = gameObject.GetComponent<HealBeamController>();
-                            hbc.healRate = healRate;
-                            hbc.target = self.target;
-                            hbc.ownership.ownerObject = option.gameObject;
-                            NetworkServer.Spawn(gameObject);
-                        }
-                        else ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: self.target is null.");
+                        ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: Target acquired.");
+                        GameObject gameObject = Object.Instantiate(HealBeam.healBeamPrefab, transform);
+                        HealBeamController hbc = option.GetComponent<OptionBehavior>().healBeamController = gameObject.GetComponent<HealBeamController>();
+                        hbc.healRate = healRate;
+                        hbc.target = self.target;
+                        hbc.ownership.ownerObject = option.gameObject;
+                        NetworkServer.Spawn(gameObject);
                     }
-                    else ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: transform is null.");
+                    else ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: self.target is null.");
                 }
-                else ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: Not a server. Cancel.");
+                else ClassicItemsPlugin._logger.LogDebug("HealBeam_OnEnter: transform is null.");
             }, false);
         }
 
@@ -267,27 +272,29 @@ namespace Chen.ClassicItems
         private void StartHealBeam_OnEnter(On.EntityStates.Drone.DroneWeapon.StartHealBeam.orig_OnEnter orig, StartHealBeam self)
         {
             orig(self);
+            if (!NetworkServer.active)
+            {
+                ClassicItemsPlugin._logger.LogDebug("StartHealBeam_OnEnter: Not a server. Cancel.");
+                return;
+            }
             FireForAllMinions(self, (option, target) =>
             {
-                if (NetworkServer.active)
+                if (HealBeamController.GetHealBeamCountForOwner(self.gameObject) >= self.maxSimultaneousBeams)
                 {
-                    if (HealBeamController.GetHealBeamCountForOwner(self.gameObject) >= self.maxSimultaneousBeams)
+                    return;
+                }
+                if (self.targetHurtBox)
+                {
+                    Transform transform = option.transform;
+                    if (transform)
                     {
-                        return;
-                    }
-                    if (self.targetHurtBox)
-                    {
-                        Transform transform = option.transform;
-                        if (transform)
-                        {
-                            GameObject gameObject = Object.Instantiate(self.healBeamPrefab, transform);
-                            HealBeamController hbc = option.GetComponent<OptionBehavior>().healBeamController = gameObject.GetComponent<HealBeamController>();
-                            hbc.healRate = self.healRateCoefficient * self.damageStat * self.attackSpeedStat * damageMultiplier;
-                            hbc.target = self.targetHurtBox;
-                            hbc.ownership.ownerObject = option.gameObject;
-                            gameObject.AddComponent<DestroyOnTimer>().duration = self.duration;
-                            NetworkServer.Spawn(gameObject);
-                        }
+                        GameObject gameObject = Object.Instantiate(self.healBeamPrefab, transform);
+                        HealBeamController hbc = option.GetComponent<OptionBehavior>().healBeamController = gameObject.GetComponent<HealBeamController>();
+                        hbc.healRate = self.healRateCoefficient * self.damageStat * self.attackSpeedStat * damageMultiplier;
+                        hbc.target = self.targetHurtBox;
+                        hbc.ownership.ownerObject = option.gameObject;
+                        gameObject.AddComponent<DestroyOnTimer>().duration = self.duration;
+                        NetworkServer.Spawn(gameObject);
                     }
                 }
             }, false);
@@ -305,6 +312,13 @@ namespace Chen.ClassicItems
                     if (behavior && behavior.flamethrower)
                     {
                         EntityState.Destroy(behavior.flamethrower);
+                        FlamethrowerSync(self, (networkIdentity, optionTracker) =>
+                        {
+                            optionTracker.flamethrowerEffectNetIds.Add(Tuple.Create(
+                                MessageType.Destroy, networkIdentity.netId, (short)behavior.numbering,
+                                0f, Vector3.zero
+                            ));
+                        });
                     }
                 });
             }
@@ -312,6 +326,7 @@ namespace Chen.ClassicItems
 
         private void Flamethrower_FixedUpdate(On.EntityStates.Mage.Weapon.Flamethrower.orig_FixedUpdate orig, MageWeapon.Flamethrower self)
         {
+            // This hook only runs in the server.
             bool oldBegunFlamethrower = self.hasBegunFlamethrower;
             orig(self);
             if (self.characterBody.name.Contains("FlameDrone") && self.characterBody.master.name.Contains("FlameDrone"))
@@ -329,11 +344,25 @@ namespace Chen.ClassicItems
                             if (flamethrowerSoundCopy) Util.PlaySound(MageWeapon.Flamethrower.startAttackSoundString, option);
                             behavior.flamethrower = Object.Instantiate(self.flamethrowerEffectPrefab, option.transform);
                             behavior.flamethrower.GetComponent<ScaleParticleSystemDuration>().newDuration = self.flamethrowerDuration;
+                            FlamethrowerSync(self, (networkIdentity, optionTracker) =>
+                            {
+                                optionTracker.flamethrowerEffectNetIds.Add(Tuple.Create(
+                                    MessageType.Create, networkIdentity.netId, (short)behavior.numbering,
+                                    self.flamethrowerDuration, Vector3.zero
+                                ));
+                            });
                         }
                     }
                     if (perMinionOldBegunFlamethrower)
                     {
                         behavior.flamethrower.transform.forward = direction;
+                        FlamethrowerSync(self, (networkIdentity, optionTracker) =>
+                        {
+                            optionTracker.flamethrowerEffectNetIds.Add(Tuple.Create(
+                                MessageType.Redirect, networkIdentity.netId, (short)behavior.numbering,
+                                0f, direction
+                            ));
+                        });
                     }
                 });
             }
@@ -510,8 +539,7 @@ namespace Chen.ClassicItems
                     float maxDistance = 1000f;
                     Vector3 forward = (target.transform.position - option.transform.position).normalized;
                     Vector3 position = option.transform.position;
-                    RaycastHit raycastHit;
-                    if (Physics.Raycast(position, forward, out raycastHit, maxDistance, LayerIndex.world.mask | LayerIndex.entityPrecise.mask))
+                    if (Physics.Raycast(position, forward, out RaycastHit raycastHit, maxDistance, LayerIndex.world.mask | LayerIndex.entityPrecise.mask))
                     {
                         forward = (raycastHit.point - position).normalized;
                     }
@@ -574,79 +602,19 @@ namespace Chen.ClassicItems
             }
         }
 
+        private void FlamethrowerSync(MageWeapon.Flamethrower self, Action<NetworkIdentity, OptionTracker> actionToRun)
+        {
+            NetworkIdentity networkIdentity = self.characterBody.gameObject.GetComponent<NetworkIdentity>();
+            if (networkIdentity)
+            {
+                ClassicItemsPlugin._logger.LogDebug($"FlamethrowerSync: Body GameObject netId = {networkIdentity.netId}");
+                OptionTracker tracker = self.characterBody.gameObject.GetComponent<OptionTracker>();
+                if (tracker) actionToRun(networkIdentity, tracker);
+                else ClassicItemsPlugin._logger.LogDebug($"FlamethrowerSync: optionTracker is null.");
+            }
+            else ClassicItemsPlugin._logger.LogDebug($"FlamethrowerSync: Body GameObject has no NetworkIdentity. That's bad news.");
+        }
+
         private bool FilterDrones(string name) => DronesList.Exists((item) => name.Contains(item));
-    }
-
-    public class SpawnOptionsForClients : INetMessage
-    {
-        private NetworkInstanceId ownerId;
-        private short numbering;
-        private bool bodyOrMaster;
-
-        public SpawnOptionsForClients()
-        {
-        }
-
-        public SpawnOptionsForClients(NetworkInstanceId ownerId, short numbering, bool bodyOrMaster)
-        {
-            this.ownerId = ownerId;
-            this.numbering = numbering;
-            this.bodyOrMaster = bodyOrMaster;
-        }
-
-        public void Serialize(NetworkWriter writer)
-        {
-            writer.Write(ownerId);
-            writer.Write(numbering);
-            writer.Write(bodyOrMaster);
-        }
-
-        public void Deserialize(NetworkReader reader)
-        {
-            ownerId = reader.ReadNetworkId();
-            numbering = reader.ReadInt16();
-            bodyOrMaster = reader.ReadBoolean();
-        }
-
-        public void OnReceived()
-        {
-            if (!NetworkServer.active)
-            {
-                ClassicItemsPlugin._logger.LogDebug($"SpawnOptionsForClients: Received a request to spawn options from server. ownerId = {ownerId}, numbering = {numbering}");
-                GameObject ownerObject = Util.FindNetworkObject(ownerId);
-                if (ownerObject)
-                {
-                    if (bodyOrMaster)
-                    {
-                        ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: BODY MODE - Getting CharacterBody...");
-                        TrySpawnOption(ownerObject.GetComponent<CharacterBody>());
-                    }
-                    else
-                    {
-                        ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: MASTER MODE - Getting CharacterMaster...");
-                        CharacterMaster ownerMaster = ownerObject.GetComponent<CharacterMaster>();
-                        if (ownerMaster)
-                        {
-                            ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Getting CharacterBody...");
-                            TrySpawnOption(ownerMaster.GetBody());
-                        }
-                        else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: ownerMaster is null.");
-                    }
-                }
-                else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: ownerObject is null.");
-            }
-            else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Host got this request. Skip.");
-        }
-
-        private void TrySpawnOption(CharacterBody ownerBody)
-        {
-            if (ownerBody)
-            {
-                ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Preparations complete. Firing SpawnOption method.");
-                OptionMasterTracker.SpawnOption(ownerBody.gameObject, numbering);
-                ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Option is good to go.");
-            }
-            else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: ownerBody is null.");
-        }
     }
 }
