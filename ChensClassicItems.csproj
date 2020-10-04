@@ -80,10 +80,11 @@
     <Folder Include="Items\T1\" />
     <Folder Include="Items\TBoss\" />
     <Folder Include="Items\TLunar\" />
+    <Folder Include="Build\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)NetworkWeaver&quot; /Y&#xD;&#xA;cd &quot;$(ProjectDir)NetworkWeaver&quot;&#xD;&#xA;Unity.UNetWeaver.exe &quot;..\lib\UnityEngine.CoreModule.dll&quot; &quot;..\lib\UnityEngine.Networking.dll&quot; &quot;Patched/&quot; &quot;$(TargetFileName)&quot; &quot;$(ProjectDir)lib&quot;&#xD;&#xA;&#xD;&#xA;xcopy &quot;$(ProjectDir)NetworkWeaver\Patched\$(TargetFileName)&quot; &quot;$(ProjectDir)Build\$(ProjectName)&quot; /Y&#xD;&#xA;xcopy &quot;$(ProjectDir)ModMeta&quot; &quot;$(ProjectDir)Build\$(ProjectName)&quot; /Y&#xD;&#xA;&#xD;&#xA;del &quot;$(ProjectDir)NetworkWeaver\Patched\$(TargetFileName)&quot;&#xD;&#xA;&#xD;&#xA;xcopy &quot;$(ProjectDir)bin\Debug\netstandard2.0\ChensClassicItems.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Risk of Rain 2\r2modman\BepInEx\plugins\Chen-ChensClassicItems\ChensClassicItems.dll&quot; /Y" />
+    <Exec Command="xcopy &quot;$(ProjectDir)bin\Debug\netstandard2.0\$(TargetFileName)&quot; &quot;$(ProjectDir)Build&quot; /Y&#xD;&#xA;&#xD;&#xA;xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)NetworkWeaver&quot; /Y&#xD;&#xA;cd &quot;$(ProjectDir)NetworkWeaver&quot;&#xD;&#xA;Unity.UNetWeaver.exe &quot;..\lib\UnityEngine.CoreModule.dll&quot; &quot;..\lib\UnityEngine.Networking.dll&quot; &quot;Patched/&quot; &quot;$(TargetFileName)&quot; &quot;$(ProjectDir)lib&quot;&#xD;&#xA;&#xD;&#xA;xcopy &quot;$(ProjectDir)NetworkWeaver\Patched\$(TargetFileName)&quot; &quot;$(ProjectDir)Build&quot; /Y&#xD;&#xA;xcopy &quot;$(ProjectDir)ModMeta&quot; &quot;$(ProjectDir)Build&quot; /Y&#xD;&#xA;xcopy &quot;$(ProjectDir)README.md&quot; &quot;$(ProjectDir)Build&quot; /Y&#xD;&#xA;del &quot;$(ProjectDir)NetworkWeaver\Patched\$(TargetFileName)&quot;&#xD;&#xA;&#xD;&#xA;cd &quot;$(ProjectDir)\Build&quot;&#xD;&#xA;del Build.zip&#xD;&#xA;7z a Build.zip .\* -x!Build.zip -x!old_*&#xD;&#xA;&#xD;&#xA;xcopy &quot;$(ProjectDir)Build\$(TargetFileName)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Risk of Rain 2\r2modman\BepInEx\plugins\Chen-ChensClassicItems&quot; /Y" />
   </Target>
 
   <ProjectExtensions><VisualStudio><UserProperties modmeta_4manifest_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
