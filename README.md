@@ -16,7 +16,7 @@ Use **r2modman** mod manager to install this mod.
 #### Equipment
 - [RoR1] Instant Minefield
 #### Tier 1
-- Coming soon!
+- [RoR1] Mortar Tube
 #### Tier 2
 - [RoR1] Dead Man's Foot
 - [RoR1] Panic Mines
@@ -33,6 +33,10 @@ Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
 GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
+
+**1.1.0**
+- Implement Mortar Tube!
+- Add more ItemStats details for all items.
 
 **1.0.3**
 - Add a condition where the host is required to wait for all clients to be ready before sending the sync commands. This ensures that all clients will be synced.

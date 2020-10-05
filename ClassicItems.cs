@@ -1,8 +1,7 @@
-﻿#define DEBUG
+﻿#undef DEBUG
 
 using BepInEx;
 using BepInEx.Configuration;
-using EntityStates.Drone.DroneWeapon;
 using R2API;
 using R2API.Networking;
 using R2API.Utils;
@@ -32,7 +31,7 @@ namespace Chen.ClassicItems
 #if DEBUG
             "0." +
 #endif
-            "1.0.3";
+            "1.1.0";
 
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";
