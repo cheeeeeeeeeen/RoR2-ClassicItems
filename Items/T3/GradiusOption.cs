@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
+using static Chen.ClassicItems.SpawnOptionsForClients;
 using static Chen.ClassicItems.SyncFlamethrowerEffectForClients;
 using static TILER2.MiscUtil;
 using MageWeapon = EntityStates.Mage.Weapon;
@@ -137,7 +138,7 @@ namespace Chen.ClassicItems
                     for (int t = 1; t <= currentCount; t++)
                     {
                         OptionMasterTracker.SpawnOption(result.gameObject, t);
-                        masterTracker.netIds.Add(Tuple.Create(characterBodyObjectNetId, (short)t, true));
+                        masterTracker.netIds.Add(Tuple.Create(GameObjectType.Body, characterBodyObjectNetId, (short)t));
                     }
                 }
             }

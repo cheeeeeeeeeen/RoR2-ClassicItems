@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using static Chen.ClassicItems.SpawnOptionsForClients;
 using static Chen.ClassicItems.SyncFlamethrowerEffectForClients;
 
 namespace Chen.ClassicItems
@@ -160,9 +161,16 @@ namespace Chen.ClassicItems
                 ClassicItemsPlugin._logger.LogMessage($"Server Flamethrower Effect Sync Attempt: New netIds found.");
                 for (int i = 0; i < flamethrowerEffectNetIds.Count;)
                 {
+                    //MessageType messageType = flamethrowerEffectNetIds[i].Item1;
+                    //NetworkInstanceId netId = flamethrowerEffectNetIds[i].Item2;
+                    //short numbering = flamethrowerEffectNetIds[i].Item3;
+                    //float duration = flamethrowerEffectNetIds[i].Item4;
+                    //Vector3 direction = flamethrowerEffectNetIds[i].Item5;
+                    //new SyncFlamethrowerEffectForClients(messageType, netId, numbering, duration, direction).Send(NetworkDestination.Clients);
                     StartCoroutine(QueueSending(flamethrowerEffectNetIds[i].Item1, flamethrowerEffectNetIds[i].Item2,
                                                 flamethrowerEffectNetIds[i].Item3, flamethrowerEffectNetIds[i].Item4,
                                                 flamethrowerEffectNetIds[i].Item5));
+                    //ClassicItemsPlugin._logger.LogMessage($"Server Flamethrower Effect Sync Attempt: Sent data <{messageType}, {netId}, {numbering}, {duration}, {direction}>");
                     flamethrowerEffectNetIds.RemoveAt(i);
                 }
             }
@@ -197,7 +205,7 @@ namespace Chen.ClassicItems
     public class OptionMasterTracker : MonoBehaviour
     {
         public int optionItemCount = 0;
-        public List<Tuple<NetworkInstanceId, short, bool>> netIds { get; private set; } = new List<Tuple<NetworkInstanceId, short, bool>>();
+        public List<Tuple<GameObjectType, NetworkInstanceId, short>> netIds { get; private set; } = new List<Tuple<GameObjectType, NetworkInstanceId, short>>();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
@@ -207,17 +215,22 @@ namespace Chen.ClassicItems
                 ClassicItemsPlugin._logger.LogMessage($"Server Option Spawn Sync Attempt: New netIds found.");
                 for (int i = 0; i < netIds.Count;)
                 {
+                    //GameObjectType bodyOrMaster = netIds[i].Item1;
+                    //NetworkInstanceId netId = netIds[i].Item2;
+                    //short numbering = netIds[i].Item3;
+                    //new SpawnOptionsForClients(bodyOrMaster, netId, numbering).Send(NetworkDestination.Clients);
                     StartCoroutine(QueueSending(netIds[i].Item1, netIds[i].Item2, netIds[i].Item3));
+                    //ClassicItemsPlugin._logger.LogDebug($"Server Option Spawn Sync Attempt: Sent data <{bodyOrMaster}, {netId}, {numbering}>");
                     netIds.RemoveAt(i);
                 }
             }
         }
 
-        private IEnumerator QueueSending(NetworkInstanceId netId, short numbering, bool bodyOrMaster)
+        private IEnumerator QueueSending(GameObjectType bodyOrMaster, NetworkInstanceId netId, short numbering)
         {
             yield return new WaitForSeconds(GradiusOption.instance.syncSeconds);
-            new SpawnOptionsForClients(netId, numbering, bodyOrMaster).Send(NetworkDestination.Clients);
-            ClassicItemsPlugin._logger.LogDebug($"Server Option Spawn Sync Attempt: Sent data <{netId}, {numbering}, {bodyOrMaster}>");
+            new SpawnOptionsForClients(bodyOrMaster, netId, numbering).Send(NetworkDestination.Clients);
+            ClassicItemsPlugin._logger.LogDebug($"Server Option Spawn Sync Attempt: Sent data <{bodyOrMaster}, {netId}, {numbering}>");
         }
 
         public static OptionMasterTracker GetOrCreateComponent(CharacterMaster me)

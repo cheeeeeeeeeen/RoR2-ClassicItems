@@ -9,33 +9,33 @@ namespace Chen.ClassicItems
 {
     public class SpawnOptionsForClients : INetMessage
     {
+        private GameObjectType bodyOrMaster;
         private NetworkInstanceId ownerId;
         private short numbering;
-        private bool bodyOrMaster;
 
         public SpawnOptionsForClients()
         {
         }
 
-        public SpawnOptionsForClients(NetworkInstanceId ownerId, short numbering, bool bodyOrMaster)
+        public SpawnOptionsForClients(GameObjectType bodyOrMaster, NetworkInstanceId ownerId, short numbering)
         {
+            this.bodyOrMaster = bodyOrMaster;
             this.ownerId = ownerId;
             this.numbering = numbering;
-            this.bodyOrMaster = bodyOrMaster;
         }
 
         public void Serialize(NetworkWriter writer)
         {
+            writer.Write((byte)bodyOrMaster);
             writer.Write(ownerId);
             writer.Write(numbering);
-            writer.Write(bodyOrMaster);
         }
 
         public void Deserialize(NetworkReader reader)
         {
+            bodyOrMaster = (GameObjectType)reader.ReadByte();
             ownerId = reader.ReadNetworkId();
             numbering = reader.ReadInt16();
-            bodyOrMaster = reader.ReadBoolean();
         }
 
         public void OnReceived()
@@ -52,16 +52,20 @@ namespace Chen.ClassicItems
                 ClassicItemsPlugin._logger.LogWarning("SpawnOptionsForClients: ownerObject is null.");
                 return;
             }
-            if (bodyOrMaster) TrySpawnOption(ownerObject.GetComponent<CharacterBody>());
-            else
+            switch (bodyOrMaster)
             {
-                CharacterMaster ownerMaster = ownerObject.GetComponent<CharacterMaster>();
-                if (!ownerMaster)
-                {
-                    ClassicItemsPlugin._logger.LogWarning("SpawnOptionsForClients: ownerMaster is null.");
-                    return;
-                }
-                TrySpawnOption(ownerMaster.GetBody());
+                case GameObjectType.Body:
+                    TrySpawnOption(ownerObject.GetComponent<CharacterBody>());
+                    break;
+                case GameObjectType.Master:
+                    CharacterMaster ownerMaster = ownerObject.GetComponent<CharacterMaster>();
+                    if (!ownerMaster)
+                    {
+                        ClassicItemsPlugin._logger.LogWarning("SpawnOptionsForClients: ownerMaster is null.");
+                        return;
+                    }
+                    TrySpawnOption(ownerMaster.GetBody());
+                    break;
             }
         }
 
@@ -74,6 +78,12 @@ namespace Chen.ClassicItems
             }
             OptionMasterTracker.SpawnOption(ownerBody.gameObject, numbering);
             ClassicItemsPlugin._logger.LogMessage("SpawnOptionsForClients: Option is good to go.");
+        }
+
+        public enum GameObjectType : byte
+        {
+            Master,
+            Body
         }
     }
 
