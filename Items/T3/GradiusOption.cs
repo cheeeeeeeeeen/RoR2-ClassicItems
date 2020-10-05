@@ -87,6 +87,18 @@ namespace Chen.ClassicItems
 
         public GradiusOption()
         {
+            onBehav += () =>
+            {
+                if (Compat_ItemStats.enabled)
+                {
+                    Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
+                        ((count, inv, master) => { return count; },
+                        (value, inv, master) => { return $"Options per Drone: {value}"; }),
+                        ((count, inv, master) => { return damageMultiplier; },
+                        (value, inv, master) => { return $"Damage: {Pct(value, 0)}"; })
+                    );
+                }
+            };
         }
 
         protected override void LoadBehavior()
