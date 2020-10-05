@@ -34,6 +34,11 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
 
+**1.0.3**
+- Add a condition where the host is required to wait for all clients to be ready before sending the sync commands. This ensures that all clients will be synced.
+- Remove a bunch of logs that are otherwise useless. Retained only some that may still cause bugs to help in bug reports.
+- Improve code.
+
 **1.0.2**
 - Fix the Drones with Options hard crashing the game when entering bazaar.
 - Fix the Options being duplicated when the player is revived in a stage by any means.
