@@ -72,12 +72,12 @@ namespace Chen.ClassicItems
                 if (Compat_ItemStats.enabled)
                 {
                     Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
-                        ((count, inv, master) =>
-                        {
-                            return baseDmg + (count - 1) * stackDmg;
-                        },
-                        (value, inv, master) => { return $"Poison Damage/Second: {Pct(value, 1)}"; }
-                    ));
+                        ((count, inv, master) => { return baseDmg + (count - 1) * stackDmg; },
+                        (value, inv, master) => { return $"Poison Damage/Second: {Pct(value, 1)}"; }),
+                        ((count, inv, master) => { return baseTicks + (count - 1) * stackTicks; },
+                        (value, inv, master) => { return $"Duration: {value} seconds"; }
+                    )
+                    );
                 }
             };
         }
