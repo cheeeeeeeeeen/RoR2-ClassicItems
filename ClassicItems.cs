@@ -1,7 +1,8 @@
-﻿#undef DEBUG
+﻿#define DEBUG
 
 using BepInEx;
 using BepInEx.Configuration;
+using EntityStates.Drone.DroneWeapon;
 using R2API;
 using R2API.Networking;
 using R2API.Utils;
@@ -57,6 +58,7 @@ namespace Chen.ClassicItems
         public static GameObject instantMinePrefab;
         public static GameObject gradiusOptionPrefab;
         public static GameObject flamethrowerEffectPrefab;
+        public static GameObject mortarPrefab;
 
         public bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
 
@@ -198,6 +200,10 @@ namespace Chen.ClassicItems
             Destroy(instantMinePrefab.GetComponent<ProjectileDeployToOwner>());
 
             flamethrowerEffectPrefab = Resources.Load<GameObject>("prefabs/effects/DroneFlamethrowerEffect");
+
+            GameObject paladinRocket = Resources.Load<GameObject>("prefabs/projectiles/PaladinRocket");
+            mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile");
+            mortarPrefab.AddComponent<MortarGravity>();
 
             Logger.LogDebug("Registering buffs...");
 
