@@ -40,43 +40,40 @@ namespace Chen.ClassicItems
 
         public void OnReceived()
         {
-            if (!NetworkServer.active)
+            if (NetworkServer.active)
             {
-                ClassicItemsPlugin._logger.LogDebug($"SpawnOptionsForClients: Received a request to spawn options from server. ownerId = {ownerId}, numbering = {numbering}");
-                GameObject ownerObject = Util.FindNetworkObject(ownerId);
-                if (ownerObject)
-                {
-                    if (bodyOrMaster)
-                    {
-                        ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: BODY MODE - Getting CharacterBody...");
-                        TrySpawnOption(ownerObject.GetComponent<CharacterBody>());
-                    }
-                    else
-                    {
-                        ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: MASTER MODE - Getting CharacterMaster...");
-                        CharacterMaster ownerMaster = ownerObject.GetComponent<CharacterMaster>();
-                        if (ownerMaster)
-                        {
-                            ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Getting CharacterBody...");
-                            TrySpawnOption(ownerMaster.GetBody());
-                        }
-                        else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: ownerMaster is null.");
-                    }
-                }
-                else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: ownerObject is null.");
+                ClassicItemsPlugin._logger.LogMessage("SpawnOptionsForClients: Host got this request. Skip.");
+                return;
             }
-            else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Host got this request. Skip.");
+            ClassicItemsPlugin._logger.LogMessage($"SpawnOptionsForClients: Received a request to spawn options from server. ownerId = {ownerId}, numbering = {numbering}");
+            GameObject ownerObject = Util.FindNetworkObject(ownerId);
+            if (!ownerObject)
+            {
+                ClassicItemsPlugin._logger.LogWarning("SpawnOptionsForClients: ownerObject is null.");
+                return;
+            }
+            if (bodyOrMaster) TrySpawnOption(ownerObject.GetComponent<CharacterBody>());
+            else
+            {
+                CharacterMaster ownerMaster = ownerObject.GetComponent<CharacterMaster>();
+                if (!ownerMaster)
+                {
+                    ClassicItemsPlugin._logger.LogWarning("SpawnOptionsForClients: ownerMaster is null.");
+                    return;
+                }
+                TrySpawnOption(ownerMaster.GetBody());
+            }
         }
 
         private void TrySpawnOption(CharacterBody ownerBody)
         {
-            if (ownerBody)
+            if (!ownerBody)
             {
-                ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Preparations complete. Firing SpawnOption method.");
-                OptionMasterTracker.SpawnOption(ownerBody.gameObject, numbering);
-                ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: Option is good to go.");
+                ClassicItemsPlugin._logger.LogWarning("SpawnOptionsForClients: ownerBody is null.");
+                return;
             }
-            else ClassicItemsPlugin._logger.LogDebug("SpawnOptionsForClients: ownerBody is null.");
+            OptionMasterTracker.SpawnOption(ownerBody.gameObject, numbering);
+            ClassicItemsPlugin._logger.LogMessage("SpawnOptionsForClients: Option is good to go.");
         }
     }
 
@@ -123,42 +120,39 @@ namespace Chen.ClassicItems
         {
             if (NetworkServer.active)
             {
-                ClassicItemsPlugin._logger.LogDebug($"SyncFlamethrowerEffectForClients: Host received the request. Skip.");
+                ClassicItemsPlugin._logger.LogMessage($"SyncFlamethrowerEffectForClients: Host received the request. Skip.");
                 return;
             }
             GameObject bodyObject = Util.FindNetworkObject(ownerBodyId);
             if (!bodyObject)
             {
-                ClassicItemsPlugin._logger.LogDebug($"SyncFlamethrowerEffectForClients: bodyObject is null.");
+                ClassicItemsPlugin._logger.LogWarning($"SyncFlamethrowerEffectForClients: bodyObject is null.");
                 return;
             }
             OptionTracker tracker = bodyObject.GetComponent<OptionTracker>();
             if (!tracker)
             {
-                ClassicItemsPlugin._logger.LogDebug($"SyncFlamethrowerEffectForClients: tracker is null.");
+                ClassicItemsPlugin._logger.LogWarning($"SyncFlamethrowerEffectForClients: tracker is null.");
                 return;
             }
             GameObject option = tracker.existingOptions[optionNumbering - 1];
             OptionBehavior behavior = option.GetComponent<OptionBehavior>();
             if (!behavior)
             {
-                ClassicItemsPlugin._logger.LogDebug($"SyncFlamethrowerEffectForClients: behavior is null.");
+                ClassicItemsPlugin._logger.LogWarning($"SyncFlamethrowerEffectForClients: behavior is null.");
                 return;
             }
             switch (messageType)
             {
                 case MessageType.Create:
-                    ClassicItemsPlugin._logger.LogDebug($"SyncFlamethrowerEffectForClients: CREATE MODE.");
                     if (GradiusOption.instance.flamethrowerSoundCopy) Util.PlaySound(MageWeapon.Flamethrower.startAttackSoundString, option);
                     behavior.flamethrower = Object.Instantiate(ClassicItemsPlugin.flamethrowerEffectPrefab, option.transform);
                     behavior.flamethrower.GetComponent<ScaleParticleSystemDuration>().newDuration = duration;
                     break;
                 case MessageType.Destroy:
-                    ClassicItemsPlugin._logger.LogDebug($"SyncFlamethrowerEffectForClients: DESTROY MODE.");
                     if (behavior.flamethrower) EntityState.Destroy(behavior.flamethrower);
                     break;
                 case MessageType.Redirect:
-                    ClassicItemsPlugin._logger.LogDebug($"SyncFlamethrowerEffectForClients: REDIRECT MODE.");
                     if (behavior.flamethrower) behavior.flamethrower.transform.forward = direction;
                     break;
                 default:
