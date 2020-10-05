@@ -39,7 +39,7 @@ namespace Chen.ClassicItems
                 }
                 else
                 {
-                    ClassicItemsPlugin._logger.LogDebug($"OptionBehavior.Update: Lost owner or ot. Destroying this option.");
+                    ClassicItemsPlugin._logger.LogWarning($"OptionBehavior.Update: Lost owner or ot. Destroying this Option. numbering = {numbering}");
                     Destroy(gameObject);
                 }
             }
@@ -88,10 +88,7 @@ namespace Chen.ClassicItems
                 if (previousPosition != t.position)
                 {
                     flightPath.Insert(0, t.position);
-                    if (flightPath.Count > masterOptionTracker.optionItemCount * distanceInterval)
-                    {
-                        flightPath.RemoveAt(flightPath.Count - 1);
-                    }
+                    if (flightPath.Count > masterOptionTracker.optionItemCount * distanceInterval) flightPath.RemoveAt(flightPath.Count - 1);
                 }
                 previousPosition = t.position;
             }
@@ -100,32 +97,44 @@ namespace Chen.ClassicItems
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
+            InitializeAndTrack();
+            SyncFlamethrowerEffects();
+        }
+
+        private void InitializeAndTrack()
+        {
             if (!masterOptionTracker)
             {
                 characterBody = gameObject.GetComponent<CharacterBody>();
-                if (characterBody)
+                if (!characterBody)
                 {
-                    characterMaster = characterBody.master;
-                    if (characterMaster)
-                    {
-                        masterCharacterMaster = characterMaster.minionOwnership.ownerMaster;
-                        if (masterCharacterMaster)
-                        {
-                            masterOptionTracker = masterCharacterMaster.gameObject.GetComponent<OptionMasterTracker>();
-                            if (masterOptionTracker) ClassicItemsPlugin._logger.LogDebug("In Initialization of OptionTracker: masterOptionTracker is set.");
-                            else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: masterOptionTracker is NULL.");
-                        }
-                        else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: masterCharacterMaster does not exist!");
-                    }
-                    else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: characterMaster does not exist!");
+                    ClassicItemsPlugin._logger.LogWarning("OptionTracker Initialization: characterBody does not exist!");
+                    return;
                 }
-                else ClassicItemsPlugin._logger.LogWarning("In Initialization of OptionTracker: characterBody does not exist!");
+                characterMaster = characterBody.master;
+                if (!characterMaster)
+                {
+                    ClassicItemsPlugin._logger.LogWarning("OptionTracker Initialization: characterMaster does not exist!");
+                    return;
+                }
+                masterCharacterMaster = characterMaster.minionOwnership.ownerMaster;
+                if (!masterCharacterMaster)
+                {
+                    ClassicItemsPlugin._logger.LogWarning("OptionTracker Initialization: masterCharacterMaster does not exist!");
+                    return;
+                }
+                masterOptionTracker = masterCharacterMaster.gameObject.GetComponent<OptionMasterTracker>();
+                if (!masterOptionTracker)
+                {
+                    ClassicItemsPlugin._logger.LogWarning("OptionTracker Initialization: masterOptionTracker is null.");
+                    return;
+                }
             }
             if (init && masterOptionTracker.optionItemCount > 0)
             {
                 init = false;
                 previousPosition = t.position;
-                ManageFlightPath(1);
+                ManageFlightPath(masterOptionTracker.optionItemCount);
             }
             else if (!init && masterOptionTracker.optionItemCount > 0)
             {
@@ -142,14 +151,13 @@ namespace Chen.ClassicItems
                 flightPath.Clear();
                 previousOptionItemCount = 0;
             }
-            SyncFlamethrowerEffects();
         }
 
         private void SyncFlamethrowerEffects()
         {
-            if (NetworkServer.active && flamethrowerEffectNetIds.Count > 0)
+            if (NetworkServer.active && NetworkUser.AllParticipatingNetworkUsersReady() && flamethrowerEffectNetIds.Count > 0)
             {
-                ClassicItemsPlugin._logger.LogDebug($"Server Sync Attempt: New flamethrowerEffectNetIds found. Trying to sync.");
+                ClassicItemsPlugin._logger.LogMessage($"Server Flamethrower Effect Sync Attempt: New netIds found.");
                 for (int i = 0; i < flamethrowerEffectNetIds.Count;)
                 {
                     StartCoroutine(QueueSending(flamethrowerEffectNetIds[i].Item1, flamethrowerEffectNetIds[i].Item2,
@@ -164,30 +172,14 @@ namespace Chen.ClassicItems
         {
             yield return new WaitForSeconds(GradiusOption.instance.syncSeconds);
             new SyncFlamethrowerEffectForClients(createOrDestroy, netId, numbering, duration, direction).Send(NetworkDestination.Clients);
-            ClassicItemsPlugin._logger.LogDebug($"Server Sync Attempt: Sent data <{createOrDestroy}, {netId}, {numbering}> (flamethrower effect)");
+            ClassicItemsPlugin._logger.LogMessage($"Server Flamethrower Effect Sync Attempt: Sent data <{createOrDestroy}, {netId}, {numbering}, {duration}, {direction}>");
         }
 
         private void ManageFlightPath(int difference)
         {
-            ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: difference is {difference}");
             int flightPathCap = masterOptionTracker.optionItemCount * distanceInterval;
-            ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: Pre-computed flightPathCap = {flightPathCap}");
-            if (difference > 0)
-            {
-                while (flightPath.Count < flightPathCap)
-                {
-                    ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: Inserting entry!");
-                    flightPath.Add(t.position);
-                }
-            }
-            else if (difference < 0)
-            {
-                while (flightPath.Count >= flightPathCap)
-                {
-                    ClassicItemsPlugin._logger.LogDebug($"ManageFlightPath: Removing entry.");
-                    flightPath.RemoveAt(flightPath.Count - 1);
-                }
-            }
+            if (difference > 0) while (flightPath.Count < flightPathCap) flightPath.Add(t.position);
+            else if (difference < 0) while (flightPath.Count >= flightPathCap) flightPath.RemoveAt(flightPath.Count - 1);
         }
 
         public static OptionTracker GetOrCreateComponent(GameObject me)
@@ -210,9 +202,9 @@ namespace Chen.ClassicItems
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
-            if (NetworkServer.active && netIds.Count > 0)
+            if (NetworkServer.active && NetworkUser.AllParticipatingNetworkUsersReady() && netIds.Count > 0)
             {
-                ClassicItemsPlugin._logger.LogDebug($"Server Sync Attempt: New netIds found. Trying to sync.");
+                ClassicItemsPlugin._logger.LogMessage($"Server Option Spawn Sync Attempt: New netIds found.");
                 for (int i = 0; i < netIds.Count;)
                 {
                     StartCoroutine(QueueSending(netIds[i].Item1, netIds[i].Item2, netIds[i].Item3));
@@ -225,7 +217,7 @@ namespace Chen.ClassicItems
         {
             yield return new WaitForSeconds(GradiusOption.instance.syncSeconds);
             new SpawnOptionsForClients(netId, numbering, bodyOrMaster).Send(NetworkDestination.Clients);
-            ClassicItemsPlugin._logger.LogDebug($"Server Sync Attempt: Sent data <{netId}, {numbering}, {bodyOrMaster}> (option spawn)");
+            ClassicItemsPlugin._logger.LogDebug($"Server Option Spawn Sync Attempt: Sent data <{netId}, {numbering}, {bodyOrMaster}>");
         }
 
         public static OptionMasterTracker GetOrCreateComponent(CharacterMaster me)
@@ -257,7 +249,6 @@ namespace Chen.ClassicItems
             Destroy(option);
         }
     }
-
 
     public class Flicker : MonoBehaviour
     {
