@@ -89,13 +89,18 @@ namespace Chen.ClassicItems
                 if (Compat_ItemStats.enabled)
                 {
                     Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
-                        ((count, inv, master) => { return Mathf.Min(procChance + stackChance * (count - 1), capChance); },
-                        (value, inv, master) => { return $"Firing Chance: {Pct(value, 0, 1)}"; }),
-                        ((count, inv, master) => { return dmgCoefficient + (count - 1) * dmgStack; },
-                        (value, inv, master) => { return $"Damage: {Pct(value, 0)}"; }),
-                        ((count, inv, master) => { return Mathf.Floor(1 + stackAmount * (count - 1)); },
-                        (value, inv, master) => { return $"Mortars: {value}"; })
-                    );
+                    (
+                        (count, inv, master) => { return Mathf.Min(procChance + stackChance * (count - 1), capChance); },
+                        (value, inv, master) => { return $"Firing Chance: {Pct(value, 0, 1)}"; }
+                    ),
+                    (
+                        (count, inv, master) => { return dmgCoefficient + (count - 1) * dmgStack; },
+                        (value, inv, master) => { return $"Damage: {Pct(value, 0)}"; }
+                    ),
+                    (
+                        (count, inv, master) => { return Mathf.Floor(1 + stackAmount * (count - 1)); },
+                        (value, inv, master) => { return $"Mortars: {value}"; }
+                    ));
                 }
             };
         }

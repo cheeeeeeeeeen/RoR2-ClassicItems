@@ -40,7 +40,7 @@ namespace Chen.ClassicItems
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Amount of time in seconds for server to send Option data to clients. Increase this if the Options are not appearing on clients. " +
                         "Option Effects such as flamethrower effects of Options are also affected by this setting. Server only. " +
-                        "You should not need to edit this setting. Report to Chen#1218 in Discord if you needed to change this.", 
+                        "You should not need to edit this setting. Report to Chen#1218 in Discord if you needed to change this.",
                         AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float syncSeconds { get; private set; } = 0f;
 
@@ -92,11 +92,14 @@ namespace Chen.ClassicItems
                 if (Compat_ItemStats.enabled)
                 {
                     Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
-                        ((count, inv, master) => { return count; },
-                        (value, inv, master) => { return $"Options per Drone: {value}"; }),
-                        ((count, inv, master) => { return damageMultiplier; },
-                        (value, inv, master) => { return $"Damage: {Pct(value, 0)}"; })
-                    );
+                    (
+                        (count, inv, master) => { return count; },
+                        (value, inv, master) => { return $"Options per Drone: {value}"; }
+                    ),
+                    (
+                        (count, inv, master) => { return damageMultiplier; },
+                        (value, inv, master) => { return $"Damage: {Pct(value, 0)}"; }
+                    ));
                 }
             };
         }

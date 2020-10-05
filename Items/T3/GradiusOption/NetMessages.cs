@@ -57,6 +57,7 @@ namespace Chen.ClassicItems
                 case GameObjectType.Body:
                     TrySpawnOption(ownerObject.GetComponent<CharacterBody>());
                     break;
+
                 case GameObjectType.Master:
                     CharacterMaster ownerMaster = ownerObject.GetComponent<CharacterMaster>();
                     if (!ownerMaster)
@@ -159,12 +160,15 @@ namespace Chen.ClassicItems
                     behavior.flamethrower = Object.Instantiate(ClassicItemsPlugin.flamethrowerEffectPrefab, option.transform);
                     behavior.flamethrower.GetComponent<ScaleParticleSystemDuration>().newDuration = duration;
                     break;
+
                 case MessageType.Destroy:
                     if (behavior.flamethrower) EntityState.Destroy(behavior.flamethrower);
                     break;
+
                 case MessageType.Redirect:
                     if (behavior.flamethrower) behavior.flamethrower.transform.forward = direction;
                     break;
+
                 default:
                     break;
             }

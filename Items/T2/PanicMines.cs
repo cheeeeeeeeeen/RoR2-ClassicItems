@@ -58,11 +58,14 @@ namespace Chen.ClassicItems
                 if (Compat_ItemStats.enabled)
                 {
                     Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
-                        ((count, inv, master) => { return baseDmg + (count - 1) * stackDmg; },
-                        (value, inv, master) => { return $"Damage: {Pct(value, 1)}"; }),
-                        ((count, inv, master) => { return count; },
-                        (value, inv, master) => { return $"Mines: {value}"; })
-                    );
+                    (
+                        (count, inv, master) => { return baseDmg + (count - 1) * stackDmg; },
+                        (value, inv, master) => { return $"Damage: {Pct(value, 1)}"; }
+                    ),
+                    (
+                        (count, inv, master) => { return count; },
+                        (value, inv, master) => { return $"Mines: {value}"; }
+                    ));
                 }
             };
         }

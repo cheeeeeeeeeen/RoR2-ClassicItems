@@ -66,6 +66,7 @@ namespace Chen.ClassicItems
         public OptionMasterTracker masterOptionTracker { get; private set; }
         public CharacterMaster characterMaster { get; private set; }
         public CharacterBody characterBody { get; private set; }
+
         public List<Tuple<MessageType, NetworkInstanceId, short, float, Vector3>> flamethrowerEffectNetIds { get; private set; } =
             new List<Tuple<MessageType, NetworkInstanceId, short, float, Vector3>>();
 
