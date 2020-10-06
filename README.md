@@ -18,6 +18,7 @@ Use **r2modman** mod manager to install this mod.
 #### Tier 1
 - [RoR1] Mortar Tube
 #### Tier 2
+- [RoR1] Arms Race
 - [RoR1] Dead Man's Foot
 - [RoR1] Panic Mines
 #### Tier 3
@@ -33,6 +34,11 @@ Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
 GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
+
+**1.2.1**
+- Add logbook entry for Arms Race.
+- Fix a terrible sync bug due to error in the modder's part.
+- Nerfed base stats of Arms Race because it was too powerful. It is still configurable.
 
 **1.2.0**
 - Implement Arms Race!
