@@ -17,15 +17,15 @@ namespace Chen.ClassicItems
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("The chance for drones to launch a mortar. Stacks multiplicatively.", AutoItemConfigFlags.None, 0f, 100f)]
-        public float mortarProcChance { get; private set; } = 18f;
+        public float mortarProcChance { get; private set; } = 5f;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("The chance for drones to launch a missile. Stacks multiplicatively.", AutoItemConfigFlags.None, 0f, 100f)]
-        public float missileProcChance { get; private set; } = 9f;
+        public float missileProcChance { get; private set; } = 4f;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Mortar Damage Coefficient.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
-        public float mortarDamage { get; private set; } = 1.7f;
+        public float mortarDamage { get; private set; } = 1.5f;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Stacking value of Mortar Damage Coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
@@ -33,7 +33,7 @@ namespace Chen.ClassicItems
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Missile Damage Coefficient.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
-        public float missileDamage { get; private set; } = 3f;
+        public float missileDamage { get; private set; } = 1.5f;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Stacking value of Missile Damage Coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
@@ -58,7 +58,12 @@ namespace Chen.ClassicItems
         }
 
         protected override string NewLangLore(string langid = null) =>
-            "Coming soon.";
+            "\"Psst. Hey. It's me again. You guessed it right: I'm whispering over text once again. It's a habit of mine.\"\n\n" +
+            "\"Here are the upgraded drone parts. Since KS-I slotted drones are the trend, I assumed that the drones you own are of the same type. " +
+            "Hence, the drone parts being compatible to KS-I only.\"\n\n" +
+            "\"Hear me out, there's more. I upgraded the A.I. in it. The A.I. should be able to hide the weapons in these containers. " +
+            "You still need to strap it to the drone, though, but hey, it would not be too obvious that the drone is weaponized. It also looks less lamer.\"\n\n" +
+            "\"Keep it up. We will not falter in this arms race, although it looks dark for us. Think positive.\"";
 
         public ArmsRace()
         {
