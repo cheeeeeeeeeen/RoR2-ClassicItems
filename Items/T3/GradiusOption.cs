@@ -37,13 +37,6 @@ namespace Chen.ClassicItems
                         AutoItemConfigFlags.None)]
         public bool gatlingSoundCopy { get; private set; } = false;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Amount of time in seconds for server to send Option data to clients. Increase this if the Options are not appearing on clients. " +
-                        "Option Effects such as flamethrower effects of Options are also affected by this setting. Server only. " +
-                        "You should not need to edit this setting. Report to Chen#1218 in Discord if you needed to change this.",
-                        AutoItemConfigFlags.None, 0f, float.MaxValue)]
-        public float syncSeconds { get; private set; } = 0f;
-
         public override bool itemAIB { get; protected set; } = true;
 
         protected override string NewLangName(string langid = null) => displayName;
@@ -142,7 +135,7 @@ namespace Chen.ClassicItems
         {
             // This hook is only ran in the server.
             CharacterBody result = orig(self, bodyPrefab, position, rotation);
-            if (result && FilterDrones(result.name) && self.minionOwnership)
+            if (result && NetworkServer.active && FilterDrones(result.name) && self.minionOwnership)
             {
                 CharacterMaster masterMaster = self.minionOwnership.ownerMaster;
                 if (masterMaster)
@@ -171,22 +164,25 @@ namespace Chen.ClassicItems
                 OptionMasterTracker masterTracker = OptionMasterTracker.GetOrCreateComponent(masterObject);
                 int oldCount = masterTracker.optionItemCount;
                 int diff = newCount - oldCount;
-                masterTracker.optionItemCount = newCount;
-                ClassicItemsPlugin._logger.LogMessage($"OnInventoryChanged: OldCount: {oldCount}, NewCount: {newCount}, Difference: {diff}");
-                if (diff > 0)
+                if (diff != 0)
                 {
-                    LoopAllMinionOwnerships(self.master, (minion) =>
+                    masterTracker.optionItemCount = newCount;
+                    ClassicItemsPlugin._logger.LogMessage($"OnInventoryChanged: OldCount: {oldCount}, NewCount: {newCount}, Difference: {diff}");
+                    if (diff > 0)
                     {
-                        for (int t = oldCount + 1; t <= newCount; t++) OptionMasterTracker.SpawnOption(minion, t);
-                    });
-                }
-                else if (diff < 0)
-                {
-                    LoopAllMinionOwnerships(self.master, (minion) =>
+                        LoopAllMinionOwnerships(self.master, (minion) =>
+                        {
+                            for (int t = oldCount + 1; t <= newCount; t++) OptionMasterTracker.SpawnOption(minion, t);
+                        });
+                    }
+                    else
                     {
-                        OptionTracker minionOptionTracker = minion.GetComponent<OptionTracker>();
-                        if (minionOptionTracker) for (int t = oldCount; t > newCount; t--) OptionMasterTracker.DestroyOption(minionOptionTracker, t);
-                    });
+                        LoopAllMinionOwnerships(self.master, (minion) =>
+                        {
+                            OptionTracker minionOptionTracker = minion.GetComponent<OptionTracker>();
+                            if (minionOptionTracker) for (int t = oldCount; t > newCount; t--) OptionMasterTracker.DestroyOption(minionOptionTracker, t);
+                        });
+                    }
                 }
             }
         }
@@ -258,7 +254,7 @@ namespace Chen.ClassicItems
                         EntityState.Destroy(behavior.flamethrower);
                         FlamethrowerSync(self, (networkIdentity, optionTracker) =>
                         {
-                            optionTracker.flamethrowerEffectNetIds.Add(Tuple.Create(
+                            optionTracker.netIds.Add(Tuple.Create(
                                 MessageType.Destroy, networkIdentity.netId, (short)behavior.numbering,
                                 0f, Vector3.zero
                             ));
@@ -290,22 +286,27 @@ namespace Chen.ClassicItems
                             behavior.flamethrower.GetComponent<ScaleParticleSystemDuration>().newDuration = self.flamethrowerDuration;
                             FlamethrowerSync(self, (networkIdentity, optionTracker) =>
                             {
-                                optionTracker.flamethrowerEffectNetIds.Add(Tuple.Create(
+                                optionTracker.netIds.Add(Tuple.Create(
                                     MessageType.Create, networkIdentity.netId, (short)behavior.numbering,
                                     self.flamethrowerDuration, Vector3.zero
                                 ));
                             });
                         }
                     }
-                    if (perMinionOldBegunFlamethrower)
+                    if (perMinionOldBegunFlamethrower && behavior.flamethrower)
                     {
                         behavior.flamethrower.transform.forward = direction;
                         FlamethrowerSync(self, (networkIdentity, optionTracker) =>
                         {
-                            optionTracker.flamethrowerEffectNetIds.Add(Tuple.Create(
-                                MessageType.Redirect, networkIdentity.netId, (short)behavior.numbering,
-                                0f, direction
-                            ));
+                            if (!optionTracker.netIds.Exists((t) => {
+                                return t.Item1 == MessageType.Redirect && t.Item2 == networkIdentity.netId && t.Item3 == (short)behavior.numbering;
+                            }))
+                            {
+                                optionTracker.netIds.Add(Tuple.Create(
+                                    MessageType.Redirect, networkIdentity.netId, (short)behavior.numbering,
+                                    0f, direction
+                                ));
+                            }
                         });
                     }
                 });
@@ -537,6 +538,7 @@ namespace Chen.ClassicItems
 
         private void FlamethrowerSync(MageWeapon.Flamethrower self, Action<NetworkIdentity, OptionTracker> actionToRun)
         {
+            if (!NetworkServer.active) return;
             NetworkIdentity networkIdentity = self.characterBody.gameObject.GetComponent<NetworkIdentity>();
             if (!networkIdentity) return;
             OptionTracker tracker = self.characterBody.gameObject.GetComponent<OptionTracker>();

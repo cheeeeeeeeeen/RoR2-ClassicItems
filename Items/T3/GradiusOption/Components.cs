@@ -67,7 +67,7 @@ namespace Chen.ClassicItems
         public CharacterMaster characterMaster { get; private set; }
         public CharacterBody characterBody { get; private set; }
 
-        public List<Tuple<MessageType, NetworkInstanceId, short, float, Vector3>> flamethrowerEffectNetIds { get; private set; } =
+        public List<Tuple<MessageType, NetworkInstanceId, short, float, Vector3>> netIds { get; private set; } =
             new List<Tuple<MessageType, NetworkInstanceId, short, float, Vector3>>();
 
         private Vector3 previousPosition = new Vector3();
@@ -94,16 +94,11 @@ namespace Chen.ClassicItems
                 }
                 previousPosition = t.position;
             }
+            SyncFlamethrowerEffects();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
-        {
-            InitializeAndTrack();
-            SyncFlamethrowerEffects();
-        }
-
-        private void InitializeAndTrack()
         {
             if (!masterOptionTracker)
             {
@@ -157,31 +152,23 @@ namespace Chen.ClassicItems
 
         private void SyncFlamethrowerEffects()
         {
-            if (NetworkServer.active && NetworkUser.AllParticipatingNetworkUsersReady() && flamethrowerEffectNetIds.Count > 0)
+            if (NetworkServer.active && NetworkUser.AllParticipatingNetworkUsersReady() && netIds.Count > 0)
             {
                 ClassicItemsPlugin._logger.LogMessage($"Server Flamethrower Effect Sync Attempt: New netIds found.");
-                for (int i = 0; i < flamethrowerEffectNetIds.Count;)
+                Tuple<MessageType, NetworkInstanceId, short, float, Vector3>[] listCopy = new Tuple<MessageType, NetworkInstanceId, short, float, Vector3>[netIds.Count];
+                netIds.CopyTo(listCopy);
+                netIds.Clear();
+                for (int i = 0; i < listCopy.Length; i++)
                 {
-                    //MessageType messageType = flamethrowerEffectNetIds[i].Item1;
-                    //NetworkInstanceId netId = flamethrowerEffectNetIds[i].Item2;
-                    //short numbering = flamethrowerEffectNetIds[i].Item3;
-                    //float duration = flamethrowerEffectNetIds[i].Item4;
-                    //Vector3 direction = flamethrowerEffectNetIds[i].Item5;
-                    //new SyncFlamethrowerEffectForClients(messageType, netId, numbering, duration, direction).Send(NetworkDestination.Clients);
-                    StartCoroutine(QueueSending(flamethrowerEffectNetIds[i].Item1, flamethrowerEffectNetIds[i].Item2,
-                                                flamethrowerEffectNetIds[i].Item3, flamethrowerEffectNetIds[i].Item4,
-                                                flamethrowerEffectNetIds[i].Item5));
-                    //ClassicItemsPlugin._logger.LogMessage($"Server Flamethrower Effect Sync Attempt: Sent data <{messageType}, {netId}, {numbering}, {duration}, {direction}>");
-                    flamethrowerEffectNetIds.RemoveAt(i);
+                    MessageType messageType = listCopy[i].Item1;
+                    NetworkInstanceId netId = listCopy[i].Item2;
+                    short numbering = listCopy[i].Item3;
+                    float duration = listCopy[i].Item4;
+                    Vector3 direction = listCopy[i].Item5;
+                    new SyncFlamethrowerEffectForClients(messageType, netId, numbering, duration, direction).Send(NetworkDestination.Clients);
+                    ClassicItemsPlugin._logger.LogMessage($"Server Flamethrower Effect Sync Attempt: Sent data <{messageType}, {netId}, {numbering}, {duration}, {direction}>");
                 }
             }
-        }
-
-        private IEnumerator QueueSending(MessageType createOrDestroy, NetworkInstanceId netId, short numbering, float duration, Vector3 direction)
-        {
-            yield return new WaitForSeconds(GradiusOption.instance.syncSeconds);
-            new SyncFlamethrowerEffectForClients(createOrDestroy, netId, numbering, duration, direction).Send(NetworkDestination.Clients);
-            ClassicItemsPlugin._logger.LogMessage($"Server Flamethrower Effect Sync Attempt: Sent data <{createOrDestroy}, {netId}, {numbering}, {duration}, {direction}>");
         }
 
         private void ManageFlightPath(int difference)
@@ -214,24 +201,18 @@ namespace Chen.ClassicItems
             if (NetworkServer.active && NetworkUser.AllParticipatingNetworkUsersReady() && netIds.Count > 0)
             {
                 ClassicItemsPlugin._logger.LogMessage($"Server Option Spawn Sync Attempt: New netIds found.");
+                Tuple<GameObjectType, NetworkInstanceId, short>[] listCopy = new Tuple<GameObjectType, NetworkInstanceId, short>[netIds.Count];
+                netIds.CopyTo(listCopy);
+                netIds.Clear();
                 for (int i = 0; i < netIds.Count;)
                 {
-                    //GameObjectType bodyOrMaster = netIds[i].Item1;
-                    //NetworkInstanceId netId = netIds[i].Item2;
-                    //short numbering = netIds[i].Item3;
-                    //new SpawnOptionsForClients(bodyOrMaster, netId, numbering).Send(NetworkDestination.Clients);
-                    StartCoroutine(QueueSending(netIds[i].Item1, netIds[i].Item2, netIds[i].Item3));
-                    //ClassicItemsPlugin._logger.LogDebug($"Server Option Spawn Sync Attempt: Sent data <{bodyOrMaster}, {netId}, {numbering}>");
-                    netIds.RemoveAt(i);
+                    GameObjectType bodyOrMaster = listCopy[i].Item1;
+                    NetworkInstanceId netId = listCopy[i].Item2;
+                    short numbering = listCopy[i].Item3;
+                    new SpawnOptionsForClients(bodyOrMaster, netId, numbering).Send(NetworkDestination.Clients);
+                    ClassicItemsPlugin._logger.LogDebug($"Server Option Spawn Sync Attempt: Sent data <{bodyOrMaster}, {netId}, {numbering}>");
                 }
             }
-        }
-
-        private IEnumerator QueueSending(GameObjectType bodyOrMaster, NetworkInstanceId netId, short numbering)
-        {
-            yield return new WaitForSeconds(GradiusOption.instance.syncSeconds);
-            new SpawnOptionsForClients(bodyOrMaster, netId, numbering).Send(NetworkDestination.Clients);
-            ClassicItemsPlugin._logger.LogDebug($"Server Option Spawn Sync Attempt: Sent data <{bodyOrMaster}, {netId}, {numbering}>");
         }
 
         public static OptionMasterTracker GetOrCreateComponent(CharacterMaster me)

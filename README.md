@@ -34,9 +34,13 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
 
+**1.1.1**
+- Change implementation of syncing Options and related effects due to reports of FPS drops.
+
 **1.1.0**
 - Implement Mortar Tube!
 - Add more ItemStats details for all items.
+- Allow Turrets to always update their position.
 
 **1.0.3**
 - Add a condition where the host is required to wait for all clients to be ready before sending the sync commands. This ensures that all clients will be synced.
