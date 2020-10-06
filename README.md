@@ -34,6 +34,9 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
 
+**1.2.0**
+- Implement Arms Race!
+
 **1.1.1**
 - Change implementation of syncing Options and related effects due to reports of FPS drops.
 

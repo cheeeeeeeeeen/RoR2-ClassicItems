@@ -1,8 +1,8 @@
 {
   "name": "ChensClassicItems",
-  "version_number": "1.1.1",
+  "version_number": "1.2.0",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "Mortar Tube joins Classic Items! This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1 as well as from other games.",
+  "description": "Mortar Tube and Arms Race now joins Classic Items! This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1 as well as from other games.",
   "dependencies": [
     "ThinkInvis-ClassicItems-4.5.4"
   ]
