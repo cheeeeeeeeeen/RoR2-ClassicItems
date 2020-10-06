@@ -85,9 +85,9 @@ namespace Chen.ClassicItems
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Update()
         {
-            if (!init && masterOptionTracker)
+            if (!init && masterOptionTracker && characterMaster)
             {
-                if (previousPosition != t.position)
+                if (previousPosition != t.position || characterMaster.name.Contains("Turret1"))
                 {
                     flightPath.Insert(0, t.position);
                     if (flightPath.Count > masterOptionTracker.optionItemCount * distanceInterval) flightPath.RemoveAt(flightPath.Count - 1);
