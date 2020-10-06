@@ -2,7 +2,6 @@
 using R2API.Networking.Interfaces;
 using RoR2;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -204,7 +203,7 @@ namespace Chen.ClassicItems
                 Tuple<GameObjectType, NetworkInstanceId, short>[] listCopy = new Tuple<GameObjectType, NetworkInstanceId, short>[netIds.Count];
                 netIds.CopyTo(listCopy);
                 netIds.Clear();
-                for (int i = 0; i < netIds.Count;)
+                for (int i = 0; i < listCopy.Length; i++)
                 {
                     GameObjectType bodyOrMaster = listCopy[i].Item1;
                     NetworkInstanceId netId = listCopy[i].Item2;
