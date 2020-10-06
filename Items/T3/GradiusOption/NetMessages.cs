@@ -40,12 +40,7 @@ namespace Chen.ClassicItems
 
         public void OnReceived()
         {
-            if (NetworkServer.active)
-            {
-                ClassicItemsPlugin._logger.LogMessage("SpawnOptionsForClients: Host got this request. Skip.");
-                return;
-            }
-            ClassicItemsPlugin._logger.LogMessage($"SpawnOptionsForClients: Received a request to spawn options from server. ownerId = {ownerId}, numbering = {numbering}");
+            if (NetworkServer.active) return;
             GameObject ownerObject = Util.FindNetworkObject(ownerId);
             if (!ownerObject)
             {
@@ -78,7 +73,6 @@ namespace Chen.ClassicItems
                 return;
             }
             OptionMasterTracker.SpawnOption(ownerBody.gameObject, numbering);
-            ClassicItemsPlugin._logger.LogMessage("SpawnOptionsForClients: Option is good to go.");
         }
 
         public enum GameObjectType : byte
@@ -129,11 +123,7 @@ namespace Chen.ClassicItems
 
         public void OnReceived()
         {
-            if (NetworkServer.active)
-            {
-                ClassicItemsPlugin._logger.LogMessage($"SyncFlamethrowerEffectForClients: Host received the request. Skip.");
-                return;
-            }
+            if (NetworkServer.active) return;
             GameObject bodyObject = Util.FindNetworkObject(ownerBodyId);
             if (!bodyObject)
             {

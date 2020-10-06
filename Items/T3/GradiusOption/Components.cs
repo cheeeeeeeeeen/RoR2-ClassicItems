@@ -153,7 +153,6 @@ namespace Chen.ClassicItems
         {
             if (NetworkServer.active && NetworkUser.AllParticipatingNetworkUsersReady() && netIds.Count > 0)
             {
-                ClassicItemsPlugin._logger.LogMessage($"Server Flamethrower Effect Sync Attempt: New netIds found.");
                 Tuple<MessageType, NetworkInstanceId, short, float, Vector3>[] listCopy = new Tuple<MessageType, NetworkInstanceId, short, float, Vector3>[netIds.Count];
                 netIds.CopyTo(listCopy);
                 netIds.Clear();
@@ -165,7 +164,6 @@ namespace Chen.ClassicItems
                     float duration = listCopy[i].Item4;
                     Vector3 direction = listCopy[i].Item5;
                     new SyncFlamethrowerEffectForClients(messageType, netId, numbering, duration, direction).Send(NetworkDestination.Clients);
-                    ClassicItemsPlugin._logger.LogMessage($"Server Flamethrower Effect Sync Attempt: Sent data <{messageType}, {netId}, {numbering}, {duration}, {direction}>");
                 }
             }
         }
@@ -199,7 +197,6 @@ namespace Chen.ClassicItems
         {
             if (NetworkServer.active && NetworkUser.AllParticipatingNetworkUsersReady() && netIds.Count > 0)
             {
-                ClassicItemsPlugin._logger.LogMessage($"Server Option Spawn Sync Attempt: New netIds found.");
                 Tuple<GameObjectType, NetworkInstanceId, short>[] listCopy = new Tuple<GameObjectType, NetworkInstanceId, short>[netIds.Count];
                 netIds.CopyTo(listCopy);
                 netIds.Clear();
@@ -209,7 +206,6 @@ namespace Chen.ClassicItems
                     NetworkInstanceId netId = listCopy[i].Item2;
                     short numbering = listCopy[i].Item3;
                     new SpawnOptionsForClients(bodyOrMaster, netId, numbering).Send(NetworkDestination.Clients);
-                    ClassicItemsPlugin._logger.LogDebug($"Server Option Spawn Sync Attempt: Sent data <{bodyOrMaster}, {netId}, {numbering}>");
                 }
             }
         }
