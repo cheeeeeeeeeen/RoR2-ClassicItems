@@ -37,6 +37,13 @@ namespace Chen.ClassicItems
                         AutoItemConfigFlags.None)]
         public bool gatlingSoundCopy { get; private set; } = false;
 
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoItemConfig("Allows displaying and syncing the flamethrower effect of Options/Multiples. Disabling this will replace the effect with bullets. " +
+                        "Damage will stay the same. Server and Client. The server and client must have the same settings for an optimized experience." +
+                        "Disable this if you are experiencing FPS drops or network lag.",
+                        AutoItemConfigFlags.None)]
+        public bool flamethrowerOptionSyncEffect { get; private set; } = true;
+
         public override bool itemAIB { get; protected set; } = true;
 
         protected override string NewLangName(string langid = null) => displayName;
@@ -243,7 +250,7 @@ namespace Chen.ClassicItems
         private void Flamethrower_OnExit(On.EntityStates.Mage.Weapon.Flamethrower.orig_OnExit orig, MageWeapon.Flamethrower self)
         {
             orig(self);
-            if (self.characterBody.name.Contains("FlameDrone") && self.characterBody.master.name.Contains("FlameDrone"))
+            if (self.characterBody.name.Contains("FlameDrone") && self.characterBody.master.name.Contains("FlameDrone") && flamethrowerOptionSyncEffect)
             {
                 FireForAllMinions(self, (option, target) =>
                 {
@@ -269,7 +276,7 @@ namespace Chen.ClassicItems
             // This hook only runs in the server.
             bool oldBegunFlamethrower = self.hasBegunFlamethrower;
             orig(self);
-            if (self.characterBody.name.Contains("FlameDrone") && self.characterBody.master.name.Contains("FlameDrone"))
+            if (self.characterBody.name.Contains("FlameDrone") && self.characterBody.master.name.Contains("FlameDrone") && flamethrowerOptionSyncEffect)
             {
                 FireForAllMinions(self, (option, target) =>
                 {
@@ -322,25 +329,51 @@ namespace Chen.ClassicItems
                 {
                     if (self.isAuthority)
                     {
-                        new BulletAttack
+                        if (flamethrowerOptionSyncEffect)
                         {
-                            owner = self.gameObject,
-                            weapon = option,
-                            origin = option.transform.position,
-                            aimVector = (target.transform.position - option.transform.position).normalized,
-                            minSpread = 0f,
-                            damage = self.tickDamageCoefficient * self.damageStat * damageMultiplier,
-                            force = MageWeapon.Flamethrower.force * damageMultiplier,
-                            muzzleName = muzzleString,
-                            hitEffectPrefab = MageWeapon.Flamethrower.impactEffectPrefab,
-                            isCrit = self.isCrit,
-                            radius = MageWeapon.Flamethrower.radius,
-                            falloffModel = BulletAttack.FalloffModel.None,
-                            stopperMask = LayerIndex.world.mask,
-                            procCoefficient = MageWeapon.Flamethrower.procCoefficientPerTick,
-                            maxDistance = self.maxDistance,
-                            damageType = (Util.CheckRoll(MageWeapon.Flamethrower.ignitePercentChance, self.characterBody.master) ? DamageType.IgniteOnHit : DamageType.Generic)
-                        }.Fire();
+                            new BulletAttack
+                            {
+                                owner = self.gameObject,
+                                weapon = option,
+                                origin = option.transform.position,
+                                aimVector = (target.transform.position - option.transform.position).normalized,
+                                minSpread = 0f,
+                                damage = self.tickDamageCoefficient * self.damageStat * damageMultiplier,
+                                force = MageWeapon.Flamethrower.force * damageMultiplier,
+                                muzzleName = muzzleString,
+                                hitEffectPrefab = MageWeapon.Flamethrower.impactEffectPrefab,
+                                isCrit = self.isCrit,
+                                radius = MageWeapon.Flamethrower.radius,
+                                falloffModel = BulletAttack.FalloffModel.None,
+                                stopperMask = LayerIndex.world.mask,
+                                procCoefficient = MageWeapon.Flamethrower.procCoefficientPerTick,
+                                maxDistance = self.maxDistance,
+                                damageType = (Util.CheckRoll(MageWeapon.Flamethrower.ignitePercentChance, self.characterBody.master) ? DamageType.IgniteOnHit : DamageType.Generic)
+                            }.Fire();
+                        }
+                        else
+                        {
+                            new BulletAttack
+                            {
+                                owner = self.gameObject,
+                                weapon = option,
+                                origin = option.transform.position,
+                                aimVector = (target.transform.position - option.transform.position).normalized,
+                                minSpread = 0f,
+                                damage = self.tickDamageCoefficient * self.damageStat * damageMultiplier,
+                                force = MageWeapon.Flamethrower.force * damageMultiplier,
+                                muzzleName = muzzleString,
+                                hitEffectPrefab = MageWeapon.Flamethrower.impactEffectPrefab,
+                                isCrit = self.isCrit,
+                                radius = MageWeapon.Flamethrower.radius,
+                                falloffModel = BulletAttack.FalloffModel.None,
+                                stopperMask = LayerIndex.world.mask,
+                                procCoefficient = MageWeapon.Flamethrower.procCoefficientPerTick,
+                                maxDistance = self.maxDistance,
+                                damageType = (Util.CheckRoll(MageWeapon.Flamethrower.ignitePercentChance, self.characterBody.master) ? DamageType.IgniteOnHit : DamageType.Generic),
+                                tracerEffectPrefab = FireGatling.tracerEffectPrefab
+                            }.Fire();
+                        }
                     }
                 });
             }
