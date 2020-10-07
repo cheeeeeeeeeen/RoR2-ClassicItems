@@ -41,7 +41,7 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 - Remove the the sync logging as it apparently caused heavy lag.
 - Add a config setting where the Options of Flame Drones will have reduced quality of effects to lessen the stress of processing and syncing.
 - Add lore for Instant Minefield.
-- Slight adjustments for config options in regards with TILER2.
+- Slight adjustments for config options in regards with TILER2 for correctness.
 
 **1.2.1**
 - Add logbook entry for Arms Race.
