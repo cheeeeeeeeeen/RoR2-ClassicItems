@@ -34,7 +34,7 @@ namespace Chen.ClassicItems
         [AutoItemConfig("Stack amount of Damage coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float dmgStack { get; private set; } = 0f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken | AutoUpdateEventFlags.InvalidatePickupToken)]
         [AutoItemConfig("Number of missiles per proc.", AutoItemConfigFlags.None, 1, int.MaxValue)]
         public int missileAmount { get; private set; } = 3;
 

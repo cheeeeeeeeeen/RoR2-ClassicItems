@@ -34,23 +34,18 @@ namespace Chen.ClassicItems
         [AutoItemConfig("Stack amount of Damage coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float dmgStack { get; private set; } = 1.7f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Velocity multiplier for the mortar. Lower value means it moves slower.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float velocityMultiplier { get; private set; } = .5f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("How heavy the mortar is. Higher means it is heavier. This is not a percentage nor a multiplier.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float gravityAmount { get; private set; } = .5f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Setting to true would launch the mortar at a fixed angle regardless of aim. Setting to false would launch the mortar relative to aim.", AutoItemConfigFlags.None)]
         public bool fixedAim { get; private set; } = false;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("The angle from where the mortar is launched. 1 means completely up. -1 means completely down.", AutoItemConfigFlags.None, float.MinValue, float.MaxValue)]
         public float launchAngle { get; private set; } = .9f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Inaccuracy of the mortar. Higher value means it's more inaccurate.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float inaccuracyRate { get; private set; } = .05f;
 
@@ -70,6 +65,7 @@ namespace Chen.ClassicItems
             desc += $" chance to launch a mortar that deals <style=cIsDamage>{Pct(dmgCoefficient, 0)}</style>";
             if (dmgStack > 0f) desc += $" <style=cStack>(+{dmgStack} per stack)</style>";
             desc += ". Affected by proc coefficient. The mortar deals an AoE damage.";
+            if (stackAmount > 0) desc += " More mortars may be launched upon stacking.";
             return desc;
         }
 

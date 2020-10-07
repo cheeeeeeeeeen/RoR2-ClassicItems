@@ -156,7 +156,7 @@ namespace Chen.ClassicItems
             return (1f - Mathf.Pow(1 - procChance / 100f, stack)) * 100f;
         }
 
-        private void TriggerArtillery(CharacterBody body, float damage, bool crit, ProcChainMask procChainMask = new ProcChainMask())
+        private void TriggerArtillery(CharacterBody body, float damage, bool crit, ProcChainMask procChainMask = default)
         {
             if (damage <= 0 || !body.master || !body.master.minionOwnership || !body.master.minionOwnership.ownerMaster) return;
             int itemCount = GetCount(body.master.minionOwnership.ownerMaster);

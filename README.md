@@ -14,6 +14,7 @@ Use **r2modman** mod manager to install this mod.
 
 ### Current Additions
 #### Equipment
+- [RoR1] Drone Repair Kit
 - [RoR1] Instant Minefield
 #### Tier 1
 - [RoR1] Mortar Tube
@@ -34,6 +35,13 @@ Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
 GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
+
+**1.3.0**
+- Implement Drone Repair Kit!
+- Remove the the sync logging as it apparently caused heavy lag.
+- Add a config setting where the Options of Flame Drones will have reduced quality of effects to lessen the stress of processing and syncing.
+- Add lore for Instant Minefield.
+- Slight adjustments for config options in regards with TILER2.
 
 **1.2.1**
 - Add logbook entry for Arms Race.

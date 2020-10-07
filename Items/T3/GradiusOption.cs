@@ -27,17 +27,14 @@ namespace Chen.ClassicItems
         [AutoItemConfig("Damage multiplier of Options/Multiples. Also applies for Healing Drones. 1 = 100%.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float damageMultiplier { get; private set; } = 1f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Set to true for Options/Multiples of Flame Drones to generate a flamethrower sound. Client only. WARNING: Turning this on may cause earrape.",
                         AutoItemConfigFlags.None)]
         public bool flamethrowerSoundCopy { get; private set; } = false;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Set to true for Options/Multiples of Gatling Turrets to generate a firing sound. Client only. WARNING: Turning this on may cause earrape.",
                         AutoItemConfigFlags.None)]
         public bool gatlingSoundCopy { get; private set; } = false;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Allows displaying and syncing the flamethrower effect of Options/Multiples. Disabling this will replace the effect with bullets. " +
                         "Damage will stay the same. Server and Client. The server and client must have the same settings for an optimized experience." +
                         "Disable this if you are experiencing FPS drops or network lag.",

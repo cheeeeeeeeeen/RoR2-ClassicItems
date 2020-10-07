@@ -15,7 +15,7 @@ namespace Chen.ClassicItems
 
         public override float eqpCooldown { get; protected set; } = 45f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
+        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken | AutoUpdateEventFlags.InvalidatePickupToken)]
         [AutoItemConfig("Number of mines to drop on use.", AutoItemConfigFlags.None, 0, int.MaxValue)]
         public int mineNumber { get; private set; } = 6;
 
