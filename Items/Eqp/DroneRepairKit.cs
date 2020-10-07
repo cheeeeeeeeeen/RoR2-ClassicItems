@@ -16,7 +16,7 @@ namespace Chen.ClassicItems
         public override float eqpCooldown { get; protected set; } = 45f;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Enable regen buff on top of the heal for Drones when this equipment is used."]
+        [AutoItemConfig("Enable regen buff on top of the heal for Drones when this equipment is used.")]
         public bool enableRegenBuff { get; private set; } = true;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
