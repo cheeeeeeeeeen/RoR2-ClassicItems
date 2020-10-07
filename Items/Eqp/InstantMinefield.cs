@@ -42,7 +42,15 @@ namespace Chen.ClassicItems
             return desc;
         }
 
-        protected override string NewLangLore(string langid = null) => "A relic of times long past (ChensClassicItems mod)";
+        protected override string NewLangLore(string langid = null) =>
+            "\"Turn the safe switch off, and just simply lay it down... and its uh... smart-fire should prevent it from blowing your own legs off.\"\n\n" +
+            "\"No [REDACTED]? I don't feel safe already, and that's just Step 1!\"\n\n" +
+            "\"That's what it says here. Hurry up because we don't have long. Those giant insects will be coming anytime soon.\"\n\n" +
+            "\"Here goes nothing, then. Turning off the safe. Laying it down now. Let's run when I place it just to be safe.\"\n\n" +
+            "\"Go, go, go! Move it!\"\n\n" +
+            "\"Seems to be safe as advertised. Look at it go. It deployed mines almost instantly.\"\n\n" +
+            "\"Could have used a better name, though. Instant Minefield doesn't exactly sound legit.\"\n\n" +
+            "\"End of log.\"";
 
         public InstantMinefield()
         {
@@ -72,7 +80,7 @@ namespace Chen.ClassicItems
             GameObject gameObject = body.gameObject;
             Util.PlaySound(FireMines.throwMineSoundString, gameObject);
             DropMines(body, gameObject);
-            if (instance.CheckEmbryoProc(body)) DropMines(body, gameObject, .7f);
+            if (instance.CheckEmbryoProc(body)) DropMines(body, gameObject, .6f);
 
             return true;
         }
