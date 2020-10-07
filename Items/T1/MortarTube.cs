@@ -40,7 +40,7 @@ namespace Chen.ClassicItems
         [AutoItemConfig("How heavy the mortar is. Higher means it is heavier. This is not a percentage nor a multiplier.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float gravityAmount { get; private set; } = .5f;
 
-        [AutoItemConfig("Setting to true would launch the mortar at a fixed angle regardless of aim. Setting to false would launch the mortar relative to aim.", AutoItemConfigFlags.None)]
+        [AutoItemConfig("Setting to true would launch the mortar at a fixed angle regardless of aim. Setting to false would launch the mortar relative to aim.")]
         public bool fixedAim { get; private set; } = false;
 
         [AutoItemConfig("The angle from where the mortar is launched. 1 means completely up. -1 means completely down.", AutoItemConfigFlags.None, float.MinValue, float.MaxValue)]
