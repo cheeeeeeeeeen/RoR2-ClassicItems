@@ -52,12 +52,15 @@ namespace Chen.ClassicItems
 
         public static GameObject panicMinePrefab;
         public static GameObject footMinePrefab;
-        public static BuffIndex footPoisonBuff;
-        public static DotController.DotIndex footPoisonDot;
         public static GameObject instantMinePrefab;
         public static GameObject gradiusOptionPrefab;
         public static GameObject flamethrowerEffectPrefab;
         public static GameObject mortarPrefab;
+
+        public static BuffIndex footPoisonBuff;
+        public static BuffIndex droneRepairKitRegenBuff;
+
+        public static DotController.DotIndex footPoisonDot;
 
         public bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
 
@@ -206,7 +209,7 @@ namespace Chen.ClassicItems
 
             Logger.LogDebug("Registering buffs...");
 
-            var poisonBuffDef = new CustomBuff(new BuffDef
+            CustomBuff poisonBuffDef = new CustomBuff(new BuffDef
             {
                 buffColor = new Color(1, 121, 91),
                 canStack = true,
@@ -215,6 +218,15 @@ namespace Chen.ClassicItems
                 iconPath = "@ChensClassicItems:Assets/ClassicItems/icons/footmine_buff_icon.png"
             });
             footPoisonBuff = BuffAPI.Add(poisonBuffDef);
+
+            CustomBuff droneRepairKitRegenBuffDef = new CustomBuff(new BuffDef
+            {
+                canStack = true,
+                isDebuff = false,
+                name = "CCIDroneRepairKit",
+                iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/dronerepairkit_buff_icon.png"
+            });
+            droneRepairKitRegenBuff = BuffAPI.Add(droneRepairKitRegenBuffDef);
 
             Logger.LogDebug("Registering DoTs...");
 
