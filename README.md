@@ -6,25 +6,22 @@ An extension mod for **ThinkInvis.ClassicItems**!
 
 This mod also adds items from Risk of Rain 1 that did not make it to Risk of Rain 2.
 
-Not only that, but this mod will also add classic items from different games.
-
 ## Installation
 
 Use **r2modman** mod manager to install this mod.
 
 ### Current Additions
 #### Equipment
-- [RoR1] Drone Repair Kit
-- [RoR1] Instant Minefield
+- Drone Repair Kit
+- Instant Minefield
 #### Tier 1
-- [RoR1] Mortar Tube
+- Mortar Tube
 #### Tier 2
-- [RoR1] Arms Race
-- [RoR1] Dead Man's Foot
-- [RoR1] Panic Mines
+- Arms Race
+- Dead Man's Foot
+- Panic Mines
 #### Tier 3
-- [RoR1] AtG Missile Mk. 2
-- [Gradius] Gradius' Option
+- AtG Missile Mk. 2
 
 ### More Information
 
@@ -35,6 +32,9 @@ Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
 GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
+
+**1.3.1**
+- Remove Gradius' Option. It is now included in a separate mod.
 
 **1.3.0**
 - Implement Drone Repair Kit!

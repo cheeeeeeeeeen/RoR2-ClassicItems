@@ -3,7 +3,6 @@
 using BepInEx;
 using BepInEx.Configuration;
 using R2API;
-using R2API.Networking;
 using R2API.Utils;
 using RoR2;
 using RoR2.Projectile;
@@ -13,7 +12,6 @@ using System.Reflection;
 using TILER2;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
 using static TILER2.MiscUtil;
 using Path = System.IO.Path;
 using ThinkInvisCI = ThinkInvisible.ClassicItems;
@@ -23,7 +21,7 @@ namespace Chen.ClassicItems
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [BepInDependency(ThinkInvisCI.ClassicItemsPlugin.ModGuid, ThinkInvisCI.ClassicItemsPlugin.ModVer)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
-    [R2APISubmoduleDependency(nameof(NetworkingAPI), nameof(DotAPI), nameof(ItemAPI), nameof(LanguageAPI), nameof(ResourcesAPI),
+    [R2APISubmoduleDependency(nameof(DotAPI), nameof(ItemAPI), nameof(LanguageAPI), nameof(ResourcesAPI),
                               nameof(PlayerAPI), nameof(PrefabAPI), nameof(BuffAPI), nameof(LoadoutAPI))]
     public class ClassicItemsPlugin : BaseUnityPlugin
     {
@@ -31,7 +29,7 @@ namespace Chen.ClassicItems
 #if DEBUG
             "0." +
 #endif
-            "1.3.0";
+            "1.3.1";
 
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";
@@ -53,8 +51,6 @@ namespace Chen.ClassicItems
         public static GameObject panicMinePrefab;
         public static GameObject footMinePrefab;
         public static GameObject instantMinePrefab;
-        public static GameObject gradiusOptionPrefab;
-        public static GameObject flamethrowerEffectPrefab;
         public static GameObject mortarPrefab;
 
         public static BuffIndex footPoisonBuff;
@@ -178,18 +174,7 @@ namespace Chen.ClassicItems
             Logger.LogDebug("No need. ThinkInvis.ClassicItems has added the needed actions.");
 
             Logger.LogDebug("Creating new prefabs...");
-
-            GameObject aPrefab = Resources.Load<GameObject>("@ChensClassicItems:assets/option/optionorb.prefab");
-            if (aPrefab)
-            {
-                aPrefab.AddComponent<NetworkIdentity>();
-                aPrefab.AddComponent<OptionBehavior>();
-                aPrefab.AddComponent<Flicker>();
-                gradiusOptionPrefab = aPrefab.InstantiateClone("GradiusOption");
-                Logger.LogDebug("Successfully created GradiusOption prefab.");
-                Destroy(aPrefab);
-            }
-            else Logger.LogError("Failed to create GradiusOption: Resource not found or is null.");
+            Logger.LogDebug("No new prefabs found.");
 
             Logger.LogDebug("Cloning needed prefabs...");
 
@@ -200,8 +185,6 @@ namespace Chen.ClassicItems
             Destroy(footMinePrefab.GetComponent<ProjectileDeployToOwner>());
             instantMinePrefab = engiMinePrefab.InstantiateClone("InstantMine");
             Destroy(instantMinePrefab.GetComponent<ProjectileDeployToOwner>());
-
-            flamethrowerEffectPrefab = Resources.Load<GameObject>("prefabs/effects/DroneFlamethrowerEffect");
 
             GameObject paladinRocket = Resources.Load<GameObject>("prefabs/projectiles/PaladinRocket");
             mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile");
@@ -247,9 +230,7 @@ namespace Chen.ClassicItems
             }
 
             Logger.LogDebug("Registering custom network messages...");
-
-            NetworkingAPI.RegisterMessageType<SpawnOptionsForClients>();
-            NetworkingAPI.RegisterMessageType<SyncFlamethrowerEffectForClients>();
+            Logger.LogDebug("No custom network messages found.");
 
             Logger.LogDebug("Initial setup done!");
         }

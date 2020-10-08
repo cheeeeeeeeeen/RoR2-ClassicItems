@@ -37,7 +37,7 @@ namespace Chen.ClassicItems
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Stacking value of Missile Damage Coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
-        public float missileStackDamage { get; private set; } = 0f; 
+        public float missileStackDamage { get; private set; } = 0f;
 
         public override bool itemAIB { get; protected set; } = true;
 
