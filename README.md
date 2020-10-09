@@ -10,20 +10,20 @@ This mod also adds items from Risk of Rain 1 that did not make it to Risk of Rai
 
 Use **r2modman** mod manager to install this mod.
 
-### Current Additions
-#### Equipment
+## Current Additions
+### Equipment
 - Drone Repair Kit
 - Instant Minefield
-#### Tier 1
+### Tier 1
 - Mortar Tube
-#### Tier 2
+### Tier 2
 - Arms Race
 - Dead Man's Foot
 - Panic Mines
-#### Tier 3
+### Tier 3
 - AtG Missile Mk. 2
 
-### More Information
+## More Information
 
 Check out the original ClassicItems made by ThinkInvisible.
 
