@@ -75,6 +75,13 @@ namespace Chen.ClassicItems
                         (value, inv, master) => { return $"Damage: {Pct(value, 0)}"; }
                     ));
                 }
+                if (Compat_BetterUI.enabled)
+                {
+                    Compat_BetterUI.AddEffect(regIndex, procChance, stackChance, Compat_BetterUI.ChanceFormatter, Compat_BetterUI.LinearStacking,
+                        (value, extraStackValue, procCoefficient) => {
+                            return Mathf.CeilToInt((capChance - value * procCoefficient) / (extraStackValue * procCoefficient)) + 1;
+                        });
+                }
             };
         }
 
