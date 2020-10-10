@@ -1,9 +1,9 @@
 {
-  "name": "Chen's Classic Items",
+  "name": "ChensClassicItems",
   "version_number": "1.3.1",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
   "description": "Remove Gradius' Option and moved it to Chen's Gradius Mod. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1 as well as from other games.",
   "dependencies": [
-    "ThinkInvis-ClassicItems-4.5.4"
+    "ThinkInvis-ClassicItems-4.5.5"
   ]
 }
