@@ -2,6 +2,8 @@
 
 using BepInEx;
 using BepInEx.Configuration;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using R2API;
 using R2API.Utils;
 using RoR2;
@@ -55,8 +57,10 @@ namespace Chen.ClassicItems
 
         public static BuffIndex footPoisonBuff;
         public static BuffIndex droneRepairKitRegenBuff;
+        public static BuffIndex thalliumPoisonBuff;
 
         public static DotController.DotIndex footPoisonDot;
+        public static DotController.DotIndex thalliumPoisonDot;
 
         public bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
 
@@ -171,7 +175,8 @@ namespace Chen.ClassicItems
             }
 
             Logger.LogDebug("Tweaking vanilla stuff...");
-            Logger.LogDebug("No need. ThinkInvis.ClassicItems has added the needed actions.");
+
+
 
             Logger.LogDebug("Creating new prefabs...");
             Logger.LogDebug("No new prefabs found.");
@@ -204,6 +209,7 @@ namespace Chen.ClassicItems
 
             CustomBuff droneRepairKitRegenBuffDef = new CustomBuff(new BuffDef
             {
+                buffColor = Color.green,
                 canStack = true,
                 isDebuff = false,
                 name = "CCIDroneRepairKit",
@@ -211,9 +217,19 @@ namespace Chen.ClassicItems
             });
             droneRepairKitRegenBuff = BuffAPI.Add(droneRepairKitRegenBuffDef);
 
+            CustomBuff thalliumBuffDef = new CustomBuff(new BuffDef
+            {
+                buffColor = new Color(66, 28, 82),
+                canStack = false,
+                isDebuff = true,
+                name = "CCIThalliumPoison",
+                iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/thallium_buff_icon.png"
+            });
+            thalliumPoisonBuff = BuffAPI.Add(thalliumBuffDef);
+
             Logger.LogDebug("Registering DoTs...");
 
-            var poisonDotDef = new DotController.DotDef
+            DotController.DotDef poisonDotDef = new DotController.DotDef
             {
                 interval = 1,
                 damageCoefficient = 1,
@@ -221,6 +237,26 @@ namespace Chen.ClassicItems
                 associatedBuff = footPoisonBuff
             };
             footPoisonDot = DotAPI.RegisterDotDef(poisonDotDef);
+
+            DotController.DotDef thalliumDotDef = new DotController.DotDef
+            {
+                interval = .5f,
+                damageCoefficient = 1,
+                damageColorIndex = DamageColorIndex.DeathMark,
+                associatedBuff = thalliumPoisonBuff
+            };
+            thalliumPoisonDot = DotAPI.RegisterDotDef(thalliumDotDef, (dotController, dotStack) =>
+            {
+                CharacterBody attackerBody = dotStack.attackerObject.GetComponent<CharacterBody>();
+                if (attackerBody)
+                {
+                    Thallium inst = Thallium.instance;
+                    float damageMultiplier = inst.dmgCoefficient + inst.dmgStack * (inst.GetCount(attackerBody) - 1);
+                    float poisonDamage = 0f;
+                    if (dotController.victimBody) poisonDamage += dotController.victimBody.damage;
+                    dotStack.damage = poisonDamage * damageMultiplier;
+                }
+            });
 
             Logger.LogDebug("Registering item behaviors...");
 

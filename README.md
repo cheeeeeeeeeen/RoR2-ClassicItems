@@ -22,6 +22,7 @@ Use **r2modman** mod manager to install this mod.
 - Panic Mines
 ### Tier 3
 - AtG Missile Mk. 2
+- Thallium
 
 ## More Information
 
@@ -32,6 +33,11 @@ Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
 GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
+
+**1.4.0**
+- Implement Thallium!
+- Add BetterUI Compats for more descriptions regarding the skills for survivors.
+- Update references for dependencies.
 
 **1.3.1**
 - Remove Gradius' Option. It is now included in a separate mod.
