@@ -34,6 +34,11 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
 
+**1.4.1**
+- Fix some description bugs.
+- Fix the actual version of the mod.
+- Improve the code base and optimize some implementations.
+
 **1.4.0**
 - Implement Thallium!
 - Add BetterUI Compats for more descriptions regarding the skills for survivors.
