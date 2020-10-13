@@ -2,12 +2,9 @@
 
 using BepInEx;
 using BepInEx.Configuration;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
 using R2API;
 using R2API.Utils;
 using RoR2;
-using RoR2.Projectile;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -31,7 +28,7 @@ namespace Chen.ClassicItems
 #if DEBUG
             "0." +
 #endif
-            "1.3.1";
+            "1.4.1";
 
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";
@@ -49,18 +46,6 @@ namespace Chen.ClassicItems
         });
 
         internal static BepInEx.Logging.ManualLogSource _logger;
-
-        public static GameObject panicMinePrefab;
-        public static GameObject footMinePrefab;
-        public static GameObject instantMinePrefab;
-        public static GameObject mortarPrefab;
-
-        public static BuffIndex footPoisonBuff;
-        public static BuffIndex droneRepairKitRegenBuff;
-        public static BuffIndex thalliumPoisonBuff;
-
-        public static DotController.DotIndex footPoisonDot;
-        public static DotController.DotIndex thalliumPoisonDot;
 
         public bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
 
@@ -97,7 +82,7 @@ namespace Chen.ClassicItems
             Logger.LogDebug("Performing plugin setup:");
 
 #if DEBUG
-            Logger.LogWarning("Running test build with debug enabled! If you're seeing this after downloading the mod from Thunderstore, please panic.");
+            Logger.LogWarning("Running test build with debug enabled! Report to CHEN if you're seeing this!");
             On.RoR2.Networking.GameNetworkManager.OnClientConnect += (self, user, t) => { };
 #endif
 
@@ -174,99 +159,11 @@ namespace Chen.ClassicItems
                     Logger.LogMessage("    Other CCI" + x.itemCodeName.PadRight(longestName) + " / N/A");
             }
 
-            Logger.LogDebug("Tweaking vanilla stuff...");
-
-
-
-            Logger.LogDebug("Creating new prefabs...");
-            Logger.LogDebug("No new prefabs found.");
-
-            Logger.LogDebug("Cloning needed prefabs...");
-
-            GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
-            panicMinePrefab = engiMinePrefab.InstantiateClone("PanicMine");
-            Destroy(panicMinePrefab.GetComponent<ProjectileDeployToOwner>());
-            footMinePrefab = engiMinePrefab.InstantiateClone("FootMine");
-            Destroy(footMinePrefab.GetComponent<ProjectileDeployToOwner>());
-            instantMinePrefab = engiMinePrefab.InstantiateClone("InstantMine");
-            Destroy(instantMinePrefab.GetComponent<ProjectileDeployToOwner>());
-
-            GameObject paladinRocket = Resources.Load<GameObject>("prefabs/projectiles/PaladinRocket");
-            mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile");
-            mortarPrefab.AddComponent<MortarGravity>();
-
-            Logger.LogDebug("Registering buffs...");
-
-            CustomBuff poisonBuffDef = new CustomBuff(new BuffDef
-            {
-                buffColor = new Color(1, 121, 91),
-                canStack = true,
-                isDebuff = true,
-                name = "CCIFootPoison",
-                iconPath = "@ChensClassicItems:Assets/ClassicItems/icons/footmine_buff_icon.png"
-            });
-            footPoisonBuff = BuffAPI.Add(poisonBuffDef);
-
-            CustomBuff droneRepairKitRegenBuffDef = new CustomBuff(new BuffDef
-            {
-                buffColor = Color.green,
-                canStack = true,
-                isDebuff = false,
-                name = "CCIDroneRepairKit",
-                iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/dronerepairkit_buff_icon.png"
-            });
-            droneRepairKitRegenBuff = BuffAPI.Add(droneRepairKitRegenBuffDef);
-
-            CustomBuff thalliumBuffDef = new CustomBuff(new BuffDef
-            {
-                buffColor = new Color(66, 28, 82),
-                canStack = false,
-                isDebuff = true,
-                name = "CCIThalliumPoison",
-                iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/thallium_buff_icon.png"
-            });
-            thalliumPoisonBuff = BuffAPI.Add(thalliumBuffDef);
-
-            Logger.LogDebug("Registering DoTs...");
-
-            DotController.DotDef poisonDotDef = new DotController.DotDef
-            {
-                interval = 1,
-                damageCoefficient = 1,
-                damageColorIndex = DamageColorIndex.Poison,
-                associatedBuff = footPoisonBuff
-            };
-            footPoisonDot = DotAPI.RegisterDotDef(poisonDotDef);
-
-            DotController.DotDef thalliumDotDef = new DotController.DotDef
-            {
-                interval = .5f,
-                damageCoefficient = 1,
-                damageColorIndex = DamageColorIndex.DeathMark,
-                associatedBuff = thalliumPoisonBuff
-            };
-            thalliumPoisonDot = DotAPI.RegisterDotDef(thalliumDotDef, (dotController, dotStack) =>
-            {
-                CharacterBody attackerBody = dotStack.attackerObject.GetComponent<CharacterBody>();
-                if (attackerBody)
-                {
-                    Thallium inst = Thallium.instance;
-                    float damageMultiplier = inst.dmgCoefficient + inst.dmgStack * (inst.GetCount(attackerBody) - 1);
-                    float poisonDamage = 0f;
-                    if (dotController.victimBody) poisonDamage += dotController.victimBody.damage;
-                    dotStack.damage = poisonDamage * damageMultiplier;
-                }
-            });
-
             Logger.LogDebug("Registering item behaviors...");
-
             foreach (ItemBoilerplate x in chensItemList)
             {
                 x.SetupBehavior();
             }
-
-            Logger.LogDebug("Registering custom network messages...");
-            Logger.LogDebug("No custom network messages found.");
 
             Logger.LogDebug("Initial setup done!");
         }

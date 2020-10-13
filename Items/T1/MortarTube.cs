@@ -1,4 +1,5 @@
-﻿using RoR2;
+﻿using R2API;
+using RoR2;
 using RoR2.Projectile;
 using System.Collections.ObjectModel;
 using TILER2;
@@ -63,7 +64,7 @@ namespace Chen.ClassicItems
             string desc = $"<style=cIsDamage>{Pct(procChance, 0, 1)}</style>";
             if (stackChance > 0f) desc += $" <style=cStack>(+{Pct(stackChance, 0, 1)} per stack, up to {Pct(capChance, 0, 1)})</style>";
             desc += $" chance to launch a mortar that deals <style=cIsDamage>{Pct(dmgCoefficient, 0)}</style>";
-            if (dmgStack > 0f) desc += $" <style=cStack>(+{dmgStack} per stack)</style>";
+            if (dmgStack > 0f) desc += $" <style=cStack>(+{Pct(dmgStack, 0)} per stack)</style>";
             desc += ". Affected by proc coefficient. The mortar deals an AoE damage.";
             if (stackAmount > 0) desc += " More mortars may be launched upon stacking.";
             return desc;
@@ -78,8 +79,14 @@ namespace Chen.ClassicItems
             "\"I'll take it.\"\n\n" +
             "A Mortar Tube, huh? I never knew they actually existed. Is it really a relic of history now? I wonder if it really works. It did look simple... and old.";
 
+        private static GameObject mortarPrefab;
+
         public MortarTube()
         {
+            GameObject paladinRocket = Resources.Load<GameObject>("prefabs/projectiles/PaladinRocket");
+            mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile");
+            mortarPrefab.AddComponent<MortarGravity>();
+
             onBehav += () =>
             {
                 if (Compat_ItemStats.enabled)
@@ -156,7 +163,7 @@ namespace Chen.ClassicItems
             procChainMask2.AddProc(ProcType.Missile);
             FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
             {
-                projectilePrefab = ClassicItemsPlugin.mortarPrefab,
+                projectilePrefab = mortarPrefab,
                 position = position,
                 procChainMask = procChainMask2,
                 target = victim,

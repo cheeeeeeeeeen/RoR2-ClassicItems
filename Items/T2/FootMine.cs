@@ -1,6 +1,7 @@
 ﻿using EntityStates;
 using EntityStates.Engi.EngiWeapon;
 using EntityStates.Engi.Mine;
+using R2API;
 using RoR2;
 using RoR2.Projectile;
 using System.Collections.Generic;
@@ -65,8 +66,35 @@ namespace Chen.ClassicItems
             "I stayed silent, confused as to what I should really feel at the moment: disgust or sadness? I don't know." +
             "\"His foot can be a good trap. We need everything in order to survive.\"";
 
+        private static GameObject minePrefab;
+        private static BuffIndex poisonBuff;
+        private static DotController.DotIndex poisonDot;
+
         public FootMine()
         {
+            GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
+            minePrefab = engiMinePrefab.InstantiateClone("FootMine");
+            Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
+
+            CustomBuff poisonBuffDef = new CustomBuff(new BuffDef
+            {
+                buffColor = new Color(1, 121, 91),
+                canStack = true,
+                isDebuff = true,
+                name = "CCIFootPoison",
+                iconPath = "@ChensClassicItems:Assets/ClassicItems/icons/footmine_buff_icon.png"
+            });
+            poisonBuff = BuffAPI.Add(poisonBuffDef);
+
+            DotController.DotDef poisonDotDef = new DotController.DotDef
+            {
+                interval = 1,
+                damageCoefficient = 1,
+                damageColorIndex = DamageColorIndex.Poison,
+                associatedBuff = poisonBuff
+            };
+            poisonDot = DotAPI.RegisterDotDef(poisonDotDef);
+
             onBehav += () =>
             {
                 if (Compat_ItemStats.enabled)
@@ -114,7 +142,6 @@ namespace Chen.ClassicItems
                 return;
 
             Vector3 corePos = Util.GetCorePosition(vBody);
-            GameObject minePrefab = ClassicItemsPlugin.footMinePrefab;
 
             Util.PlaySound(FireMines.throwMineSoundString, vGameObject);
             ProjectileManager.instance.FireProjectile(minePrefab, corePos, MineDropDirection(),
@@ -167,7 +194,7 @@ namespace Chen.ClassicItems
                     {
                         if (tcpt.body && tcpt.body.mainHurtBox && tcpt.body.isActiveAndEnabled)
                         {
-                            DotController.InflictDot(tcpt.gameObject, owner, ClassicItemsPlugin.footPoisonDot, baseTicks + stackTicks * (icnt - 1), baseDmg + stackDmg * (icnt - 1));
+                            DotController.InflictDot(tcpt.gameObject, owner, poisonDot, baseTicks + stackTicks * (icnt - 1), baseDmg + stackDmg * (icnt - 1));
                         }
                     }
                 }

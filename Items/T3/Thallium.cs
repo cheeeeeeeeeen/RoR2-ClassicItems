@@ -1,5 +1,6 @@
 ﻿//using Mono.Cecil.Cil;
 //using MonoMod.Cil;
+using R2API;
 using RoR2;
 using System.Collections.ObjectModel;
 //using System.Reflection;
@@ -63,10 +64,42 @@ namespace Chen.ClassicItems
         protected override string NewLangLore(string langid = null) =>
             "\"She shouldn't notice,\" it says.\n\nWell, that was dark. Few words, but contains heavy intent.\n\nWe will now use it for our survival instead.";
 
+        private static BuffIndex poisonBuff;
+        private static DotController.DotIndex poisonDot;
+
         public Thallium()
         {
             onBehav += () =>
             {
+                CustomBuff thalliumBuffDef = new CustomBuff(new BuffDef
+                {
+                    buffColor = new Color(66, 28, 82),
+                    canStack = false,
+                    isDebuff = true,
+                    name = "CCIThalliumPoison",
+                    iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/thallium_buff_icon.png"
+                });
+                poisonBuff = BuffAPI.Add(thalliumBuffDef);
+
+                DotController.DotDef thalliumDotDef = new DotController.DotDef
+                {
+                    interval = .5f,
+                    damageCoefficient = 1,
+                    damageColorIndex = DamageColorIndex.DeathMark,
+                    associatedBuff = poisonBuff
+                };
+                poisonDot = DotAPI.RegisterDotDef(thalliumDotDef, (dotController, dotStack) =>
+                {
+                    CharacterBody attackerBody = dotStack.attackerObject.GetComponent<CharacterBody>();
+                    if (attackerBody)
+                    {
+                        float damageMultiplier = dmgCoefficient + dmgStack * (GetCount(attackerBody) - 1);
+                        float poisonDamage = 0f;
+                        if (dotController.victimBody) poisonDamage += dotController.victimBody.damage;
+                        dotStack.damage = poisonDamage * damageMultiplier;
+                    }
+                });
+
                 if (Compat_ItemStats.enabled)
                 {
                     Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
@@ -117,7 +150,7 @@ namespace Chen.ClassicItems
             var vicb = victim.GetComponent<CharacterBody>();
 
             CharacterBody body = damageInfo.attacker.GetComponent<CharacterBody>();
-            if (!body || !vicb || !vicb.healthComponent || !vicb.mainHurtBox || vicb.HasBuff(ClassicItemsPlugin.thalliumPoisonBuff)) return;
+            if (!body || !vicb || !vicb.healthComponent || !vicb.mainHurtBox || vicb.HasBuff(poisonBuff)) return;
 
             CharacterMaster chrm = body.master;
             if (!chrm) return;
@@ -131,12 +164,12 @@ namespace Chen.ClassicItems
             if (m2Proc > capChance) m2Proc = capChance;
             if (!Util.CheckRoll(m2Proc * damageInfo.procCoefficient, chrm)) return;
 
-            DotController.InflictDot(victim, damageInfo.attacker, ClassicItemsPlugin.thalliumPoisonDot, duration);
+            DotController.InflictDot(victim, damageInfo.attacker, poisonDot, duration);
         }
 
         private void On_CharacterBody_RecalculateStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
-            if (self.HasBuff(ClassicItemsPlugin.thalliumPoisonBuff))
+            if (self.HasBuff(poisonBuff))
             {
                 float baseMoveSpeed = self.baseMoveSpeed + self.levelMoveSpeed * (self.level - 1);
                 float flatMovementReduction = baseMoveSpeed * (1f - slowMultiplier);

@@ -1,4 +1,5 @@
-﻿using RoR2;
+﻿using R2API;
+using RoR2;
 using System;
 using System.Collections.Generic;
 using ThinkInvisible.ClassicItems;
@@ -91,10 +92,22 @@ namespace Chen.ClassicItems
             "Turret1"
         };
 
+        private static BuffIndex regenBuff;
+
         public DroneRepairKit()
         {
             onBehav += () =>
             {
+                CustomBuff regenBuffDef = new CustomBuff(new BuffDef
+                {
+                    buffColor = Color.green,
+                    canStack = true,
+                    isDebuff = false,
+                    name = "CCIDroneRepairKit",
+                    iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/dronerepairkit_buff_icon.png"
+                });
+                regenBuff = BuffAPI.Add(regenBuffDef);
+
                 Embryo.instance.Compat_Register(regIndex);
             };
         }
@@ -116,10 +129,10 @@ namespace Chen.ClassicItems
                 float currentRegen = healthRegenAmount;
                 if (regenType == 0) currentRegen *= self.baseMaxHealth + self.levelMaxHealth * (self.level - 1);
                 orig(self);
-                if (self && self.HasBuff(ClassicItemsPlugin.droneRepairKitRegenBuff))
+                if (self && self.HasBuff(regenBuff))
                 {
-                    ClassicItemsPlugin._logger.LogMessage(self.GetBuffCount(ClassicItemsPlugin.droneRepairKitRegenBuff));
-                    self.regen += currentRegen * self.GetBuffCount(ClassicItemsPlugin.droneRepairKitRegenBuff);
+                    ClassicItemsPlugin._logger.LogMessage(self.GetBuffCount(regenBuff));
+                    self.regen += currentRegen * self.GetBuffCount(regenBuff);
                 }
             }
             else orig(self);
@@ -170,7 +183,7 @@ namespace Chen.ClassicItems
             if (!body) body = healthComponent.body;
             if (healType == 0) healthComponent.HealFraction(healthRestoreAmount, default);
             else healthComponent.Heal(healthRestoreAmount, default);
-            if (enableRegenBuff) body.AddTimedBuff(ClassicItemsPlugin.droneRepairKitRegenBuff, regenDuration);
+            if (enableRegenBuff) body.AddTimedBuff(regenBuff, regenDuration);
         }
     }
 }

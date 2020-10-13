@@ -1,5 +1,6 @@
 ﻿using EntityStates.Engi.EngiWeapon;
 using EntityStates.Engi.Mine;
+using R2API;
 using RoR2;
 using RoR2.Projectile;
 using ThinkInvisible.ClassicItems;
@@ -52,10 +53,16 @@ namespace Chen.ClassicItems
             "\"Could have used a better name, though. Instant Minefield doesn't exactly sound legit.\"\n\n" +
             "\"End of log.\"";
 
+        private static GameObject minePrefab;
+
         public InstantMinefield()
         {
             onBehav += () =>
             {
+                GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
+                minePrefab = engiMinePrefab.InstantiateClone("InstantMine");
+                Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
+
                 Embryo.instance.Compat_Register(regIndex);
             };
         }
@@ -88,7 +95,6 @@ namespace Chen.ClassicItems
         private void DropMines(CharacterBody userBody, GameObject userGameObject, float yMult = 1f)
         {
             Vector3 corePos = Util.GetCorePosition(userBody);
-            GameObject minePrefab = ClassicItemsPlugin.instantMinePrefab;
             for (int n = 0; n < mineNumber; n++)
             {
                 ProjectileManager.instance.FireProjectile(minePrefab, corePos, MineDropDirection(yMult),
