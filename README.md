@@ -35,9 +35,10 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 ## Changelog
 
 **1.4.1**
-- Fix some description bugs.
+- Fix and improve some descriptions.
 - Fix the actual version of the mod.
 - Improve the code base and optimize some implementations.
+- Add a short lore to Drone Repair Kit.
 
 **1.4.0**
 - Implement Thallium!
