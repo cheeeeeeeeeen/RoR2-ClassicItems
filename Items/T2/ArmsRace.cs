@@ -214,7 +214,7 @@ namespace Chen.ClassicItems
             procChainMask2.AddProc(ProcType.Missile);
             FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
             {
-                projectilePrefab = ClassicItemsPlugin.mortarPrefab,
+                projectilePrefab = MortarTube.mortarPrefab,
                 position = position,
                 procChainMask = procChainMask2,
                 owner = gameObject,
