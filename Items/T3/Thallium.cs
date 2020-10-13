@@ -55,9 +55,9 @@ namespace Chen.ClassicItems
             if (stackChance > 0f) desc += $" <style=cStack>(+{Pct(stackChance, 0, 1)} per stack, up to {Pct(capChance, 0, 1)})</style>";
             desc += $" chance to apply Thallium poisoning that deals <style=cIsDamage>{Pct(dmgCoefficient * duration, 0)}</style>";
             if (dmgStack > 0f) desc += $" <style=cStack>(+{Pct(dmgStack * duration, 0)} per stack)</style>";
-            desc += $" damage based on the victim's damage over {duration} seconds. Victims' base movement speed are also reduced by" +
+            desc += $" damage based on the victim's damage over <style=cIsDamage>{duration} seconds</style>. Victims' base movement speed are also reduced by" +
                     $" <style=cIsDamage>{Pct(slowMultiplier, 0)}</style>. Affected by proc coefficient." +
-                    $" The poison cannot be reapplied when affected, and is not stackable.";
+                    $" <style=cDeath>The poison cannot be reapplied when affected, and is not stackable.</style>";
             return desc;
         }
 

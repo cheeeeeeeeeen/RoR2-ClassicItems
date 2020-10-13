@@ -50,9 +50,9 @@ namespace Chen.ClassicItems
         {
             string desc = $"<style=cDeath>When hit for more than {Pct(healthThreshold)} max health</style>, drop a poison mine with <style=cIsDamage>{Pct(baseDmg)}</style>";
             if (stackDmg > 0f) desc += $" <style=cStack>(+{Pct(stackDmg)} per stack)</style>";
-            desc += $" damage per second. Poison lasts for <style=cStack>{baseTicks - 1}</style>";
+            desc += $" damage per second. Poison lasts for <style=cIsDamage>{baseTicks - 1}</style>";
             if (stackTicks > 0) desc += $" <style=cStack>(+{stackTicks} per stack)</style>";
-            desc += " seconds. <style=cIsDamage>Poison</style> is stackable. <style=cDeath>The mine will be destroyed shortly after the owner dies.</style>";
+            desc += "<style=cIsDamage> seconds</style>. Poison is <style=cIsUtility>stackable</style>. <style=cDeath>The mine will be destroyed shortly after the owner dies.</style>";
             return desc;
         }
 

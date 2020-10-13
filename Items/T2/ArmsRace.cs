@@ -49,9 +49,9 @@ namespace Chen.ClassicItems
         {
             string desc = $"Owned Drones have a <style=cIsDamage>{Pct(mortarProcChance, 0, 1)}</style> <style=cStack>(+{Pct(mortarProcChance, 0, 1)} per stack, multiplicative)</style>";
             desc += $" to launch a mortar and a <style=cIsDamage>{Pct(missileProcChance, 0, 1)}</style> <style=cStack>(+{Pct(missileProcChance, 0, 1)} per stack, multiplicative)</style>";
-            desc += $" to fire a missile for {Pct(mortarDamage, 0)}";
+            desc += $" to fire a missile for <style=cIsDamage>{Pct(mortarDamage, 0)}</style>";
             if (mortarStackDamage > 0) desc += $" <style=cStack>(+{Pct(mortarStackDamage, 0)} per stack)</style>";
-            desc += $" and {Pct(missileDamage, 0)}";
+            desc += $" and <style=cIsDamage>{Pct(missileDamage, 0)}</style>";
             if (missileStackDamage > 0) desc += $" <style=cStack>(+{Pct(missileStackDamage, 0)} per stack)</style>";
             desc += " respectively.";
             return desc;
