@@ -75,7 +75,11 @@ namespace Chen.ClassicItems
             return desc;
         }
 
-        protected override string NewLangLore(string langid = null) => "A relic of times long past (ChensClassicItems mod)";
+        protected override string NewLangLore(string langid = null) =>
+            "Another old item found from random places of the Planet, but our machinist took it and started tinkering with the tools inside it.\n\n" +
+            "\"Ah, this is a good find,\" he exclaimed as he left with the toolbox.\n\n" +
+            "It looked like nanodrones were inside that box. Ah, for as long as it is put to use, I have no problem with it.\n\n" +
+            "\"What are you doing? Wait, are you trying to fuse your own---\"";
 
         public static readonly List<string> DronesList = new List<string>
         {
