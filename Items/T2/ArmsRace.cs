@@ -1,4 +1,5 @@
 ﻿using EntityStates.Drone.DroneWeapon;
+using EntityStates.Squid.SquidWeapon;
 using RoR2;
 using RoR2.Projectile;
 using System.Collections.ObjectModel;
@@ -39,16 +40,21 @@ namespace Chen.ClassicItems
         [AutoItemConfig("Stacking value of Missile Damage Coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float missileStackDamage { get; private set; } = 0f;
 
+        [AutoItemConfig("Determines whether Squid Polyp will work with Arms Race.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        public bool allowSquidPolyps { get; private set; } = false;
+
         public override bool itemAIB { get; protected set; } = true;
 
         protected override string NewLangName(string langid = null) => displayName;
 
-        protected override string NewLangPickup(string langid = null) => $"Drones are equipped with explosive weaponry.";
+        protected override string NewLangPickup(string langid = null) => "Drones are equipped with explosive weaponry.";
 
         protected override string NewLangDesc(string langid = null)
         {
-            string desc = $"Owned Drones have a <style=cIsDamage>{Pct(mortarProcChance, 0, 1)}</style> <style=cStack>(+{Pct(mortarProcChance, 0, 1)} per stack, multiplicative)</style>";
-            desc += $" to launch a mortar and a <style=cIsDamage>{Pct(missileProcChance, 0, 1)}</style> <style=cStack>(+{Pct(missileProcChance, 0, 1)} per stack, multiplicative)</style>";
+            string desc = $"Owned Drones and Turrets have a <style=cIsDamage>{Pct(mortarProcChance, 0, 1)}</style>";
+            desc += $" <style=cStack>(+{Pct(mortarProcChance, 0, 1)} per stack, multiplicative)</style>";
+            desc += $" to launch a mortar and a <style=cIsDamage>{Pct(missileProcChance, 0, 1)}</style>";
+            desc += $" <style=cStack>(+{Pct(missileProcChance, 0, 1)} per stack, multiplicative)</style>";
             desc += $" to fire a missile for <style=cIsDamage>{Pct(mortarDamage, 0)}</style>";
             if (mortarStackDamage > 0) desc += $" <style=cStack>(+{Pct(mortarStackDamage, 0)} per stack)</style>";
             desc += $" and <style=cIsDamage>{Pct(missileDamage, 0)}</style>";
@@ -100,6 +106,7 @@ namespace Chen.ClassicItems
             On.EntityStates.Drone.DroneWeapon.FireMissileBarrage.FireMissile += FireMissileBarrage_FireMissile;
             On.EntityStates.Drone.DroneWeapon.FireTwinRocket.FireProjectile += FireTwinRocket_FireProjectile;
             On.EntityStates.Mage.Weapon.Flamethrower.FireGauntlet += Flamethrower_FireGauntlet;
+            On.EntityStates.Squid.SquidWeapon.FireSpine.FireOrbArrow += FireSpine_FireOrbArrow;
         }
 
         protected override void UnloadBehavior()
@@ -110,6 +117,7 @@ namespace Chen.ClassicItems
             On.EntityStates.Drone.DroneWeapon.FireMissileBarrage.FireMissile -= FireMissileBarrage_FireMissile;
             On.EntityStates.Drone.DroneWeapon.FireTwinRocket.FireProjectile -= FireTwinRocket_FireProjectile;
             On.EntityStates.Mage.Weapon.Flamethrower.FireGauntlet -= Flamethrower_FireGauntlet;
+            On.EntityStates.Squid.SquidWeapon.FireSpine.FireOrbArrow -= FireSpine_FireOrbArrow;
         }
 
         private void Flamethrower_FireGauntlet(On.EntityStates.Mage.Weapon.Flamethrower.orig_FireGauntlet orig, MageWeapon.Flamethrower self, string muzzleString)
@@ -119,6 +127,13 @@ namespace Chen.ClassicItems
             {
                 TriggerArtillery(self.characterBody, self.tickDamageCoefficient * self.damageStat, self.isCrit);
             }
+        }
+
+        private void FireSpine_FireOrbArrow(On.EntityStates.Squid.SquidWeapon.FireSpine.orig_FireOrbArrow orig, FireSpine self)
+        {
+            orig(self);
+            if (!allowSquidPolyps) return;
+            TriggerArtillery(self.characterBody, self.damageStat * FireSpine.damageCoefficient, Util.CheckRoll(self.critStat, self.characterBody.master));
         }
 
         private void FireGatling_OnEnter(On.EntityStates.Drone.DroneWeapon.FireGatling.orig_OnEnter orig, FireGatling self)
