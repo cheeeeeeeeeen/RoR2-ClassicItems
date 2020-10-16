@@ -53,6 +53,7 @@ namespace Chen.ClassicItems
             "But if there is one thing about surviving in this damnable place, then I should trust that this equipment will prove itself useful.";
 
         private static GameObject minePrefab;
+        private static GameObject mineGhostPrefab;
 
         public PanicMines()
         {
@@ -61,6 +62,12 @@ namespace Chen.ClassicItems
                 GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
                 minePrefab = engiMinePrefab.InstantiateClone("PanicMine");
                 Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
+
+                GameObject engiMineGhostPrefab = Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost");
+                mineGhostPrefab = engiMineGhostPrefab.InstantiateClone("PanicMineGhost");
+                SkinnedMeshRenderer mesh = mineGhostPrefab.GetComponentInChildren<SkinnedMeshRenderer>();
+                mesh.material.color = new Color(255, 168, 0);
+                minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
                 if (Compat_ItemStats.enabled)
                 {

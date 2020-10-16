@@ -67,6 +67,7 @@ namespace Chen.ClassicItems
             "\"His foot can be a good trap. We need everything in order to survive.\"";
 
         private static GameObject minePrefab;
+        private static GameObject mineGhostPrefab;
         private static BuffIndex poisonBuff;
         private static DotController.DotIndex poisonDot;
 
@@ -75,6 +76,12 @@ namespace Chen.ClassicItems
             GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
             minePrefab = engiMinePrefab.InstantiateClone("FootMine");
             Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
+
+            GameObject engiMineGhostPrefab = Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost");
+            mineGhostPrefab = engiMineGhostPrefab.InstantiateClone("FootMineGhost");
+            SkinnedMeshRenderer mesh = mineGhostPrefab.GetComponentInChildren<SkinnedMeshRenderer>();
+            mesh.material.color = Color.green;
+            minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
             CustomBuff poisonBuffDef = new CustomBuff(new BuffDef
             {

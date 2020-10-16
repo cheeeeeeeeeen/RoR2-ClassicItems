@@ -54,6 +54,7 @@ namespace Chen.ClassicItems
             "\"End of log.\"";
 
         private static GameObject minePrefab;
+        private static GameObject mineGhostPrefab;
 
         public InstantMinefield()
         {
@@ -62,6 +63,13 @@ namespace Chen.ClassicItems
                 GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
                 minePrefab = engiMinePrefab.InstantiateClone("InstantMine");
                 Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
+
+                GameObject engiMineGhostPrefab = Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost");
+                mineGhostPrefab = engiMineGhostPrefab.InstantiateClone("InstantMineGhost");
+                SkinnedMeshRenderer mesh = mineGhostPrefab.GetComponentInChildren<SkinnedMeshRenderer>();
+                mesh.material.color = new Color(111, 95, 52);
+
+                minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
                 Embryo.instance.Compat_Register(regIndex);
             };
