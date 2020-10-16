@@ -40,7 +40,7 @@ namespace Chen.ClassicItems
         [AutoItemConfig("Stacking value of Missile Damage Coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
         public float missileStackDamage { get; private set; } = 0f;
 
-        [AutoItemConfig("Determines whether Squid Polyp will work with Arms Race.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoItemConfig("Determines whether Squid Polyp will work with Arms Race.")]
         public bool allowSquidPolyps { get; private set; } = false;
 
         public override bool itemAIB { get; protected set; } = true;
