@@ -1,8 +1,8 @@
 {
   "name": "ChensClassicItems",
-  "version_number": "1.4.1",
+  "version_number": "1.4.2",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "Thallium joins Classic Items! Although it is a bit reworked so it is not vague. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "Arms Race now works with Squid Polyps! It is configurable and is disabled by default. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
   "dependencies": [
     "ThinkInvis-ClassicItems-4.5.5"
   ]

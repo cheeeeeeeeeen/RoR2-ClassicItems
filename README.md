@@ -34,6 +34,10 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
 
+**1.4.2**
+- Support Squid Polyps for use with Arms Race. Configurable.
+- Squid Polyps are turned off by default, so turn it on in config if you want to buff them.
+
 **1.4.1**
 - Fix and improve some descriptions.
 - Fix the actual version of the mod.
