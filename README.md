@@ -34,6 +34,9 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
 
+**1.4.3**
+- Recolor the mines for an easier time differentiating which ones are which.
+
 **1.4.2**
 - Support Squid Polyps for use with Arms Race. Configurable.
 - Squid Polyps are turned off by default, so turn it on in config if you want to buff them.
