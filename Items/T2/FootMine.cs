@@ -78,7 +78,7 @@ namespace Chen.ClassicItems
             Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
 
             GameObject engiMineGhostPrefab = Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost");
-            mineGhostPrefab = engiMineGhostPrefab.InstantiateClone("FootMineGhost");
+            mineGhostPrefab = engiMineGhostPrefab.InstantiateClone("FootMineGhost", false);
             SkinnedMeshRenderer mesh = mineGhostPrefab.GetComponentInChildren<SkinnedMeshRenderer>();
             mesh.material.color = Color.green;
             minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
