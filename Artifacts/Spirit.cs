@@ -1,7 +1,4 @@
-﻿using BepInEx.Logging;
-using Chen.ClassicItems;
-using RoR2;
-using RoR2.UI;
+﻿using RoR2;
 using TILER2;
 
 public class Spirit : Artifact<Spirit>
@@ -14,6 +11,7 @@ public class Spirit : Artifact<Spirit>
     public float maximumPossibleSpeedMultiplier { get; private set; } = 3f;
 
     protected override string NewLangName(string langid = null) => displayName;
+
     protected override string NewLangDesc(string langid = null) => "Characters run faster at lower health.";
 
     public Spirit()
