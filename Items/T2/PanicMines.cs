@@ -66,7 +66,7 @@ namespace Chen.ClassicItems
                 GameObject engiMineGhostPrefab = Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost");
                 mineGhostPrefab = engiMineGhostPrefab.InstantiateClone("PanicMineGhost", false);
                 SkinnedMeshRenderer mesh = mineGhostPrefab.GetComponentInChildren<SkinnedMeshRenderer>();
-                mesh.material.color = new Color(255, 168, 0);
+                mesh.material.color = new Color32(255, 168, 0, 255);
                 minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
                 if (Compat_ItemStats.enabled)

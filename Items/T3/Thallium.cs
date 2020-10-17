@@ -73,7 +73,7 @@ namespace Chen.ClassicItems
             {
                 CustomBuff thalliumBuffDef = new CustomBuff(new BuffDef
                 {
-                    buffColor = new Color(66, 28, 82),
+                    buffColor = new Color32(66, 28, 82, 255),
                     canStack = false,
                     isDebuff = true,
                     name = "CCIThalliumPoison",
