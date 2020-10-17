@@ -36,6 +36,10 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
 ## Changelog
 
+**1.4.4**
+- Fix bugs found with the Artifact of Spirit about misbhaving characters, like zooming off the map.
+- Let Artifact of Spirit modify acceleration also to mitigate for their own new speed.
+
 **1.4.3**
 - Implement Artifact of Spirit!
 - Temporary icon for Spirit artifact for now.
