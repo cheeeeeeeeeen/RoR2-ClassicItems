@@ -4,13 +4,15 @@
 
 An extension mod for **ThinkInvis.ClassicItems**!
 
-This mod also adds items from Risk of Rain 1 that did not make it to Risk of Rain 2.
+This mod also adds items (and artifacts) from Risk of Rain 1 that did not make it to Risk of Rain 2.
 
 ## Installation
 
 Use **r2modman** mod manager to install this mod.
 
 ## Current Additions
+### Artifact
+- Spirit
 ### Equipment
 - Drone Repair Kit
 - Instant Minefield
@@ -35,6 +37,8 @@ GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 ## Changelog
 
 **1.4.3**
+- Implement Artifact of Spirit!
+- Temporary icon for Spirit artifact for now.
 - Recolor the mines for an easier time differentiating which ones are which.
 
 **1.4.2**

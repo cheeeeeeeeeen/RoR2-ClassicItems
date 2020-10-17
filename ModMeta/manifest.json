@@ -2,7 +2,7 @@
   "name": "ChensClassicItems",
   "version_number": "1.4.3",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "Arms Race now works with Squid Polyps! It is configurable and is disabled by default. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "Artifact of Spirit joins the turf! Temporary icon for now. Feel free to improve it! Contact me for details. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
   "dependencies": [
     "ThinkInvis-ClassicItems-4.5.5"
   ]
