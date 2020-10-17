@@ -1,4 +1,7 @@
-﻿using RoR2;
+﻿using BepInEx.Logging;
+using Chen.ClassicItems;
+using RoR2;
+using RoR2.UI;
 using TILER2;
 
 public class Spirit : Artifact<Spirit>
@@ -34,7 +37,8 @@ public class Spirit : Artifact<Spirit>
         orig(self);
         if (!IsActiveAndEnabled()) return;
         HealthComponent hc = self.healthComponent;
-        if (!hc || hc.fullHealth <= 0) return;
+        if (!hc || !hc.alive || hc.fullHealth <= 0 || hc.health <= 0 || self.moveSpeed < 0 || hc.health > hc.fullHealth) return;
         self.moveSpeed += self.moveSpeed * maximumPossibleSpeedMultiplier * (1 - (hc.health / hc.fullHealth));
+        self.acceleration += self.acceleration * maximumPossibleSpeedMultiplier * (1 - (hc.health / hc.fullHealth));
     }
 }
