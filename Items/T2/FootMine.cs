@@ -85,7 +85,7 @@ namespace Chen.ClassicItems
 
             CustomBuff poisonBuffDef = new CustomBuff(new BuffDef
             {
-                buffColor = new Color32(1, 121, 91, 255),
+                //buffColor = new Color32(1, 121, 91, 255),
                 canStack = true,
                 isDebuff = true,
                 name = "CCIFootPoison",

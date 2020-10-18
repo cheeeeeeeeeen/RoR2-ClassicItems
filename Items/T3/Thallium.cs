@@ -1,13 +1,11 @@
-﻿//using Mono.Cecil.Cil;
-//using MonoMod.Cil;
-using R2API;
+﻿using R2API;
 using RoR2;
 using System.Collections.ObjectModel;
-//using System.Reflection;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
 using static TILER2.MiscUtil;
+using static TILER2.StatHooks;
 
 namespace Chen.ClassicItems
 {
@@ -73,7 +71,7 @@ namespace Chen.ClassicItems
             {
                 CustomBuff thalliumBuffDef = new CustomBuff(new BuffDef
                 {
-                    buffColor = new Color32(66, 28, 82, 255),
+                    //buffColor = new Color32(66, 28, 82, 255),
                     canStack = false,
                     isDebuff = true,
                     name = "CCIThalliumPoison",
@@ -130,15 +128,13 @@ namespace Chen.ClassicItems
         protected override void LoadBehavior()
         {
             On.RoR2.GlobalEventManager.OnHitEnemy += On_GEMOnHitEnemy;
-            On.RoR2.CharacterBody.RecalculateStats += On_CharacterBody_RecalculateStats;
-            //IL.RoR2.CharacterBody.RecalculateStats += CharacterBody_RecalculateStats;
+            GetStatCoefficients += Thallium_GetStatCoefficients;
         }
 
         protected override void UnloadBehavior()
         {
             On.RoR2.GlobalEventManager.OnHitEnemy -= On_GEMOnHitEnemy;
-            On.RoR2.CharacterBody.RecalculateStats -= On_CharacterBody_RecalculateStats;
-            //IL.RoR2.CharacterBody.RecalculateStats -= CharacterBody_RecalculateStats;
+            GetStatCoefficients -= Thallium_GetStatCoefficients;
         }
 
         private void On_GEMOnHitEnemy(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
@@ -167,56 +163,12 @@ namespace Chen.ClassicItems
             DotController.InflictDot(victim, damageInfo.attacker, poisonDot, duration);
         }
 
-        private void On_CharacterBody_RecalculateStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        private void Thallium_GetStatCoefficients(CharacterBody sender, StatHookEventArgs args)
         {
-            if (self.HasBuff(poisonBuff))
+            if (sender.HasBuff(poisonBuff))
             {
-                float baseMoveSpeed = self.baseMoveSpeed + self.levelMoveSpeed * (self.level - 1);
-                float flatMovementReduction = baseMoveSpeed * (1f - slowMultiplier);
-                orig(self);
-                self.moveSpeed -= flatMovementReduction;
+                args.moveSpeedMultAdd -= slowMultiplier;
             }
-            else orig(self);
         }
-
-        //private void CharacterBody_RecalculateStats(ILContext il)
-        //{
-        //    ILCursor c = new ILCursor(il);
-        //    bool ilFound;
-        //    var localIndex = -1;
-
-        //    ilFound = c.TryGotoNext(MoveType.AfterLabel,
-        //        x => x.MatchLdloc(54),
-        //        x => x.MatchLdcR4(.3f),
-        //        x => x.MatchAdd(),
-        //        x => x.MatchStloc(54),
-        //        x => x.MatchLdcR4(1),
-        //        x => x.MatchStloc(out localIndex));
-
-        //    if (ilFound && localIndex > 0)
-        //    {
-        //        MethodInfo method = typeof(CharacterBody).GetMethod("HasBuff", BindingFlags.Public | BindingFlags.Instance);
-        //        ClassicItemsPlugin._logger.LogMessage("Defining Label");
-        //        ILLabel label = c.DefineLabel();
-        //        ClassicItemsPlugin._logger.LogMessage("Ldarg_0");
-        //        c.Emit(OpCodes.Ldarg_0);
-        //        ClassicItemsPlugin._logger.LogMessage("args buff index");
-        //        c.Emit(OpCodes.Ldc_I4, ClassicItemsPlugin.thalliumPoisonBuff);
-        //        ClassicItemsPlugin._logger.LogMessage("call method HasBuff");
-        //        c.Emit(OpCodes.Call, method);
-        //        ClassicItemsPlugin._logger.LogMessage("Brfalse");
-        //        c.Emit(OpCodes.Brtrue, label);
-        //        ClassicItemsPlugin._logger.LogMessage("ldloc localindex");
-        //        c.Emit(OpCodes.Ldloc, localIndex);
-        //        ClassicItemsPlugin._logger.LogMessage("ldc_r4 slowMult");
-        //        c.Emit(OpCodes.Ldc_R4, slowMultiplier);
-        //        ClassicItemsPlugin._logger.LogMessage("Add");
-        //        c.Emit(OpCodes.Add);
-        //        ClassicItemsPlugin._logger.LogMessage("Store");
-        //        c.Emit(OpCodes.Stloc, localIndex);
-        //        c.MarkLabel(label);
-        //    }
-        //    else ClassicItemsPlugin._logger.LogError("Failed to add IL Thalium Slow.");
-        //}
     }
 }
