@@ -9,57 +9,57 @@ using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
-    public class MortarTube : Item<MortarTube>
+    public class MortarTube : Item_V2<MortarTube>
     {
         public override string displayName => "Mortar Tube";
         public override ItemTier itemTier => ItemTier.Tier1;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Base percent chance of launch a mortar. Affected by proc coefficient.", AutoItemConfigFlags.None, 0f, 100f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Base percent chance of launch a mortar. Affected by proc coefficient.", AutoConfigFlags.None, 0f, 100f)]
         public float procChance { get; private set; } = 9f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Added to ProcChance per extra stack of Mortar Tube.", AutoItemConfigFlags.None, 0f, 100f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Added to ProcChance per extra stack of Mortar Tube.", AutoConfigFlags.None, 0f, 100f)]
         public float stackChance { get; private set; } = 0f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Maximum allowed ProcChance for Mortar Tube.", AutoItemConfigFlags.None, 0f, 100f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Maximum allowed ProcChance for Mortar Tube.", AutoConfigFlags.None, 0f, 100f)]
         public float capChance { get; private set; } = 100f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Damage coefficient of each missile.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Damage coefficient of each missile.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float dmgCoefficient { get; private set; } = 1.7f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Stack amount of Damage coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Stack amount of Damage coefficient. Linear.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float dmgStack { get; private set; } = 1.7f;
 
-        [AutoItemConfig("Velocity multiplier for the mortar. Lower value means it moves slower.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfig("Velocity multiplier for the mortar. Lower value means it moves slower.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float velocityMultiplier { get; private set; } = .5f;
 
-        [AutoItemConfig("How heavy the mortar is. Higher means it is heavier. This is not a percentage nor a multiplier.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfig("How heavy the mortar is. Higher means it is heavier. This is not a percentage nor a multiplier.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float gravityAmount { get; private set; } = .5f;
 
-        [AutoItemConfig("Setting to true would launch the mortar at a fixed angle regardless of aim. Setting to false would launch the mortar relative to aim.")]
+        [AutoConfig("Setting to true would launch the mortar at a fixed angle regardless of aim. Setting to false would launch the mortar relative to aim.")]
         public bool fixedAim { get; private set; } = false;
 
-        [AutoItemConfig("The angle from where the mortar is launched. 1 means completely up. -1 means completely down.", AutoItemConfigFlags.None, float.MinValue, float.MaxValue)]
+        [AutoConfig("The angle from where the mortar is launched. 1 means completely up. -1 means completely down.", AutoConfigFlags.None, float.MinValue, float.MaxValue)]
         public float launchAngle { get; private set; } = .9f;
 
-        [AutoItemConfig("Inaccuracy of the mortar. Higher value means it's more inaccurate.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfig("Inaccuracy of the mortar. Higher value means it's more inaccurate.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float inaccuracyRate { get; private set; } = .05f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Amount of mortars launched per stack. It can be set to 0.5 to fire another mortar for every 2nd Mortar Tube gained (excluding the first).",
-                        AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Amount of mortars launched per stack. It can be set to 0.5 to fire another mortar for every 2nd Mortar Tube gained (excluding the first).",
+                        AutoConfigFlags.None, 0f, float.MaxValue)]
         public float stackAmount { get; private set; } = 0f;
 
-        protected override string NewLangName(string langid = null) => displayName;
+        protected override string GetNameString(string langID = null) => displayName;
 
-        protected override string NewLangPickup(string langid = null) => $"Chance to launch a mortar.";
+        protected override string GetPickupString(string langID = null) => "Chance to launch a mortar.";
 
-        protected override string NewLangDesc(string langid = null)
+        protected override string GetDescString(string langID = null)
         {
             string desc = $"<style=cIsDamage>{Pct(procChance, 0, 1)}</style>";
             if (stackChance > 0f) desc += $" <style=cStack>(+{Pct(stackChance, 0, 1)} per stack, up to {Pct(capChance, 0, 1)})</style>";
@@ -70,7 +70,7 @@ namespace Chen.ClassicItems
             return desc;
         }
 
-        protected override string NewLangLore(string langid = null) =>
+        protected override string GetLoreString(string langID = null) =>
             "\"A very primitive weapon, all manual labor. Put the explosive down the end, then fire.\"\n\n" +
             "\"That sounds highly dangerous. I would not recommend it. There are far more advanced weapons that we can use.\"\n\n" +
             "\"What a waste. It could have been good for artillery support.\"\n\n" +
@@ -81,48 +81,48 @@ namespace Chen.ClassicItems
 
         public static GameObject mortarPrefab;
 
-        public MortarTube()
+        public override void SetupBehavior()
         {
+            base.SetupBehavior();
             GameObject paladinRocket = Resources.Load<GameObject>("prefabs/projectiles/PaladinRocket");
             mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile");
             mortarPrefab.AddComponent<MortarGravity>();
 
-            onBehav += () =>
+            if (Compat_ItemStats.enabled)
             {
-                if (Compat_ItemStats.enabled)
-                {
-                    Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
-                    (
-                        (count, inv, master) => { return Mathf.Min(procChance + stackChance * (count - 1), capChance); },
-                        (value, inv, master) => { return $"Firing Chance: {Pct(value, 0, 1)}"; }
-                    ),
-                    (
-                        (count, inv, master) => { return dmgCoefficient + (count - 1) * dmgStack; },
-                        (value, inv, master) => { return $"Damage: {Pct(value, 0)}"; }
-                    ),
-                    (
-                        (count, inv, master) => { return Mathf.Floor(1 + stackAmount * (count - 1)); },
-                        (value, inv, master) => { return $"Mortars: {value}"; }
-                    ));
-                }
-                if (Compat_BetterUI.enabled)
-                {
-                    Compat_BetterUI.AddEffect(regIndex, procChance, stackChance, Compat_BetterUI.ChanceFormatter, Compat_BetterUI.LinearStacking,
-                        (value, extraStackValue, procCoefficient) =>
-                        {
-                            return Mathf.CeilToInt((capChance - value * procCoefficient) / (extraStackValue * procCoefficient)) + 1;
-                        });
-                }
-            };
+                Compat_ItemStats.CreateItemStatDef(itemDef,
+                (
+                    (count, inv, master) => { return Mathf.Min(procChance + stackChance * (count - 1), capChance); },
+                    (value, inv, master) => { return $"Firing Chance: {Pct(value, 0, 1)}"; }
+                ),
+                (
+                    (count, inv, master) => { return dmgCoefficient + (count - 1) * dmgStack; },
+                    (value, inv, master) => { return $"Damage: {Pct(value, 0)}"; }
+                ),
+                (
+                    (count, inv, master) => { return Mathf.Floor(1 + stackAmount * (count - 1)); },
+                    (value, inv, master) => { return $"Mortars: {value}"; }
+                ));
+            }
+            if (Compat_BetterUI.enabled)
+            {
+                Compat_BetterUI.AddEffect(catalogIndex, procChance, stackChance, Compat_BetterUI.ChanceFormatter, Compat_BetterUI.LinearStacking,
+                    (value, extraStackValue, procCoefficient) =>
+                    {
+                        return Mathf.CeilToInt((capChance - value * procCoefficient) / (extraStackValue * procCoefficient)) + 1;
+                    });
+            }
         }
 
-        protected override void LoadBehavior()
+        public override void Install()
         {
+            base.Install();
             On.RoR2.GlobalEventManager.OnHitEnemy += On_GEMOnHitEnemy;
         }
 
-        protected override void UnloadBehavior()
+        public override void Uninstall()
         {
+            base.Uninstall();
             On.RoR2.GlobalEventManager.OnHitEnemy -= On_GEMOnHitEnemy;
         }
 
