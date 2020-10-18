@@ -8,41 +8,41 @@ using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
-    public class Missile2 : Item<Missile2>
+    public class Missile2 : Item_V2<Missile2>
     {
         public override string displayName => "AtG Missile Mk. 2";
         public override ItemTier itemTier => ItemTier.Tier3;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Base percent chance of triggering AtG Missile Mk. 2. Affected by proc coefficient.", AutoItemConfigFlags.None, 0f, 100f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Base percent chance of triggering AtG Missile Mk. 2. Affected by proc coefficient.", AutoConfigFlags.None, 0f, 100f)]
         public float procChance { get; private set; } = 7f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Added to ProcChance per extra stack of AtG Missile Mk. 2.", AutoItemConfigFlags.None, 0f, 100f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Added to ProcChance per extra stack of AtG Missile Mk. 2.", AutoConfigFlags.None, 0f, 100f)]
         public float stackChance { get; private set; } = 7f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Maximum allowed ProcChance for AtG Missile Mk. 2.", AutoItemConfigFlags.None, 0f, 100f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Maximum allowed ProcChance for AtG Missile Mk. 2.", AutoConfigFlags.None, 0f, 100f)]
         public float capChance { get; private set; } = 100f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Damage coefficient of each missile.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Damage coefficient of each missile.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float dmgCoefficient { get; private set; } = 3f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Stack amount of Damage coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Stack amount of Damage coefficient. Linear.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float dmgStack { get; private set; } = 0f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken | AutoUpdateEventFlags.InvalidatePickupToken)]
-        [AutoItemConfig("Number of missiles per proc.", AutoItemConfigFlags.None, 1, int.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Number of missiles per proc.", AutoConfigFlags.None, 1, int.MaxValue)]
         public int missileAmount { get; private set; } = 3;
 
-        protected override string NewLangName(string langid = null) => displayName;
+        protected override string GetNameString(string langid = null) => displayName;
 
-        protected override string NewLangPickup(string langid = null) => $"Chance to fire {missileAmount} missiles.";
+        protected override string GetPickupString(string langid = null) => $"Chance to fire {missileAmount} missiles.";
 
-        protected override string NewLangDesc(string langid = null)
+        protected override string GetDescString(string langid = null)
         {
             string desc = $"<style=cIsDamage>{Pct(procChance, 0, 1)}</style>";
             if (stackChance > 0f) desc += $" <style=cStack>(+{Pct(stackChance, 0, 1)} per stack, up to {Pct(capChance, 0, 1)})</style>";
@@ -52,47 +52,47 @@ namespace Chen.ClassicItems
             return desc;
         }
 
-        protected override string NewLangLore(string langid = null) =>
+        protected override string GetLoreString(string langid = null) =>
             "\"I do not understand. They're all [REDACTED]. Whatever, use them.\"\n\n" +
             "\"You don't sound so convincing. The [REDACTED] is [REDACTED] [REDACTED]. I mean it. [REDACTED].\"\n\n" +
             "\"Alright, soldier, stop speaking the [REDACTED] language.\"\n\n" +
             "\"... but it IS [REDACTED].\"\n\n" +
             "\"I give up. To your positions.\"";
 
-        public Missile2()
+        public override void SetupBehavior()
         {
-            onBehav += () =>
+            base.SetupBehavior();
+            if (Compat_ItemStats.enabled)
             {
-                if (Compat_ItemStats.enabled)
-                {
-                    Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
-                    (
-                        (count, inv, master) => { return Mathf.Min(procChance + stackChance * (count - 1), capChance); },
-                        (value, inv, master) => { return $"Firing Chance: {Pct(value, 0, 1)}"; }
-                    ),
-                    (
-                        (count, inv, master) => { return dmgCoefficient + (count - 1) * dmgStack; },
-                        (value, inv, master) => { return $"Damage: {Pct(value, 0)}"; }
-                    ));
-                }
-                if (Compat_BetterUI.enabled)
-                {
-                    Compat_BetterUI.AddEffect(regIndex, procChance, stackChance, Compat_BetterUI.ChanceFormatter, Compat_BetterUI.LinearStacking,
-                        (value, extraStackValue, procCoefficient) =>
-                        {
-                            return Mathf.CeilToInt((capChance - value * procCoefficient) / (extraStackValue * procCoefficient)) + 1;
-                        });
-                }
-            };
+                Compat_ItemStats.CreateItemStatDef(itemDef,
+                (
+                    (count, inv, master) => { return Mathf.Min(procChance + stackChance * (count - 1), capChance); },
+                    (value, inv, master) => { return $"Firing Chance: {Pct(value, 0, 1)}"; }
+                ),
+                (
+                    (count, inv, master) => { return dmgCoefficient + (count - 1) * dmgStack; },
+                    (value, inv, master) => { return $"Damage: {Pct(value, 0)}"; }
+                ));
+            }
+            if (Compat_BetterUI.enabled)
+            {
+                Compat_BetterUI.AddEffect(catalogIndex, procChance, stackChance, Compat_BetterUI.ChanceFormatter, Compat_BetterUI.LinearStacking,
+                    (value, extraStackValue, procCoefficient) =>
+                    {
+                        return Mathf.CeilToInt((capChance - value * procCoefficient) / (extraStackValue * procCoefficient)) + 1;
+                    });
+            }
         }
 
-        protected override void LoadBehavior()
+        public override void Install()
         {
+            base.Install();
             On.RoR2.GlobalEventManager.OnHitEnemy += On_GEMOnHitEnemy;
         }
 
-        protected override void UnloadBehavior()
+        public override void Uninstall()
         {
+            base.Uninstall();
             On.RoR2.GlobalEventManager.OnHitEnemy -= On_GEMOnHitEnemy;
         }
 
