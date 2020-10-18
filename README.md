@@ -26,13 +26,20 @@ Use **r2modman** mod manager to install this mod.
 - AtG Missile Mk. 2
 - Thallium
 
+## Contact
+- Issue Page: https://github.com/cheeeeeeeeeen/RoR2-ChensGradiusMod/issues
+- Email: `blancfaye7@gmail.com`
+- Discord: `Chen#1218`
+- RoR2 Modding Server: https://discord.com/invite/5MbXZvd
+
 ## More Information
 
-Check out the original ClassicItems made by ThinkInvisible.
+Check out the original ClassicItems made by **ThinkInvisible**.
+- Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
+- GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
 
-Thunderstore: https://thunderstore.io/package/ThinkInvis/ClassicItems/
-
-GitHub: https://github.com/ThinkInvis/RoR2-ClassicItems
+**Kirbsuke#0352** made the Artifact of Spirit icon.
+- Contact: `kirbydamaster@gmail.com` or through Discord.
 
 ## Changelog
 
