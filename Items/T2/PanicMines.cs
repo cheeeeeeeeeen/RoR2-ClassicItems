@@ -10,32 +10,32 @@ using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
-    public class PanicMines : Item<PanicMines>
+    public class PanicMines : Item_V2<PanicMines>
     {
         public override string displayName => "Panic Mines";
         public override ItemTier itemTier => ItemTier.Tier2;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Fraction of max health required as damage taken to drop a mine.", AutoItemConfigFlags.None, 0f, 1f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Fraction of max health required as damage taken to drop a mine.", AutoConfigFlags.None, 0f, 1f)]
         public float healthThreshold { get; private set; } = 0.2f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Base AoE damage coefficient of the panic mine.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Base AoE damage coefficient of the panic mine.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float baseDmg { get; private set; } = 5f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Stack increase of the AoE damage coefficient.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Stack increase of the AoE damage coefficient.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float stackDmg { get; private set; } = 0f;
 
-        [AutoItemConfig("If true, damage to shield and barrier (from e.g. Personal Shield Generator, Topaz Brooch) will not count towards triggering Panic Mines.")]
+        [AutoConfig("If true, damage to shield and barrier (from e.g. Personal Shield Generator, Topaz Brooch) will not count towards triggering Panic Mines.")]
         public bool requireHealth { get; private set; } = true;
 
-        protected override string NewLangName(string langid = null) => displayName;
+        protected override string GetNameString(string langid = null) => displayName;
 
-        protected override string NewLangPickup(string langid = null) => "Drop mines when taking heavy damage.";
+        protected override string GetPickupString(string langid = null) => "Drop mines when taking heavy damage.";
 
-        protected override string NewLangDesc(string langid = null)
+        protected override string GetDescString(string langid = null)
         {
             string desc = "<style=cDeath>When hit";
             if (healthThreshold > 0f) desc += $" for more than {Pct(healthThreshold)} of max health</style>";
@@ -45,7 +45,7 @@ namespace Chen.ClassicItems
             return desc;
         }
 
-        protected override string NewLangLore(string langid = null) =>
+        protected override string GetLoreString(string langid = null) =>
             "\"Must be strapped onto vehicles, NOT personnel! After taking heavy fire, the automatic dispenser should drop down and arm a mine to make a hasty retreat (Or blow enemies sky-high who are dumb enough to follow.)" +
             " Includes smart-fire, but leave the blast radius regardless. The laws of physics don't pick sides. Very high yield for how small it is." +
             " If you want to use it offensively, then... well, just get shot. A lot. Preferably by small arms fire, or you'll die trying to have the mines drop.\"\n\n" +
@@ -55,43 +55,43 @@ namespace Chen.ClassicItems
         private static GameObject minePrefab;
         private static GameObject mineGhostPrefab;
 
-        public PanicMines()
+        public override void SetupBehavior()
         {
-            onBehav += () =>
+            base.SetupBehavior();
+            GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
+            minePrefab = engiMinePrefab.InstantiateClone("PanicMine");
+            Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
+
+            GameObject engiMineGhostPrefab = Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost");
+            mineGhostPrefab = engiMineGhostPrefab.InstantiateClone("PanicMineGhost", false);
+            SkinnedMeshRenderer mesh = mineGhostPrefab.GetComponentInChildren<SkinnedMeshRenderer>();
+            mesh.material.color = new Color32(255, 168, 0, 255);
+            minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
+
+            if (Compat_ItemStats.enabled)
             {
-                GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
-                minePrefab = engiMinePrefab.InstantiateClone("PanicMine");
-                Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
-
-                GameObject engiMineGhostPrefab = Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost");
-                mineGhostPrefab = engiMineGhostPrefab.InstantiateClone("PanicMineGhost", false);
-                SkinnedMeshRenderer mesh = mineGhostPrefab.GetComponentInChildren<SkinnedMeshRenderer>();
-                mesh.material.color = new Color32(255, 168, 0, 255);
-                minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
-
-                if (Compat_ItemStats.enabled)
-                {
-                    Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
-                    (
-                        (count, inv, master) => { return baseDmg + (count - 1) * stackDmg; },
-                        (value, inv, master) => { return $"Damage: {Pct(value, 1)}"; }
-                    ),
-                    (
-                        (count, inv, master) => { return count; },
-                        (value, inv, master) => { return $"Mines: {value}"; }
-                    ));
-                }
-            };
+                Compat_ItemStats.CreateItemStatDef(itemDef,
+                (
+                    (count, inv, master) => { return baseDmg + (count - 1) * stackDmg; },
+                    (value, inv, master) => { return $"Damage: {Pct(value, 1)}"; }
+                ),
+                (
+                    (count, inv, master) => { return count; },
+                    (value, inv, master) => { return $"Mines: {value}"; }
+                ));
+            }
         }
 
-        protected override void LoadBehavior()
+        public override void Install()
         {
+            base.Install();
             On.RoR2.HealthComponent.TakeDamage += On_HCTakeDamage;
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate += On_ESMineArmingWeak;
         }
 
-        protected override void UnloadBehavior()
+        public override void Uninstall()
         {
+            base.Uninstall();
             On.RoR2.HealthComponent.TakeDamage -= On_HCTakeDamage;
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate -= On_ESMineArmingWeak;
         }
