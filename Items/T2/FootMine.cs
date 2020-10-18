@@ -13,40 +13,40 @@ using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
-    public class FootMine : Item<FootMine>
+    public class FootMine : Item_V2<FootMine>
     {
         public override string displayName => "Dead Man's Foot";
         public override ItemTier itemTier => ItemTier.Tier2;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Fraction of max health required as damage taken to drop a poison mine.", AutoItemConfigFlags.None, 0f, 1f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Fraction of max health required as damage taken to drop a poison mine.", AutoConfigFlags.None, 0f, 1f)]
         public float healthThreshold { get; private set; } = 0.1f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Base poison damage coefficient dealt to affected enemies.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Base poison damage coefficient dealt to affected enemies.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float baseDmg { get; private set; } = 1.5f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Stack amount for the poison damage coefficient.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Stack amount for the poison damage coefficient.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float stackDmg { get; private set; } = 0f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Number of poison ticks.", AutoItemConfigFlags.None, 0, int.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Number of poison ticks.", AutoConfigFlags.None, 0, int.MaxValue)]
         public int baseTicks { get; private set; } = 4;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Stack increase of poison ticks.", AutoItemConfigFlags.None, 0, int.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Stack increase of poison ticks.", AutoConfigFlags.None, 0, int.MaxValue)]
         public int stackTicks { get; private set; } = 1;
 
-        [AutoItemConfig("If true, damage to shield and barrier (from e.g. Personal Shield Generator, Topaz Brooch) will not count towards triggering Dead Man's Foot.")]
+        [AutoConfig("If true, damage to shield and barrier (from e.g. Personal Shield Generator, Topaz Brooch) will not count towards triggering Dead Man's Foot.")]
         public bool requireHealth { get; private set; } = true;
 
-        protected override string NewLangName(string langid = null) => displayName;
+        protected override string GetNameString(string langid = null) => displayName;
 
-        protected override string NewLangPickup(string langid = null) => "Drop a poison mine when taking heavy damage.";
+        protected override string GetPickupString(string langid = null) => "Drop a poison mine when taking heavy damage.";
 
-        protected override string NewLangDesc(string langid = null)
+        protected override string GetDescString(string langid = null)
         {
             string desc = $"<style=cDeath>When hit for more than {Pct(healthThreshold)} max health</style>, drop a poison mine with <style=cIsDamage>{Pct(baseDmg)}</style>";
             if (stackDmg > 0f) desc += $" <style=cStack>(+{Pct(stackDmg)} per stack)</style>";
@@ -56,7 +56,7 @@ namespace Chen.ClassicItems
             return desc;
         }
 
-        protected override string NewLangLore(string langid = null) =>
+        protected override string GetLoreString(string langid = null) =>
             "I feel like my allies are losing it. Truly, this place is hell to begin with. We are always on the brink of our deaths. " +
             "I can't even believe I find myself writing this journal as all hell is about to break loose any second.\n\n" +
             "As I look towards a friend who appears to be going insane, he is holding a... foot. A foot!?\n\n" +
@@ -71,8 +71,9 @@ namespace Chen.ClassicItems
         private static BuffIndex poisonBuff;
         private static DotController.DotIndex poisonDot;
 
-        public FootMine()
+        public override void SetupBehavior()
         {
+            base.SetupBehavior();
             GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
             minePrefab = engiMinePrefab.InstantiateClone("FootMine");
             Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
@@ -102,32 +103,31 @@ namespace Chen.ClassicItems
             };
             poisonDot = DotAPI.RegisterDotDef(poisonDotDef);
 
-            onBehav += () =>
+            if (Compat_ItemStats.enabled)
             {
-                if (Compat_ItemStats.enabled)
-                {
-                    Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
-                    (
-                        (count, inv, master) => { return baseDmg + (count - 1) * stackDmg; },
-                        (value, inv, master) => { return $"Poison Damage/Second: {Pct(value, 1)}"; }
-                    ),
-                    (
-                        (count, inv, master) => { return baseTicks + (count - 1) * stackTicks; },
-                        (value, inv, master) => { return $"Duration: {value} seconds"; }
-                    ));
-                }
-            };
+                Compat_ItemStats.CreateItemStatDef(itemDef,
+                (
+                    (count, inv, master) => { return baseDmg + (count - 1) * stackDmg; },
+                    (value, inv, master) => { return $"Poison Damage/Second: {Pct(value, 1)}"; }
+                ),
+                (
+                    (count, inv, master) => { return baseTicks + (count - 1) * stackTicks; },
+                    (value, inv, master) => { return $"Duration: {value} seconds"; }
+                ));
+            }
         }
 
-        protected override void LoadBehavior()
+        public override void Install()
         {
+            base.Install();
             On.RoR2.HealthComponent.TakeDamage += On_HCTakeDamage;
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate += On_ESMineArmingWeak;
             On.EntityStates.Engi.Mine.Detonate.Explode += On_ESDetonate;
         }
 
-        protected override void UnloadBehavior()
+        public override void Uninstall()
         {
+            base.Uninstall();
             On.RoR2.HealthComponent.TakeDamage -= On_HCTakeDamage;
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate -= On_ESMineArmingWeak;
             On.EntityStates.Engi.Mine.Detonate.Explode -= On_ESDetonate;
