@@ -1,32 +1,34 @@
 ﻿using RoR2;
 using TILER2;
 
-public class Spirit : Artifact<Spirit>
+public class Spirit : Artifact_V2<Spirit>
 {
     public override string displayName => "Artifact of Spirit";
 
-    [AutoItemConfig("The percentage of which maximum movement speed can be multiplied according to health loss. 1 = 100%. " +
-                    "Note that the number here is the movement speed multiplier that can be achieved when the body is dead.",
-                    AutoItemConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
+    [AutoConfig("The percentage of which maximum movement speed can be multiplied according to health loss. 1 = 100%. " +
+                "Note that the number here is the movement speed multiplier that can be achieved when the body is dead.",
+                AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
     public float maximumPossibleSpeedMultiplier { get; private set; } = 3f;
 
-    protected override string NewLangName(string langid = null) => displayName;
+    protected override string GetNameString(string langid = null) => displayName;
 
-    protected override string NewLangDesc(string langid = null) => "Characters run faster at lower health.";
+    protected override string GetDescString(string langid = null) => "Characters run faster at lower health.";
 
     public Spirit()
     {
-        iconPathName = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_on_icon.png";
-        iconPathNameDisabled = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_off_icon.png";
+        iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_on_icon.png";
+        iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_off_icon.png";
     }
 
-    protected override void LoadBehavior()
+    public override void Install()
     {
+        base.Install();
         On.RoR2.CharacterBody.RecalculateStats += On_CBRecalcStats;
     }
 
-    protected override void UnloadBehavior()
+    public override void Uninstall()
     {
+        base.Uninstall();
         On.RoR2.CharacterBody.RecalculateStats -= On_CBRecalcStats;
     }
 
