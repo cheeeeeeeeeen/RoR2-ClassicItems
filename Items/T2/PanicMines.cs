@@ -18,7 +18,7 @@ namespace Chen.ClassicItems
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Fraction of max health required as damage taken to drop a mine.", AutoItemConfigFlags.None, 0f, 1f)]
-        public float healthThreshold { get; private set; } = 0.2f;
+        public float healthThreshold { get; private set; } = 0.1f;
 
         [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
         [AutoItemConfig("Base AoE damage coefficient of the panic mine.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
