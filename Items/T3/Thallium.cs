@@ -11,45 +11,45 @@ using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
-    public class Thallium : Item<Thallium>
+    public class Thallium : Item_V2<Thallium>
     {
         public override string displayName => "Thallium";
         public override ItemTier itemTier => ItemTier.Tier3;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Base percent chance of triggering Thallium poisoning. Affected by proc coefficient.", AutoItemConfigFlags.None, 0f, 100f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Base percent chance of triggering Thallium poisoning. Affected by proc coefficient.", AutoConfigFlags.None, 0f, 100f)]
         public float procChance { get; private set; } = 10f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Added to ProcChance per extra stack of Thallium. Linear.", AutoItemConfigFlags.None, 0f, 100f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Added to ProcChance per extra stack of Thallium. Linear.", AutoConfigFlags.None, 0f, 100f)]
         public float stackChance { get; private set; } = 0f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Maximum allowed ProcChance for Thallium.", AutoItemConfigFlags.None, 0f, 100f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Maximum allowed ProcChance for Thallium.", AutoConfigFlags.None, 0f, 100f)]
         public float capChance { get; private set; } = 10f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Damage coefficient of the poison per second. Based on the victim's damage. Automatically computed per tick.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Damage coefficient of the poison per second. Based on the victim's damage. Automatically computed per tick.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float dmgCoefficient { get; private set; } = 1.25f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Stack amount of Damage coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Stack amount of Damage coefficient. Linear.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float dmgStack { get; private set; } = 0f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Slow multiplier applied by Thallium. Only applied on the base movement speed.", AutoItemConfigFlags.None, 0f, 1f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Slow multiplier applied by Thallium. Only applied on the base movement speed.", AutoConfigFlags.None, 0f, 1f)]
         public float slowMultiplier { get; private set; } = .9f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Duration of the Thallium debuff.", AutoItemConfigFlags.None, 0, int.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Duration of the Thallium debuff.", AutoConfigFlags.None, 0, int.MaxValue)]
         public int duration { get; private set; } = 4;
 
-        protected override string NewLangName(string langid = null) => displayName;
+        protected override string GetNameString(string langid = null) => displayName;
 
-        protected override string NewLangPickup(string langid = null) => $"Chance to slow and damage enemies over time.";
+        protected override string GetPickupString(string langid = null) => $"Chance to slow and damage enemies over time.";
 
-        protected override string NewLangDesc(string langid = null)
+        protected override string GetDescString(string langid = null)
         {
             string desc = $"<style=cIsDamage>{Pct(procChance, 0, 1)}</style>";
             if (stackChance > 0f) desc += $" <style=cStack>(+{Pct(stackChance, 0, 1)} per stack, up to {Pct(capChance, 0, 1)})</style>";
@@ -61,81 +61,81 @@ namespace Chen.ClassicItems
             return desc;
         }
 
-        protected override string NewLangLore(string langid = null) =>
+        protected override string GetLoreString(string langid = null) =>
             "\"She shouldn't notice,\" it says.\n\nWell, that was dark. Few words, but contains heavy intent.\n\nWe will now use it for our survival instead.";
 
         private static BuffIndex poisonBuff;
         private static DotController.DotIndex poisonDot;
 
-        public Thallium()
+        public override void SetupBehavior()
         {
-            onBehav += () =>
+            base.SetupBehavior();
+            CustomBuff thalliumBuffDef = new CustomBuff(new BuffDef
             {
-                CustomBuff thalliumBuffDef = new CustomBuff(new BuffDef
-                {
-                    buffColor = new Color32(66, 28, 82, 255),
-                    canStack = false,
-                    isDebuff = true,
-                    name = "CCIThalliumPoison",
-                    iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/thallium_buff_icon.png"
-                });
-                poisonBuff = BuffAPI.Add(thalliumBuffDef);
+                buffColor = new Color32(66, 28, 82, 255),
+                canStack = false,
+                isDebuff = true,
+                name = "CCIThalliumPoison",
+                iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/thallium_buff_icon.png"
+            });
+            poisonBuff = BuffAPI.Add(thalliumBuffDef);
 
-                DotController.DotDef thalliumDotDef = new DotController.DotDef
-                {
-                    interval = .5f,
-                    damageCoefficient = 1,
-                    damageColorIndex = DamageColorIndex.DeathMark,
-                    associatedBuff = poisonBuff
-                };
-                poisonDot = DotAPI.RegisterDotDef(thalliumDotDef, (dotController, dotStack) =>
-                {
-                    CharacterBody attackerBody = dotStack.attackerObject.GetComponent<CharacterBody>();
-                    if (attackerBody)
-                    {
-                        float damageMultiplier = dmgCoefficient + dmgStack * (GetCount(attackerBody) - 1);
-                        float poisonDamage = 0f;
-                        if (dotController.victimBody) poisonDamage += dotController.victimBody.damage;
-                        dotStack.damage = poisonDamage * damageMultiplier;
-                    }
-                });
-
-                if (Compat_ItemStats.enabled)
-                {
-                    Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
-                    (
-                        (count, inv, master) => { return Mathf.Min(procChance + stackChance * (count - 1), capChance); },
-                        (value, inv, master) => { return $"Poison Chance: {Pct(value, 0, 1)}"; }
-                    ),
-                    (
-                        (count, inv, master) => { return dmgCoefficient + (count - 1) * dmgStack; },
-                        (value, inv, master) => { return $"Victim damage per second: {Pct(value, 0)}"; }
-                    ),
-                    (
-                        (count, inv, master) => { return duration; },
-                        (value, inv, master) => { return $"Poison Duration: {value}"; }
-                    ));
-                }
-                if (Compat_BetterUI.enabled)
-                {
-                    Compat_BetterUI.AddEffect(regIndex, procChance, stackChance, Compat_BetterUI.ChanceFormatter, Compat_BetterUI.LinearStacking,
-                        (value, extraStackValue, procCoefficient) =>
-                        {
-                            return Mathf.CeilToInt((capChance - value * procCoefficient) / (extraStackValue * procCoefficient)) + 1;
-                        });
-                }
+            DotController.DotDef thalliumDotDef = new DotController.DotDef
+            {
+                interval = .5f,
+                damageCoefficient = 1,
+                damageColorIndex = DamageColorIndex.DeathMark,
+                associatedBuff = poisonBuff
             };
+            poisonDot = DotAPI.RegisterDotDef(thalliumDotDef, (dotController, dotStack) =>
+            {
+                CharacterBody attackerBody = dotStack.attackerObject.GetComponent<CharacterBody>();
+                if (attackerBody)
+                {
+                    float damageMultiplier = dmgCoefficient + dmgStack * (GetCount(attackerBody) - 1);
+                    float poisonDamage = 0f;
+                    if (dotController.victimBody) poisonDamage += dotController.victimBody.damage;
+                    dotStack.damage = poisonDamage * damageMultiplier;
+                }
+            });
+
+            if (Compat_ItemStats.enabled)
+            {
+                Compat_ItemStats.CreateItemStatDef(itemDef,
+                (
+                    (count, inv, master) => { return Mathf.Min(procChance + stackChance * (count - 1), capChance); },
+                    (value, inv, master) => { return $"Poison Chance: {Pct(value, 0, 1)}"; }
+                ),
+                (
+                    (count, inv, master) => { return dmgCoefficient + (count - 1) * dmgStack; },
+                    (value, inv, master) => { return $"Victim damage per second: {Pct(value, 0)}"; }
+                ),
+                (
+                    (count, inv, master) => { return duration; },
+                    (value, inv, master) => { return $"Poison Duration: {value}"; }
+                ));
+            }
+            if (Compat_BetterUI.enabled)
+            {
+                Compat_BetterUI.AddEffect(catalogIndex, procChance, stackChance, Compat_BetterUI.ChanceFormatter, Compat_BetterUI.LinearStacking,
+                    (value, extraStackValue, procCoefficient) =>
+                    {
+                        return Mathf.CeilToInt((capChance - value * procCoefficient) / (extraStackValue * procCoefficient)) + 1;
+                    });
+            }
         }
 
-        protected override void LoadBehavior()
+        public override void Install()
         {
+            base.Install();
             On.RoR2.GlobalEventManager.OnHitEnemy += On_GEMOnHitEnemy;
             On.RoR2.CharacterBody.RecalculateStats += On_CharacterBody_RecalculateStats;
             //IL.RoR2.CharacterBody.RecalculateStats += CharacterBody_RecalculateStats;
         }
 
-        protected override void UnloadBehavior()
+        public override void Uninstall()
         {
+            base.Uninstall();
             On.RoR2.GlobalEventManager.OnHitEnemy -= On_GEMOnHitEnemy;
             On.RoR2.CharacterBody.RecalculateStats -= On_CharacterBody_RecalculateStats;
             //IL.RoR2.CharacterBody.RecalculateStats -= CharacterBody_RecalculateStats;
