@@ -44,7 +44,7 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 ## Changelog
 
 **2.0.0**
-- Migrate the code to support TILER2 3.0.0!
+- Migrate the code to support new changes of TILER2.
 
 **1.4.5**
 - Fix bright mines bug. Replace Color with Color32.
