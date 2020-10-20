@@ -12,14 +12,28 @@ namespace Chen.ClassicItems
                     AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
         public float maximumPossibleSpeedMultiplier { get; private set; } = 3f;
 
+        [AutoConfig("Determines the icon style. Any integer = Kirbsuke's, 1 = Aromatic Sunday's. Client only.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int iconStyle { get; private set; } = 0;
+
         protected override string GetNameString(string langid = null) => displayName;
 
         protected override string GetDescString(string langid = null) => "Characters run faster at lower health.";
 
-        public Spirit()
+        public override void SetupConfig()
         {
-            iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_on_icon.png";
-            iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_off_icon.png";
+            base.SetupConfig();
+            switch (iconStyle)
+            {
+                case 1:
+                    iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/alt_spirit_artifact_on_icon.png";
+                    iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/icons/alt_spirit_artifact_off_icon.png";
+                    break;
+
+                default:
+                    iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_on_icon.png";
+                    iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_off_icon.png";
+                    break;
+            }
         }
 
         public override void Install()
