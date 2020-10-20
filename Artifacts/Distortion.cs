@@ -1,0 +1,249 @@
+﻿using R2API.Networking;
+using R2API.Networking.Interfaces;
+using RoR2;
+using RoR2.UI;
+using System.Collections;
+using System.Collections.Generic;
+using TILER2;
+using UnityEngine;
+using UnityEngine.Networking;
+using Random = UnityEngine.Random;
+
+namespace Chen.ClassicItems
+{
+    public class Distortion : Artifact_V2<Distortion>
+    {
+        public override string displayName => "Artifact of Distortion";
+
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("The time when skill lockdown shifts in seconds.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
+        public int intervalBetweenLocks { get; private set; } = 60;
+
+        [AutoConfig("The syncing time for Distortion effects towards Clients. There is no need to modify this unless there is a problem. " +
+                    "Increase this if clients do not get their skills locked. Setting to 0 may cause problems.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
+        public float syncSeconds { get; private set; } = .5f;
+
+        protected override string GetNameString(string langid = null) => displayName;
+
+        protected override string GetDescString(string langid = null) => $"Lock a random skill every {intervalBetweenLocks} seconds.";
+
+        public Distortion()
+        {
+            iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_on_icon.png";
+            iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_off_icon.png";
+        }
+
+        public override void SetupBehavior()
+        {
+            NetworkingAPI.RegisterMessageType<SpawnDistortionComponent>();
+        }
+
+        public override void Install()
+        {
+            base.Install();
+            On.RoR2.CharacterMaster.SpawnBody += CharacterMaster_SpawnBody;
+            On.RoR2.Run.Start += Run_Start;
+        }
+
+        public override void Uninstall()
+        {
+            base.Uninstall();
+            On.RoR2.CharacterMaster.SpawnBody -= CharacterMaster_SpawnBody;
+            On.RoR2.Run.Start -= Run_Start;
+        }
+
+        private void Run_Start(On.RoR2.Run.orig_Start orig, Run self)
+        {
+            orig(self);
+            if (NetworkServer.active)
+            {
+                for (int i = 0; i < NetworkUser.readOnlyInstancesList.Count; i++)
+                {
+                    CharacterMaster master = NetworkUser.readOnlyInstancesList[i].master;
+                    master.gameObject.AddComponent<DistortionQueue>();
+                }
+            }
+        }
+
+        private CharacterBody CharacterMaster_SpawnBody(On.RoR2.CharacterMaster.orig_SpawnBody orig, CharacterMaster self, GameObject bodyPrefab, Vector3 position, Quaternion rotation)
+        {
+            CharacterBody body = orig(self, bodyPrefab, position, rotation);
+            if (IsActiveAndEnabled() && body)
+            {
+                if (body.isPlayerControlled && body.hasEffectiveAuthority)
+                {
+                    DistortionManager.GetOrAddComponent(body);
+                }
+                else
+                {
+                    DistortionQueue queue = body.masterObject.GetComponent<DistortionQueue>();
+                    NetworkIdentity identity = body.gameObject.GetComponent<NetworkIdentity>();
+                    if (queue && identity)
+                    {
+                        queue.netIds.Add(identity.netId);
+                    }
+                }
+            }
+            return body;
+        }
+    }
+
+    public class DistortionManager : MonoBehaviour
+    {
+        private readonly List<int> defaultSkillStocks = new List<int>();
+        private GenericSkill[] genericSkills;
+        private bool init = true;
+        private CharacterBody body;
+        private int timer = -1;
+        private int lockedSkillIndex = -1;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
+        private void FixedUpdate()
+        {
+            if (init)
+            {
+                if (AssignAndCheckBody())
+                {
+                    genericSkills = body.GetComponentsInChildren<GenericSkill>();
+                    for (int i = 0; i < genericSkills.Length; i++)
+                    {
+                        defaultSkillStocks.Add(genericSkills[i].maxStock);
+                    }
+                    init = false;
+                }
+            }
+            else
+            {
+                if (timer < 0)
+                {
+                    timer++;
+                    LockRandomSkill();
+                }
+                if (timer > 60 * Distortion.instance.intervalBetweenLocks)
+                {
+                    timer = 0;
+                    UnlockSkill();
+                    LockRandomSkill();
+                }
+                else timer++;
+            }
+        }
+
+        private bool AssignAndCheckBody()
+        {
+            body = gameObject.GetComponent<CharacterBody>();
+            if (!body)
+            {
+                ClassicItemsPlugin._logger.LogWarning("DistortionManager.FixedUpdate: Body is not found.");
+                return false;
+            }
+            return true;
+        }
+
+        private int LockRandomSkill()
+        {
+            if (genericSkills.Length > 1)
+            {
+                lockedSkillIndex = Random.Range(0, defaultSkillStocks.Count);
+                lockedSkillIndex = 0;
+                genericSkills[lockedSkillIndex].maxStock = 0;
+                genericSkills[lockedSkillIndex].stock = 0;
+                return lockedSkillIndex;
+            }
+            return -1;
+        }
+
+        private bool UnlockSkill()
+        {
+            if (lockedSkillIndex > 0)
+            {
+                genericSkills[lockedSkillIndex].maxStock = defaultSkillStocks[lockedSkillIndex];
+                return true;
+            }
+            return false;
+        }
+
+        public static DistortionManager GetOrAddComponent(CharacterBody body)
+        {
+            return GetOrAddComponent(body.gameObject);
+        }
+
+        public static DistortionManager GetOrAddComponent(GameObject bodyObject)
+        {
+            return bodyObject.GetComponent<DistortionManager>() ?? bodyObject.AddComponent<DistortionManager>();
+        }
+    }
+
+    public class DistortionQueue : MonoBehaviour
+    {
+        public List<NetworkInstanceId> netIds { get; private set; } = new List<NetworkInstanceId>();
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
+        private void FixedUpdate()
+        {
+            if (!PauseScreenController.paused && NetworkServer.active && NetworkUser.AllParticipatingNetworkUsersReady() && netIds.Count > 0)
+            {
+                NetworkInstanceId[] copy = new NetworkInstanceId[netIds.Count];
+                netIds.CopyTo(copy);
+                netIds.Clear();
+                for (int i = 0; i < copy.Length; i++)
+                {
+                    StartCoroutine(SendSignal(copy[i]));
+                }
+            }
+        }
+
+        private IEnumerator SendSignal(NetworkInstanceId netId)
+        {
+            yield return new WaitForSeconds(Distortion.instance.syncSeconds);
+            new SpawnDistortionComponent(netId).Send(NetworkDestination.Clients);
+        }
+    }
+
+    public class SpawnDistortionComponent : INetMessage
+    {
+        private NetworkInstanceId ownerBodyId;
+
+        public SpawnDistortionComponent()
+        {
+        }
+
+        public SpawnDistortionComponent(NetworkInstanceId ownerBodyId)
+        {
+            this.ownerBodyId = ownerBodyId;
+        }
+
+        public void Serialize(NetworkWriter writer)
+        {
+            writer.Write(ownerBodyId);
+        }
+
+        public void Deserialize(NetworkReader reader)
+        {
+            ownerBodyId = reader.ReadNetworkId();
+        }
+
+        public void OnReceived()
+        {
+            if (NetworkServer.active) return;
+            GameObject bodyObject = Util.FindNetworkObject(ownerBodyId);
+            if (!bodyObject)
+            {
+                ClassicItemsPlugin._logger.LogWarning($"SpawnDistortionComponent: bodyObject is null.");
+                return;
+            }
+            CharacterBody body = bodyObject.GetComponent<CharacterBody>();
+            if (!body)
+            {
+                ClassicItemsPlugin._logger.LogWarning($"SpawnDistortionComponent: body is null.");
+                return;
+            }
+            if (!body.isPlayerControlled || !body.hasEffectiveAuthority)
+            {
+                ClassicItemsPlugin._logger.LogMessage($"SpawnDistortionComponent: You do not control this character. Skip.");
+                return;
+            }
+            DistortionManager.GetOrAddComponent(bodyObject);
+        }
+    }
+}
