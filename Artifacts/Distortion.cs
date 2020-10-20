@@ -17,15 +17,16 @@ namespace Chen.ClassicItems
 
         [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
         [AutoConfig("The time when skill lockdown shifts in seconds.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
-        public int intervalBetweenLocks { get; private set; } = 60;
+        public int intervalBetweenLocks { get; private set; } = 90;
 
         [AutoConfig("The syncing time for Distortion effects towards Clients. There is no need to modify this unless there is a problem. " +
-                    "Increase this if clients do not get their skills locked. Setting to 0 may cause problems.", AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
+                    "Increase this if clients do not get their skills locked. Setting to 0 may cause problems.",
+                    AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
         public float syncSeconds { get; private set; } = .5f;
 
         protected override string GetNameString(string langid = null) => displayName;
 
-        protected override string GetDescString(string langid = null) => $"Lock a random skill every {intervalBetweenLocks} seconds.";
+        protected override string GetDescString(string langid = null) => $"Lock a random skill except the primary every {intervalBetweenLocks} seconds.";
 
         public Distortion()
         {
@@ -42,46 +43,26 @@ namespace Chen.ClassicItems
         {
             base.Install();
             On.RoR2.CharacterMaster.SpawnBody += CharacterMaster_SpawnBody;
-            On.RoR2.Run.Start += Run_Start;
         }
 
         public override void Uninstall()
         {
             base.Uninstall();
             On.RoR2.CharacterMaster.SpawnBody -= CharacterMaster_SpawnBody;
-            On.RoR2.Run.Start -= Run_Start;
-        }
-
-        private void Run_Start(On.RoR2.Run.orig_Start orig, Run self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                for (int i = 0; i < NetworkUser.readOnlyInstancesList.Count; i++)
-                {
-                    CharacterMaster master = NetworkUser.readOnlyInstancesList[i].master;
-                    master.gameObject.AddComponent<DistortionQueue>();
-                }
-            }
         }
 
         private CharacterBody CharacterMaster_SpawnBody(On.RoR2.CharacterMaster.orig_SpawnBody orig, CharacterMaster self, GameObject bodyPrefab, Vector3 position, Quaternion rotation)
         {
             CharacterBody body = orig(self, bodyPrefab, position, rotation);
-            if (IsActiveAndEnabled() && body)
+            if (IsActiveAndEnabled() && body && body.isPlayerControlled)
             {
-                if (body.isPlayerControlled && body.hasEffectiveAuthority)
+                ClassicItemsPlugin._logger.LogMessage("ADDING DistortionManager");
+                DistortionManager.GetOrAddComponent(body);
+                DistortionQueue queue = DistortionQueue.GetOrAddComponent(body.master);
+                NetworkIdentity identity = body.gameObject.GetComponent<NetworkIdentity>();
+                if (queue && identity)
                 {
-                    DistortionManager.GetOrAddComponent(body);
-                }
-                else
-                {
-                    DistortionQueue queue = body.masterObject.GetComponent<DistortionQueue>();
-                    NetworkIdentity identity = body.gameObject.GetComponent<NetworkIdentity>();
-                    if (queue && identity)
-                    {
-                        queue.netIds.Add(identity.netId);
-                    }
+                    queue.netIds.Add(identity.netId);
                 }
             }
             return body;
@@ -90,7 +71,6 @@ namespace Chen.ClassicItems
 
     public class DistortionManager : MonoBehaviour
     {
-        private readonly List<int> defaultSkillStocks = new List<int>();
         private GenericSkill[] genericSkills;
         private bool init = true;
         private CharacterBody body;
@@ -105,10 +85,6 @@ namespace Chen.ClassicItems
                 if (AssignAndCheckBody())
                 {
                     genericSkills = body.GetComponentsInChildren<GenericSkill>();
-                    for (int i = 0; i < genericSkills.Length; i++)
-                    {
-                        defaultSkillStocks.Add(genericSkills[i].maxStock);
-                    }
                     init = false;
                 }
             }
@@ -144,10 +120,8 @@ namespace Chen.ClassicItems
         {
             if (genericSkills.Length > 1)
             {
-                lockedSkillIndex = Random.Range(0, defaultSkillStocks.Count);
-                lockedSkillIndex = 0;
-                genericSkills[lockedSkillIndex].maxStock = 0;
-                genericSkills[lockedSkillIndex].stock = 0;
+                lockedSkillIndex = Random.Range(0, genericSkills.Length);
+                genericSkills[lockedSkillIndex].stock = genericSkills[lockedSkillIndex].maxStock = -Distortion.instance.intervalBetweenLocks;
                 return lockedSkillIndex;
             }
             return -1;
@@ -157,7 +131,8 @@ namespace Chen.ClassicItems
         {
             if (lockedSkillIndex > 0)
             {
-                genericSkills[lockedSkillIndex].maxStock = defaultSkillStocks[lockedSkillIndex];
+                genericSkills[lockedSkillIndex].RecalculateMaxStock();
+                genericSkills[lockedSkillIndex].stock = genericSkills[lockedSkillIndex].maxStock;
                 return true;
             }
             return false;
@@ -197,6 +172,16 @@ namespace Chen.ClassicItems
         {
             yield return new WaitForSeconds(Distortion.instance.syncSeconds);
             new SpawnDistortionComponent(netId).Send(NetworkDestination.Clients);
+        }
+
+        public static DistortionQueue GetOrAddComponent(CharacterMaster master)
+        {
+            return GetOrAddComponent(master.gameObject);
+        }
+
+        public static DistortionQueue GetOrAddComponent(GameObject masterObject)
+        {
+            return masterObject.GetComponent<DistortionQueue>() ?? masterObject.AddComponent<DistortionQueue>();
         }
     }
 
