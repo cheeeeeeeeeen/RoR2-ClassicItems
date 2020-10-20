@@ -12,6 +12,7 @@ Use **r2modman** mod manager to install this mod.
 
 ## Current Additions
 ### Artifact
+- Distortion
 - Spirit
 ### Equipment
 - Drone Repair Kit
@@ -41,7 +42,14 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 **Kirbsuke#0352** made the Artifact of Spirit icon.
 - Contact: `kirbydamaster@gmail.com` or through Discord.
 
+**Aromatic Sunday#2929** did offer to make icons, and thus included as an alternate version.
+
 ## Changelog
+
+**2.1.0**
+- Implement Artifact of Distortion!
+- Temporary icons for the new artifact.
+- Include alternate icons for Spirit artifact made by other people.
 
 **2.0.1**
 - Update the mod for a missing setup that prevents it from working correctly.
