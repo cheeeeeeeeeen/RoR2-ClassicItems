@@ -47,13 +47,11 @@ namespace Chen.ClassicItems
             LanguageAPI.Add("ALL_DISTORTION_LOCKED_DESCRIPTION", "You forgot how to perform this skill.");
 
             distortSkill = ScriptableObject.CreateInstance<SkillDef>();
-            distortSkill.activationState = new SerializableEntityStateType(nameof(Idle));
             distortSkill.activationStateMachineName = "Weapon";
             distortSkill.baseMaxStock = 0;
             distortSkill.baseRechargeInterval = 0f;
-            distortSkill.beginSkillCooldownOnSkillEnd = true;
             distortSkill.canceledFromSprinting = false;
-            distortSkill.fullRestockOnAssign = true;
+            distortSkill.fullRestockOnAssign = false;
             distortSkill.interruptPriority = InterruptPriority.Any;
             distortSkill.isBullets = true;
             distortSkill.isCombatSkill = false;
@@ -153,7 +151,7 @@ namespace Chen.ClassicItems
                 lockedSkillIndex = Random.Range(0, genericSkills.Length);
                 oldSkillDef = genericSkills[lockedSkillIndex].skillDef;
                 genericSkills[lockedSkillIndex].AssignSkill(Distortion.distortSkill);
-                genericSkills[lockedSkillIndex].RecalculateMaxStock();
+                genericSkills[lockedSkillIndex].stock = 0;
                 return lockedSkillIndex;
             }
             return -1;
