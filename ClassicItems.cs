@@ -148,19 +148,6 @@ namespace Chen.ClassicItems
                 x.SetupAttributes();
             }
 
-            Logger.LogMessage("Index dump follows (pairs of name / index):");
-            foreach (CatalogBoilerplate x in chensItemList)
-            {
-                if (x is Equipment_V2 eqp)
-                    Logger.LogMessage("Equipment CCI" + x.name + " / " + ((int)eqp.catalogIndex).ToString());
-                else if (x is Item_V2 item)
-                    Logger.LogMessage("     Item CCI" + x.name + " / " + ((int)item.catalogIndex).ToString());
-                else if (x is Artifact_V2 afct)
-                    Logger.LogMessage(" Artifact CCI" + x.name + " / " + ((int)afct.catalogIndex).ToString());
-                else
-                    Logger.LogMessage("    Other CCI" + x.name + " / N/A");
-            }
-
             Logger.LogDebug("Registering item behaviors...");
             foreach (CatalogBoilerplate x in chensItemList)
             {
@@ -174,6 +161,7 @@ namespace Chen.ClassicItems
         {
             Logger.LogDebug("Performing late setup:");
             T2Module.SetupAll_PluginStart(chensItemList);
+            CatalogBoilerplate.ConsoleDump(Logger, chensItemList);
             Logger.LogDebug("Late setup done!");
         }
     }
