@@ -43,6 +43,9 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.0.1**
+- Update the mod for a missing setup that prevents it from working correctly.
+
 **2.0.0**
 - Migrate the code to support new changes of TILER2.
 

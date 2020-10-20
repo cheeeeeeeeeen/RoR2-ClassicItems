@@ -1,4 +1,7 @@
-﻿using R2API.Networking;
+﻿#undef DEBUG
+
+#if DEBUG
+using R2API.Networking;
 using R2API.Networking.Interfaces;
 using RoR2;
 using RoR2.UI;
@@ -232,3 +235,4 @@ namespace Chen.ClassicItems
         }
     }
 }
+#endif

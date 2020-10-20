@@ -28,7 +28,7 @@ namespace Chen.ClassicItems
 #if DEBUG
             "0." +
 #endif
-            "2.0.0";
+            "2.0.1";
 
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";
@@ -172,7 +172,8 @@ namespace Chen.ClassicItems
         private void Start()
         {
             Logger.LogDebug("Performing late setup:");
-            Logger.LogDebug("Nothing to perform here.");
+            T2Module.SetupAll_PluginStart(chensItemList);
+            Logger.LogDebug("Late setup done!");
         }
     }
 }
