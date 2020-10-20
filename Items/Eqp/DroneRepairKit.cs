@@ -111,7 +111,7 @@ namespace Chen.ClassicItems
             });
             regenBuff = BuffAPI.Add(regenBuffDef);
 
-            Embryo.instance.Compat_Register(catalogIndex);
+            Embryo_V2.instance.Compat_Register(catalogIndex);
         }
 
         public override void Install()

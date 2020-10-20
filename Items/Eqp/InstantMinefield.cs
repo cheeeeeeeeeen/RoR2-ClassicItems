@@ -69,7 +69,7 @@ namespace Chen.ClassicItems
             mesh.material.color = new Color32(111, 95, 52, 255);
             minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
-            Embryo.instance.Compat_Register(catalogIndex);
+            Embryo_V2.instance.Compat_Register(catalogIndex);
         }
 
         public override void Install()
