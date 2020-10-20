@@ -21,7 +21,8 @@ namespace Chen.ClassicItems
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [BepInDependency(ThinkInvisCI.ClassicItemsPlugin.ModGuid, ThinkInvisCI.ClassicItemsPlugin.ModVer)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
-    [R2APISubmoduleDependency(nameof(DotAPI), nameof(ResourcesAPI), nameof(PrefabAPI), nameof(BuffAPI), nameof(NetworkingAPI))]
+    [R2APISubmoduleDependency(nameof(DotAPI), nameof(ResourcesAPI), nameof(PrefabAPI), nameof(BuffAPI), nameof(NetworkingAPI),
+                              nameof(LoadoutAPI), nameof(LanguageAPI))]
     public class ClassicItemsPlugin : BaseUnityPlugin
     {
         public const string ModVer =
