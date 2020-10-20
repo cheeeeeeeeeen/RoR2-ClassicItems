@@ -3,6 +3,7 @@
 using BepInEx;
 using BepInEx.Configuration;
 using R2API;
+using R2API.Networking;
 using R2API.Utils;
 using RoR2;
 using System.Collections.Generic;
@@ -20,21 +21,22 @@ namespace Chen.ClassicItems
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [BepInDependency(ThinkInvisCI.ClassicItemsPlugin.ModGuid, ThinkInvisCI.ClassicItemsPlugin.ModVer)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
-    [R2APISubmoduleDependency(nameof(DotAPI), nameof(ResourcesAPI), nameof(PrefabAPI), nameof(BuffAPI))]
+    [R2APISubmoduleDependency(nameof(DotAPI), nameof(ResourcesAPI), nameof(PrefabAPI), nameof(BuffAPI), nameof(NetworkingAPI),
+                              nameof(LoadoutAPI), nameof(LanguageAPI))]
     public class ClassicItemsPlugin : BaseUnityPlugin
     {
         public const string ModVer =
 #if DEBUG
             "0." +
 #endif
-            "1.4.5";
+            "2.1.0";
 
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";
 
         private static ConfigFile cfgFile;
 
-        internal static FilingDictionary<ItemBoilerplate> chensItemList = new FilingDictionary<ItemBoilerplate>();
+        internal static FilingDictionary<CatalogBoilerplate> chensItemList = new FilingDictionary<CatalogBoilerplate>();
 
         private static readonly ReadOnlyDictionary<ItemTier, string> modelNameMap = new ReadOnlyDictionary<ItemTier, string>(new Dictionary<ItemTier, string>{
             {ItemTier.Boss, "BossCard"},
@@ -99,67 +101,68 @@ namespace Chen.ClassicItems
             Logger.LogDebug("Skip. Global configs are based on ThinkInvis.ClassicItems.");
 
             Logger.LogDebug("Instantiating item classes...");
-            chensItemList = ItemBoilerplate.InitAll("ChensClassicItems");
+            chensItemList = T2Module.InitAll<CatalogBoilerplate>(new T2Module.ModInfo
+            {
+                displayName = "Chen's Classic Items",
+                longIdentifier = "ChensClassicItems",
+                shortIdentifier = "CCI",
+                mainConfigFile = cfgFile
+            });
 
             Logger.LogDebug("Loading item configs...");
-            foreach (ItemBoilerplate x in chensItemList)
+            foreach (CatalogBoilerplate x in chensItemList)
             {
+                x.SetupConfig();
                 x.ConfigEntryChanged += (sender, args) =>
                 {
-                    if ((args.flags & (AutoUpdateEventFlags.InvalidateNameToken | (longDesc ? AutoUpdateEventFlags.InvalidateDescToken : AutoUpdateEventFlags.InvalidatePickupToken))) == 0) return;
-                    if (x.pickupDef != null)
+                    if ((args.flags & AutoConfigUpdateActionTypes.InvalidateLanguage) == 0) return;
+                    var y = sender as CatalogBoilerplate;
+                    if (y.pickupDef != null)
                     {
-                        var ctsf = x.pickupDef.displayPrefab?.transform;
+                        var ctsf = y.pickupDef.displayPrefab?.transform;
                         if (!ctsf) return;
                         var cfront = ctsf.Find("cardfront");
                         if (!cfront) return;
 
-                        cfront.Find("carddesc").GetComponent<TextMeshPro>().text = Language.GetString(longDesc ? x.descToken : x.pickupToken);
-                        cfront.Find("cardname").GetComponent<TextMeshPro>().text = Language.GetString(x.nameToken);
+                        cfront.Find("carddesc").GetComponent<TextMeshPro>().text = Language.GetString(longDesc ? y.descToken : y.pickupToken);
+                        cfront.Find("cardname").GetComponent<TextMeshPro>().text = Language.GetString(y.nameToken);
                     }
-                    if (x.logbookEntry != null)
-                    {
-                        x.logbookEntry.modelPrefab = x.pickupDef.displayPrefab;
-                    }
+                    if (y.logbookEntry != null) y.logbookEntry.modelPrefab = y.pickupDef.displayPrefab;
                 };
-                x.SetupConfig(cfgFile);
             }
 
             Logger.LogDebug("Registering item attributes...");
-
-            int longestName = 0;
-            foreach (ItemBoilerplate x in chensItemList)
+            foreach (CatalogBoilerplate x in chensItemList)
             {
                 string mpnOvr = null;
-                if (x is Item item) mpnOvr = "@ChensClassicItems:Assets/ClassicItems/models/" + modelNameMap[item.itemTier] + ".prefab";
-                else if (x is Equipment eqp) mpnOvr = "@ChensClassicItems:Assets/ClassicItems/models/" + (eqp.eqpIsLunar ? "LqpCard.prefab" : "EqpCard.prefab");
-                var ipnOvr = "@ChensClassicItems:Assets/ClassicItems/icons/" + x.itemCodeName + "_icon.png";
+                if (x is Item_V2 item) mpnOvr = "@ChensClassicItems:Assets/ClassicItems/models/" + modelNameMap[item.itemTier] + ".prefab";
+                else if (x is Equipment_V2 eqp) mpnOvr = "@ChensClassicItems:Assets/ClassicItems/models/" + (eqp.isLunar ? "LqpCard.prefab" : "EqpCard.prefab");
+                var ipnOvr = "@ChensClassicItems:Assets/ClassicItems/icons/" + x.name + "_icon.png";
 
                 if (mpnOvr != null)
                 {
-                    typeof(ItemBoilerplate).GetProperty(nameof(ItemBoilerplate.modelPathName)).SetValue(x, mpnOvr);
-                    typeof(ItemBoilerplate).GetProperty(nameof(ItemBoilerplate.iconPathName)).SetValue(x, ipnOvr);
+                    typeof(CatalogBoilerplate).GetProperty(nameof(CatalogBoilerplate.modelResourcePath)).SetValue(x, mpnOvr);
+                    typeof(CatalogBoilerplate).GetProperty(nameof(CatalogBoilerplate.iconResourcePath)).SetValue(x, ipnOvr);
                 }
 
-                x.SetupAttributes("CHENSCLASSICITEMS", "CCI");
-                if (x.itemCodeName.Length > longestName) longestName = x.itemCodeName.Length;
+                x.SetupAttributes();
             }
 
             Logger.LogMessage("Index dump follows (pairs of name / index):");
-            foreach (ItemBoilerplate x in chensItemList)
+            foreach (CatalogBoilerplate x in chensItemList)
             {
-                if (x is Equipment eqp)
-                    Logger.LogMessage("Equipment CCI" + x.itemCodeName.PadRight(longestName) + " / " + ((int)eqp.regIndex).ToString());
-                else if (x is Item item)
-                    Logger.LogMessage("     Item CCI" + x.itemCodeName.PadRight(longestName) + " / " + ((int)item.regIndex).ToString());
-                else if (x is Artifact afct)
-                    Logger.LogMessage(" Artifact CCI" + x.itemCodeName.PadRight(longestName) + " / " + ((int)afct.regIndex).ToString());
+                if (x is Equipment_V2 eqp)
+                    Logger.LogMessage("Equipment CCI" + x.name + " / " + ((int)eqp.catalogIndex).ToString());
+                else if (x is Item_V2 item)
+                    Logger.LogMessage("     Item CCI" + x.name + " / " + ((int)item.catalogIndex).ToString());
+                else if (x is Artifact_V2 afct)
+                    Logger.LogMessage(" Artifact CCI" + x.name + " / " + ((int)afct.catalogIndex).ToString());
                 else
-                    Logger.LogMessage("    Other CCI" + x.itemCodeName.PadRight(longestName) + " / N/A");
+                    Logger.LogMessage("    Other CCI" + x.name + " / N/A");
             }
 
             Logger.LogDebug("Registering item behaviors...");
-            foreach (ItemBoilerplate x in chensItemList)
+            foreach (CatalogBoilerplate x in chensItemList)
             {
                 x.SetupBehavior();
             }
@@ -170,7 +173,8 @@ namespace Chen.ClassicItems
         private void Start()
         {
             Logger.LogDebug("Performing late setup:");
-            Logger.LogDebug("Nothing to perform here.");
+            T2Module.SetupAll_PluginStart(chensItemList);
+            Logger.LogDebug("Late setup done!");
         }
     }
 }

@@ -10,46 +10,46 @@ using MageWeapon = EntityStates.Mage.Weapon;
 
 namespace Chen.ClassicItems
 {
-    public class ArmsRace : Item<ArmsRace>
+    public class ArmsRace : Item_V2<ArmsRace>
     {
         public override string displayName => "Arms Race";
         public override ItemTier itemTier => ItemTier.Tier2;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("The chance for drones to launch a mortar. Stacks multiplicatively.", AutoItemConfigFlags.None, 0f, 100f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("The chance for drones to launch a mortar. Stacks multiplicatively.", AutoConfigFlags.None, 0f, 100f)]
         public float mortarProcChance { get; private set; } = 5f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("The chance for drones to launch a missile. Stacks multiplicatively.", AutoItemConfigFlags.None, 0f, 100f)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("The chance for drones to launch a missile. Stacks multiplicatively.", AutoConfigFlags.None, 0f, 100f)]
         public float missileProcChance { get; private set; } = 4f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Mortar Damage Coefficient.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Mortar Damage Coefficient.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float mortarDamage { get; private set; } = 1.5f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Stacking value of Mortar Damage Coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Stacking value of Mortar Damage Coefficient. Linear.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float mortarStackDamage { get; private set; } = 0f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Missile Damage Coefficient.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Missile Damage Coefficient.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float missileDamage { get; private set; } = 1.5f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Stacking value of Missile Damage Coefficient. Linear.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Stacking value of Missile Damage Coefficient. Linear.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float missileStackDamage { get; private set; } = 0f;
 
-        [AutoItemConfig("Determines whether Squid Polyp will work with Arms Race.")]
+        [AutoConfig("Determines whether Squid Polyp will work with Arms Race.")]
         public bool allowSquidPolyps { get; private set; } = false;
 
-        public override bool itemAIB { get; protected set; } = true;
+        public override bool itemIsAIBlacklisted { get; protected set; } = true;
 
-        protected override string NewLangName(string langid = null) => displayName;
+        protected override string GetNameString(string langid = null) => displayName;
 
-        protected override string NewLangPickup(string langid = null) => "Drones are equipped with explosive weaponry.";
+        protected override string GetPickupString(string langid = null) => "Drones are equipped with explosive weaponry.";
 
-        protected override string NewLangDesc(string langid = null)
+        protected override string GetDescString(string langid = null)
         {
             string desc = $"Owned Drones and Turrets have a <style=cIsDamage>{Pct(mortarProcChance, 0, 1)}</style>";
             desc += $" <style=cStack>(+{Pct(mortarProcChance, 0, 1)} per stack, multiplicative)</style>";
@@ -63,7 +63,7 @@ namespace Chen.ClassicItems
             return desc;
         }
 
-        protected override string NewLangLore(string langid = null) =>
+        protected override string GetLoreString(string langid = null) =>
             "\"Psst. Hey. It's me again. You guessed it right: I'm whispering over text once again. It's a habit of mine.\"\n\n" +
             "\"Here are the upgraded drone parts. Since KS-I slotted drones are the trend, I assumed that the drones you own are of the same type. " +
             "Hence, the drone parts being compatible to KS-I only.\"\n\n" +
@@ -71,35 +71,34 @@ namespace Chen.ClassicItems
             "You still need to strap it to the drone, though, but hey, it would not be too obvious that the drone is weaponized. It also looks less lamer.\"\n\n" +
             "\"Keep it up. We will not falter in this arms race, although it looks dark for us. Think positive.\"";
 
-        public ArmsRace()
+        public override void SetupBehavior()
         {
-            onBehav += () =>
+            base.SetupBehavior();
+            if (Compat_ItemStats.enabled)
             {
-                if (Compat_ItemStats.enabled)
-                {
-                    Compat_ItemStats.CreateItemStatDef(regItem.ItemDef,
-                    (
-                        (count, inv, master) => { return ProcComputation(mortarProcChance, (int)count); },
-                        (value, inv, master) => { return $"Mortar Firing Chance: {Pct(value, 0, 1)}"; }
-                    ),
-                    (
-                        (count, inv, master) => { return ProcComputation(missileProcChance, (int)count); },
-                        (value, inv, master) => { return $"Missile Firing Chance: {Pct(value, 0, 1)}"; }
-                    ),
-                    (
-                        (count, inv, master) => { return mortarDamage + (count - 1) * mortarStackDamage; },
-                        (value, inv, master) => { return $"Mortar Damage: {Pct(value, 0)}"; }
-                    ),
-                    (
-                        (count, inv, master) => { return missileDamage + (count - 1) * missileStackDamage; },
-                        (value, inv, master) => { return $"Missile Damage: {Pct(value, 0)}"; }
-                    ));
-                }
-            };
+                Compat_ItemStats.CreateItemStatDef(itemDef,
+                (
+                    (count, inv, master) => { return ProcComputation(mortarProcChance, (int)count); },
+                    (value, inv, master) => { return $"Mortar Firing Chance: {Pct(value, 0, 1)}"; }
+                ),
+                (
+                    (count, inv, master) => { return ProcComputation(missileProcChance, (int)count); },
+                    (value, inv, master) => { return $"Missile Firing Chance: {Pct(value, 0, 1)}"; }
+                ),
+                (
+                    (count, inv, master) => { return mortarDamage + (count - 1) * mortarStackDamage; },
+                    (value, inv, master) => { return $"Mortar Damage: {Pct(value, 0)}"; }
+                ),
+                (
+                    (count, inv, master) => { return missileDamage + (count - 1) * missileStackDamage; },
+                    (value, inv, master) => { return $"Missile Damage: {Pct(value, 0)}"; }
+                ));
+            }
         }
 
-        protected override void LoadBehavior()
+        public override void Install()
         {
+            base.Install();
             On.EntityStates.Drone.DroneWeapon.FireGatling.OnEnter += FireGatling_OnEnter;
             On.EntityStates.Drone.DroneWeapon.FireTurret.OnEnter += FireTurret_OnEnter;
             On.EntityStates.Drone.DroneWeapon.FireMegaTurret.FireBullet += FireMegaTurret_FireBullet;
@@ -109,8 +108,9 @@ namespace Chen.ClassicItems
             On.EntityStates.Squid.SquidWeapon.FireSpine.FireOrbArrow += FireSpine_FireOrbArrow;
         }
 
-        protected override void UnloadBehavior()
+        public override void Uninstall()
         {
+            base.Uninstall();
             On.EntityStates.Drone.DroneWeapon.FireGatling.OnEnter -= FireGatling_OnEnter;
             On.EntityStates.Drone.DroneWeapon.FireTurret.OnEnter -= FireTurret_OnEnter;
             On.EntityStates.Drone.DroneWeapon.FireMegaTurret.FireBullet -= FireMegaTurret_FireBullet;

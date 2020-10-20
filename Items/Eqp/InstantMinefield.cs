@@ -10,23 +10,23 @@ using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
-    public class InstantMinefield : Equipment<InstantMinefield>
+    public class InstantMinefield : Equipment_V2<InstantMinefield>
     {
         public override string displayName => "Instant Minefield";
 
-        public override float eqpCooldown { get; protected set; } = 45f;
+        public override float cooldown { get; protected set; } = 45f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken | AutoUpdateEventFlags.InvalidatePickupToken)]
-        [AutoItemConfig("Number of mines to drop on use.", AutoItemConfigFlags.None, 0, int.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Number of mines to drop on use.", AutoConfigFlags.None, 0, int.MaxValue)]
         public int mineNumber { get; private set; } = 6;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Damage of each mine.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Damage of each mine.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float mineDamage { get; private set; } = 4f;
 
-        protected override string NewLangName(string langid = null) => displayName;
+        protected override string GetNameString(string langid = null) => displayName;
 
-        protected override string NewLangPickup(string langid = null)
+        protected override string GetPickupString(string langid = null)
         {
             string desc = "Drop";
             if (mineNumber != 1) desc += " many mines";
@@ -35,7 +35,7 @@ namespace Chen.ClassicItems
             return desc;
         }
 
-        protected override string NewLangDesc(string langid = null)
+        protected override string GetDescString(string langid = null)
         {
             string desc = $"Drop <style=cIsDamage>{mineNumber}</style> mine";
             if (mineNumber != 1) desc += "s";
@@ -43,7 +43,7 @@ namespace Chen.ClassicItems
             return desc;
         }
 
-        protected override string NewLangLore(string langid = null) =>
+        protected override string GetLoreString(string langid = null) =>
             "\"Turn the safe switch off, and just simply lay it down... and its uh... smart-fire should prevent it from blowing your own legs off.\"\n\n" +
             "\"No [REDACTED]? I don't feel safe already, and that's just Step 1!\"\n\n" +
             "\"That's what it says here. Hurry up because we don't have long. Those giant insects will be coming anytime soon.\"\n\n" +
@@ -56,37 +56,37 @@ namespace Chen.ClassicItems
         private static GameObject minePrefab;
         private static GameObject mineGhostPrefab;
 
-        public InstantMinefield()
+        public override void SetupBehavior()
         {
-            onBehav += () =>
-            {
-                GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
-                minePrefab = engiMinePrefab.InstantiateClone("InstantMine");
-                Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
+            base.SetupBehavior();
+            GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
+            minePrefab = engiMinePrefab.InstantiateClone("InstantMine");
+            Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
 
-                GameObject engiMineGhostPrefab = Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost");
-                mineGhostPrefab = engiMineGhostPrefab.InstantiateClone("InstantMineGhost", false);
-                SkinnedMeshRenderer mesh = mineGhostPrefab.GetComponentInChildren<SkinnedMeshRenderer>();
-                mesh.material.color = new Color32(111, 95, 52, 255);
-                minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
+            GameObject engiMineGhostPrefab = Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost");
+            mineGhostPrefab = engiMineGhostPrefab.InstantiateClone("InstantMineGhost", false);
+            SkinnedMeshRenderer mesh = mineGhostPrefab.GetComponentInChildren<SkinnedMeshRenderer>();
+            mesh.material.color = new Color32(111, 95, 52, 255);
+            minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
-                Embryo.instance.Compat_Register(regIndex);
-            };
+            Embryo_V2.instance.Compat_Register(catalogIndex);
         }
 
-        protected override void LoadBehavior()
+        public override void Install()
         {
+            base.Install();
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate += On_ESMineArmingWeak;
             On.EntityStates.Engi.Mine.BaseMineArmingState.OnEnter += On_ESBaseMineArmingState;
         }
 
-        protected override void UnloadBehavior()
+        public override void Uninstall()
         {
+            base.Uninstall();
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate -= On_ESMineArmingWeak;
             On.EntityStates.Engi.Mine.BaseMineArmingState.OnEnter -= On_ESBaseMineArmingState;
         }
 
-        protected override bool OnEquipUseInner(EquipmentSlot slot)
+        protected override bool PerformEquipmentAction(EquipmentSlot slot)
         {
             CharacterBody body = slot.characterBody;
             if (!body) return false;

@@ -10,44 +10,44 @@ using Object = UnityEngine.Object;
 
 namespace Chen.ClassicItems
 {
-    public class DroneRepairKit : Equipment<DroneRepairKit>
+    public class DroneRepairKit : Equipment_V2<DroneRepairKit>
     {
         public override string displayName => "Drone Repair Kit";
 
-        public override float eqpCooldown { get; protected set; } = 45f;
+        public override float cooldown { get; protected set; } = 45f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Enable regen buff on top of the heal for Drones when this equipment is used.")]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Enable regen buff on top of the heal for Drones when this equipment is used.")]
         public bool enableRegenBuff { get; private set; } = true;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Type of healing done to Drones. 0 = Percentage. 1 = Fixed amount.", AutoItemConfigFlags.None, 0, 1)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Type of healing done to Drones. 0 = Percentage. 1 = Fixed amount.", AutoConfigFlags.None, 0, 1)]
         public int healType { get; private set; } = 0;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Amount of HP healed per drone. If healing type is Percentage, 1 = 100%; based on max health. " +
-                        "If Fixed, the amount here is the HP restored to Drones. Affected by Embryo.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Amount of HP healed per drone. If healing type is Percentage, 1 = 100%; based on max health. " +
+                        "If Fixed, the amount here is the HP restored to Drones. Affected by Embryo.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float healthRestoreAmount { get; private set; } = 1f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Type of regen applied Drones. 0 = Percentage. 1 = Fixed amount.", AutoItemConfigFlags.None, 0, 1)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Type of regen applied Drones. 0 = Percentage. 1 = Fixed amount.", AutoConfigFlags.None, 0, 1)]
         public int regenType { get; private set; } = 0;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Amount of regenration per drone. If healing type is Percentage, 1 = 100%; based on BASE max health of the drone. " +
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Amount of regenration per drone. If healing type is Percentage, 1 = 100%; based on BASE max health of the drone. " +
                         "Base Max health is the unmodified max health of the drone. Scales with level. Affected by Embryo." +
-                        "If Fixed, the amount here is the HP restored to Drones.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+                        "If Fixed, the amount here is the HP restored to Drones.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float healthRegenAmount { get; private set; } = .01f;
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("Duration of the regen buff granted by this equipment.", AutoItemConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Duration of the regen buff granted by this equipment.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float regenDuration { get; private set; } = 8f;
 
-        protected override string NewLangName(string langid = null) => displayName;
+        protected override string GetNameString(string langid = null) => displayName;
 
-        protected override string NewLangPickup(string langid = null) => "Repair all active drones.";
+        protected override string GetPickupString(string langid = null) => "Repair all active drones.";
 
-        protected override string NewLangDesc(string langid = null)
+        protected override string GetDescString(string langid = null)
         {
             string desc = "";
             if (healthRestoreAmount > 0 && healthRegenAmount > 0) desc += "Repairs all owned drones,";
@@ -75,7 +75,7 @@ namespace Chen.ClassicItems
             return desc;
         }
 
-        protected override string NewLangLore(string langid = null) =>
+        protected override string GetLoreString(string langid = null) =>
             "Another old item found from random places of the Planet, but our machinist took it and started tinkering with the tools inside it.\n\n" +
             "\"Ah, this is a good find,\" he exclaimed as he left with the toolbox.\n\n" +
             "It looked like nanodrones were inside that box. Ah, for as long as it is put to use, I have no problem with it.\n\n" +
@@ -98,31 +98,31 @@ namespace Chen.ClassicItems
 
         private static BuffIndex regenBuff;
 
-        public DroneRepairKit()
+        public override void SetupBehavior()
         {
-            onBehav += () =>
+            base.SetupBehavior();
+            CustomBuff regenBuffDef = new CustomBuff(new BuffDef
             {
-                CustomBuff regenBuffDef = new CustomBuff(new BuffDef
-                {
-                    buffColor = Color.green,
-                    canStack = true,
-                    isDebuff = false,
-                    name = "CCIDroneRepairKit",
-                    iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/dronerepairkit_buff_icon.png"
-                });
-                regenBuff = BuffAPI.Add(regenBuffDef);
+                buffColor = Color.green,
+                canStack = true,
+                isDebuff = false,
+                name = "CCIDroneRepairKit",
+                iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/dronerepairkit_buff_icon.png"
+            });
+            regenBuff = BuffAPI.Add(regenBuffDef);
 
-                Embryo.instance.Compat_Register(regIndex);
-            };
+            Embryo_V2.instance.Compat_Register(catalogIndex);
         }
 
-        protected override void LoadBehavior()
+        public override void Install()
         {
+            base.Install();
             On.RoR2.CharacterBody.RecalculateStats += CharacterBody_RecalculateStats;
         }
 
-        protected override void UnloadBehavior()
+        public override void Uninstall()
         {
+            base.Uninstall();
             On.RoR2.CharacterBody.RecalculateStats -= CharacterBody_RecalculateStats;
         }
 
@@ -142,7 +142,7 @@ namespace Chen.ClassicItems
             else orig(self);
         }
 
-        protected override bool OnEquipUseInner(EquipmentSlot slot)
+        protected override bool PerformEquipmentAction(EquipmentSlot slot)
         {
             CharacterBody body = slot.characterBody;
             if (!body) return false;

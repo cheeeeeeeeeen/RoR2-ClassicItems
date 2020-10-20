@@ -1,6 +1,9 @@
-﻿using R2API.Networking;
+﻿using EntityStates;
+using R2API;
+using R2API.Networking;
 using R2API.Networking.Interfaces;
 using RoR2;
+using RoR2.Skills;
 using RoR2.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,41 +14,70 @@ using Random = UnityEngine.Random;
 
 namespace Chen.ClassicItems
 {
-    public class Distortion : Artifact<Distortion>
+    public class Distortion : Artifact_V2<Distortion>
     {
         public override string displayName => "Artifact of Distortion";
 
-        [AutoUpdateEventInfo(AutoUpdateEventFlags.InvalidateDescToken)]
-        [AutoItemConfig("The time when skill lockdown shifts in seconds.", AutoItemConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
-        public int intervalBetweenLocks { get; private set; } = 90;
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("The time when skill lockdown shifts in seconds.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
+        public int intervalBetweenLocks { get; private set; } = 60;
 
-        [AutoItemConfig("The syncing time for Distortion effects towards Clients. There is no need to modify this unless there is a problem. " +
-                        "Increase this if clients do not get their skills locked. Setting to 0 may cause problems.",
-                        AutoItemConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
+        [AutoConfig("The syncing time for Distortion effects towards Clients. There is no need to modify this unless there is a problem. " +
+                    "Increase this if clients do not get their skills locked. Setting to 0 may cause problems.",
+                    AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
         public float syncSeconds { get; private set; } = .5f;
 
-        protected override string NewLangName(string langid = null) => displayName;
+        protected override string GetNameString(string langid = null) => displayName;
 
-        protected override string NewLangDesc(string langid = null) => $"Lock a random skill except the primary every {intervalBetweenLocks} seconds.";
+        protected override string GetDescString(string langid = null) => $"Lock a random active or passive skill every {intervalBetweenLocks} seconds.";
+
+        public static SkillDef distortSkill;
 
         public Distortion()
         {
-            iconPathName = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_on_icon.png";
-            iconPathNameDisabled = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_off_icon.png";
-
-            onBehav += () =>
-            {
-                NetworkingAPI.RegisterMessageType<SpawnDistortionComponent>();
-            };
+            iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/distortion_artifact_on_icon.png";
+            iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/Icons/distortion_artifact_off_icon.png";
         }
 
-        protected override void LoadBehavior()
+        public override void SetupBehavior()
         {
+            NetworkingAPI.RegisterMessageType<SpawnDistortionComponent>();
+
+            LanguageAPI.Add("ALL_DISTORTION_LOCKED_NAME", "Distorted");
+            LanguageAPI.Add("ALL_DISTORTION_LOCKED_DESCRIPTION", "You forgot how to perform this skill.");
+
+            distortSkill = ScriptableObject.CreateInstance<SkillDef>();
+            distortSkill.activationState = new SerializableEntityStateType(nameof(Idle));
+            distortSkill.activationStateMachineName = "Weapon";
+            distortSkill.baseMaxStock = 0;
+            distortSkill.baseRechargeInterval = 0f;
+            distortSkill.beginSkillCooldownOnSkillEnd = true;
+            distortSkill.canceledFromSprinting = false;
+            distortSkill.fullRestockOnAssign = true;
+            distortSkill.interruptPriority = InterruptPriority.Any;
+            distortSkill.isBullets = true;
+            distortSkill.isCombatSkill = false;
+            distortSkill.mustKeyPress = false;
+            distortSkill.noSprint = false;
+            distortSkill.rechargeStock = 0;
+            distortSkill.requiredStock = 0;
+            distortSkill.stockToConsume = 0;
+            distortSkill.icon = Resources.Load<Sprite>("@ChensClassicItems:Assets/ClassicItems/icons/distortion_skill_icon.png");
+            distortSkill.skillDescriptionToken = "ALL_DISTORTION_LOCKED_DESCRIPTION";
+            distortSkill.skillName = "ALL_DISTORTION_LOCKED_NAME";
+            distortSkill.skillNameToken = "ALL_DISTORTION_LOCKED_NAME";
+            LoadoutAPI.AddSkillDef(distortSkill);
+        }
+
+        public override void Install()
+        {
+            base.Install();
             On.RoR2.CharacterMaster.SpawnBody += CharacterMaster_SpawnBody;
         }
 
-        protected override void UnloadBehavior()
+        public override void Uninstall()
         {
+            base.Uninstall();
             On.RoR2.CharacterMaster.SpawnBody -= CharacterMaster_SpawnBody;
         }
 
@@ -54,7 +86,6 @@ namespace Chen.ClassicItems
             CharacterBody body = orig(self, bodyPrefab, position, rotation);
             if (IsActiveAndEnabled() && body && body.isPlayerControlled)
             {
-                ClassicItemsPlugin._logger.LogMessage("ADDING DistortionManager");
                 DistortionManager.GetOrAddComponent(body);
                 DistortionQueue queue = DistortionQueue.GetOrAddComponent(body.master);
                 NetworkIdentity identity = body.gameObject.GetComponent<NetworkIdentity>();
@@ -69,11 +100,12 @@ namespace Chen.ClassicItems
 
     public class DistortionManager : MonoBehaviour
     {
-        private GenericSkill[] genericSkills;
+        public GenericSkill[] genericSkills;
         private bool init = true;
         private CharacterBody body;
         private int timer = -1;
         private int lockedSkillIndex = -1;
+        public SkillDef oldSkillDef;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
@@ -119,7 +151,9 @@ namespace Chen.ClassicItems
             if (genericSkills.Length > 1)
             {
                 lockedSkillIndex = Random.Range(0, genericSkills.Length);
-                genericSkills[lockedSkillIndex].stock = genericSkills[lockedSkillIndex].maxStock = -Distortion.instance.intervalBetweenLocks;
+                oldSkillDef = genericSkills[lockedSkillIndex].skillDef;
+                genericSkills[lockedSkillIndex].AssignSkill(Distortion.distortSkill);
+                genericSkills[lockedSkillIndex].RecalculateMaxStock();
                 return lockedSkillIndex;
             }
             return -1;
@@ -127,10 +161,10 @@ namespace Chen.ClassicItems
 
         private bool UnlockSkill()
         {
-            if (lockedSkillIndex > 0)
+            if (lockedSkillIndex >= 0)
             {
+                genericSkills[lockedSkillIndex].AssignSkill(oldSkillDef);
                 genericSkills[lockedSkillIndex].RecalculateMaxStock();
-                genericSkills[lockedSkillIndex].stock = genericSkills[lockedSkillIndex].maxStock;
                 return true;
             }
             return false;
