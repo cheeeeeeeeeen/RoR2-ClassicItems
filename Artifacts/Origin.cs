@@ -1,11 +1,9 @@
-﻿#undef DISABLE
-#if DISABLE
-using RoR2;
-using RoR2.Skills;
+﻿using RoR2;
+using RoR2.Artifacts;
+using System.Collections.Generic;
+using System.Linq;
 using TILER2;
 using UnityEngine;
-using UnityEngine.Networking;
-using Random = UnityEngine.Random;
 
 namespace Chen.ClassicItems
 {
@@ -14,135 +12,236 @@ namespace Chen.ClassicItems
         public override string displayName => "Artifact of Origin";
 
         [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
-        [AutoConfig("Amount of time in minutes for Imps to invade the area.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
-        public int spawnInterval { get; private set; } = 9;
+        [AutoConfig("Amount of time in minutes for Imps to invade the area.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int spawnInterval { get; private set; } = 10;
+
+        [AutoConfig("Number of Imp Overlords that will spawn for each player.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impOverlordNumber { get; private set; } = 1;
+
+        [AutoConfig("Number of Imps that will spawn for each player.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impNumber { get; private set; } = 4;
+
+        [AutoConfig("Number of Rare items the Imp Overlord will have.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impOverlordRedItems { get; private set; } = 4;
+
+        [AutoConfig("Number of Uncommon items the Imp Overlord will have.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impOverlordGreenItems { get; private set; } = 8;
+
+        [AutoConfig("Number of Common items the Imp Overlord will have.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impOverlordWhiteItems { get; private set; } = 12;
+
+        [AutoConfig("Number of Lunar items the Imp Overlord will have.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impOverlordBlueItems { get; private set; } = 0;
+
+        [AutoConfig("Number of Boss items the Imp Overlord will have.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impOverlordYellowItems { get; private set; } = 1;
+
+        [AutoConfig("Number of Rare items the Imp will have.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impRedItems { get; private set; } = 2;
+
+        [AutoConfig("Number of Uncommon items the Imp will have.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impGreenItems { get; private set; } = 4;
+
+        [AutoConfig("Number of Common items the Imp will have.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impWhiteItems { get; private set; } = 6;
+
+        [AutoConfig("Number of Lunar items the Imp will have.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impBlueItems { get; private set; } = 0;
+
+        [AutoConfig("Number of Boss items the Imp will have.", AutoConfigFlags.None, 0, int.MaxValue)]
+        public int impYellowItems { get; private set; } = 0;
 
         protected override string GetNameString(string langid = null) => displayName;
 
-        protected override string GetDescString(string langid = null) => $"Imps will be sent to invade to destroy you every {spawnInterval} minutes.";
+        protected override string GetDescString(string langid = null) => $"Imps will invade to destroy you every {spawnInterval} minutes.";
 
         public Origin()
         {
-            iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_on_icon.png";
-            iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/Icons/spirit_artifact_off_icon.png";
+            iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/origin_artifact_on_icon.png";
+            iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/Icons/origin_artifact_off_icon.png";
         }
 
         public override void Install()
         {
             base.Install();
-            On.RoR2.CharacterMaster.SpawnBody += CharacterMaster_SpawnBody;
             Run.onRunStartGlobal += Run_onRunStartGlobal;
         }
 
         public override void Uninstall()
         {
             base.Uninstall();
-            On.RoR2.CharacterMaster.SpawnBody -= CharacterMaster_SpawnBody;
-        }
-
-        private CharacterBody CharacterMaster_SpawnBody(On.RoR2.CharacterMaster.orig_SpawnBody orig, CharacterMaster self, GameObject bodyPrefab, Vector3 position, Quaternion rotation)
-        {
-            CharacterBody body = orig(self, bodyPrefab, position, rotation);
-            if (IsActiveAndEnabled() && body && body.isPlayerControlled)
-            {
-                DistortionManager.GetOrAddComponent(body);
-                DistortionQueue queue = DistortionQueue.GetOrAddComponent(body.master);
-                NetworkIdentity identity = body.gameObject.GetComponent<NetworkIdentity>();
-                if (queue && identity)
-                {
-                    queue.netIds.Add(identity.netId);
-                }
-            }
-            return body;
+            Run.onRunStartGlobal -= Run_onRunStartGlobal;
         }
 
         private void Run_onRunStartGlobal(Run obj)
         {
-            throw new System.NotImplementedException();
+            if (IsActiveAndEnabled())
+            {
+                OriginManager.GetOrAddComponent(obj);
+            }
         }
     }
 
     public class OriginManager : MonoBehaviour
     {
-        public GenericSkill[] genericSkills;
-        private bool init = true;
-        private CharacterBody body;
-        private int timer = -1;
-        private int lockedSkillIndex = -1;
-        public SkillDef oldSkillDef;
+        private Run run;
+        private int previousInvasionCycle = 0;
+        private Origin origin = Origin.instance;
+        private ItemIndex[] redList;
+        private ItemIndex[] greenList;
+        private ItemIndex[] whiteList;
+        private ItemIndex[] blueList;
+        private ItemIndex[] yellowList;
+        private readonly ItemIndex[] bannedItems = new ItemIndex[]
+        {
+            ItemIndex.GoldOnHit, ItemIndex.LunarTrinket, ItemIndex.FocusConvergence, ItemIndex.MonstersOnShrineUse,
+            ItemIndex.TitanGoldDuringTP, ItemIndex.SprintWisp, ItemIndex.ArtifactKey, ItemIndex.SiphonOnLowHealth, ItemIndex.ScrapYellow,
+            ItemIndex.AutoCastEquipment
+        };
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
+        private void Awake()
+        {
+            run = gameObject.GetComponent<Run>();
+            origin = Origin.instance;
+            if (MonsterTeamGainsItemsArtifactManager.availableTier1Items.Length <= 0) MonsterTeamGainsItemsArtifactManager.GenerateAvailableItemsSet();
+            redList = MonsterTeamGainsItemsArtifactManager.availableTier3Items;
+            greenList = MonsterTeamGainsItemsArtifactManager.availableTier2Items;
+            whiteList = MonsterTeamGainsItemsArtifactManager.availableTier1Items;
+            blueList = GenerateAvailableItems(run.availableLunarDropList);
+            yellowList = GenerateAvailableItems(run.availableBossDropList);
+        }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
-            if (init)
+            if (gameObject)
             {
-                if (AssignAndCheckBody())
+                int currentInvasionCycle = GetCurrentInvasionCycle();
+                if (previousInvasionCycle < currentInvasionCycle)
                 {
-                    genericSkills = body.GetComponentsInChildren<GenericSkill>();
-                    init = false;
+                    previousInvasionCycle = currentInvasionCycle;
+                    PerformInvasion(new Xoroshiro128Plus(run.seed + (ulong)currentInvasionCycle));
                 }
             }
-            else
+        }
+
+        private int GetCurrentInvasionCycle()
+        {
+            return Mathf.FloorToInt(run.GetRunStopwatch() / (origin.spawnInterval * 60));
+        }
+
+        private void PerformInvasion(Xoroshiro128Plus rng)
+        {
+            SpawnCard overlordSpawnCard = Resources.Load<SpawnCard>("spawncards/characterspawncards/cscImpBoss");
+            SpawnCard impSpawnCard = Resources.Load<SpawnCard>("spawncards/characterspawncards/cscImp");
+            if (!overlordSpawnCard || !impSpawnCard)
             {
-                if (timer < 0)
+                Log.Warning("OriginManager.PerformInvasion: There were missing Spawn Cards!");
+                return;
+            }
+            for (int i = CharacterMaster.readOnlyInstancesList.Count - 1; i >= 0; i--)
+            {
+                CharacterMaster master = CharacterMaster.readOnlyInstancesList[i];
+                if (master.teamIndex == TeamIndex.Player && master.playerCharacterMasterController)
                 {
-                    timer++;
-                    LockRandomSkill();
+                    CharacterBody body = master.GetBody();
+                    if (body) SpawnImpArmy(body, overlordSpawnCard, impSpawnCard, rng);
                 }
-                if (timer > 60 * Distortion.instance.intervalBetweenLocks)
+            }
+        }
+
+        private void SpawnImpArmy(CharacterBody body, SpawnCard leader, SpawnCard soldier, Xoroshiro128Plus rng)
+        {
+            Transform spawnOnTarget = body.coreTransform;
+            for (int i = 0; i < origin.impOverlordNumber; i++)
+            {
+                DirectorCore.MonsterSpawnDistance input = DirectorCore.MonsterSpawnDistance.Close;
+                DirectorPlacementRule directorPlacementRule = new DirectorPlacementRule
                 {
-                    timer = 0;
-                    UnlockSkill();
-                    LockRandomSkill();
-                }
-                else timer++;
+                    spawnOnTarget = spawnOnTarget,
+                    placementMode = DirectorPlacementRule.PlacementMode.NearestNode
+                };
+                DirectorCore.GetMonsterSpawnDistance(input, out directorPlacementRule.minDistance, out directorPlacementRule.maxDistance);
+                DirectorSpawnRequest directorSpawnRequest = new DirectorSpawnRequest(leader, directorPlacementRule, rng)
+                {
+                    teamIndexOverride = TeamIndex.Monster,
+                    ignoreTeamMemberLimit = true
+                };
+                GameObject leaderMasterObject = DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
+                if (leaderMasterObject) GiveImpItems(leaderMasterObject, true);
             }
-        }
-
-        private bool AssignAndCheckBody()
-        {
-            body = gameObject.GetComponent<CharacterBody>();
-            if (!body)
+            for (int i = 0; i < origin.impNumber; i++)
             {
-                ClassicItemsPlugin._logger.LogWarning("DistortionManager.FixedUpdate: Body is not found.");
-                return false;
+                DirectorCore.MonsterSpawnDistance input = DirectorCore.MonsterSpawnDistance.Standard;
+                DirectorPlacementRule directorPlacementRule = new DirectorPlacementRule
+                {
+                    spawnOnTarget = spawnOnTarget,
+                    placementMode = DirectorPlacementRule.PlacementMode.Approximate
+                };
+                DirectorCore.GetMonsterSpawnDistance(input, out directorPlacementRule.minDistance, out directorPlacementRule.maxDistance);
+                DirectorSpawnRequest directorSpawnRequest = new DirectorSpawnRequest(soldier, directorPlacementRule, rng)
+                {
+                    teamIndexOverride = TeamIndex.Monster,
+                    ignoreTeamMemberLimit = true
+                };
+                GameObject soldierMasterObject = DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
+                if (soldierMasterObject) GiveImpItems(soldierMasterObject, false, i);
             }
-            return true;
         }
 
-        private int LockRandomSkill()
+        private void GiveImpItems(GameObject masterObject, bool isLeader, int numbering = -1)
         {
-            if (genericSkills.Length > 1)
+            CharacterMaster master = masterObject.GetComponent<CharacterMaster>();
+            if (!master) return;
+            Inventory inv = master.inventory;
+            string name = isLeader ? "Imp Overlord" : "Imp";
+            if (numbering >= 0) name += $" {numbering + 1}";
+            int redCount = isLeader ? origin.impOverlordRedItems : origin.impRedItems;
+            int greenCount = isLeader ? origin.impOverlordGreenItems : origin.impGreenItems;
+            int whiteCount = isLeader ? origin.impOverlordWhiteItems : origin.impWhiteItems;
+            int blueCount = isLeader ? origin.impOverlordBlueItems : origin.impBlueItems;
+            int yellowCount = isLeader ? origin.impOverlordYellowItems : origin.impYellowItems;
+            for (int i = 0; i < redCount; i++) inv.GiveItem(DecideRandomItem(redList, name));
+            for (int i = 0; i < greenCount; i++) inv.GiveItem(DecideRandomItem(greenList, name));
+            for (int i = 0; i < whiteCount; i++) inv.GiveItem(DecideRandomItem(whiteList, name));
+            for (int i = 0; i < blueCount; i++) inv.GiveItem(DecideRandomItem(blueList, name));
+            for (int i = 0; i < yellowCount; i++) inv.GiveItem(DecideRandomItem(yellowList, name));
+            inv.GiveRandomEquipment();
+            float hpBoost = run.difficultyCoefficient;
+            if (isLeader) hpBoost *= 3f;
+            else hpBoost *= 12f;
+            inv.GiveItem(ItemIndex.BoostHp, (int)hpBoost);
+        }
+
+        private ItemIndex DecideRandomItem(ItemIndex[] itemList, string name = null)
+        {
+            ItemIndex index = itemList[run.spawnRng.RangeInt(0, itemList.Length)];
+            if (name != null) Log.Message($"OriginManager: Given {name} a {ItemCatalog.GetItemDef(index).name}.");
+            return index;
+        }
+
+        private ItemIndex[] GenerateAvailableItems(List<PickupIndex> list)
+        {
+            List<ItemIndex> indices = new List<ItemIndex>();
+            foreach (PickupIndex pickup in list)
             {
-                lockedSkillIndex = Random.Range(0, genericSkills.Length);
-                oldSkillDef = genericSkills[lockedSkillIndex].skillDef;
-                genericSkills[lockedSkillIndex].AssignSkill(Distortion.distortSkill);
-                genericSkills[lockedSkillIndex].stock = 0;
-                return lockedSkillIndex;
+                ItemIndex index = pickup.pickupDef.itemIndex;
+                ItemDef itemDef = ItemCatalog.GetItemDef(index);
+                if (itemDef.ContainsTag(ItemTag.AIBlacklist)) continue;
+                if (!bannedItems.Contains(index)) indices.Add(index);
             }
-            return -1;
+            return indices.ToArray();
         }
 
-        private bool UnlockSkill()
+    public static OriginManager GetOrAddComponent(Run run)
         {
-            if (lockedSkillIndex >= 0)
-            {
-                genericSkills[lockedSkillIndex].AssignSkill(oldSkillDef);
-                genericSkills[lockedSkillIndex].RecalculateMaxStock();
-                return true;
-            }
-            return false;
+            return GetOrAddComponent(run.gameObject);
         }
 
-        public static DistortionManager GetOrAddComponent(CharacterBody body)
+        public static OriginManager GetOrAddComponent(GameObject runObject)
         {
-            return GetOrAddComponent(body.gameObject);
-        }
-
-        public static DistortionManager GetOrAddComponent(GameObject bodyObject)
-        {
-            return bodyObject.GetComponent<DistortionManager>() ?? bodyObject.AddComponent<DistortionManager>();
+            return runObject.GetComponent<OriginManager>() ?? runObject.AddComponent<OriginManager>();
         }
     }
 }
-#endif

@@ -3,7 +3,6 @@
 using BepInEx;
 using BepInEx.Configuration;
 using R2API;
-using R2API.Networking;
 using R2API.Utils;
 using RoR2;
 using System.Collections.Generic;
@@ -21,7 +20,7 @@ namespace Chen.ClassicItems
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [BepInDependency(ThinkInvisCI.ClassicItemsPlugin.ModGuid, ThinkInvisCI.ClassicItemsPlugin.ModVer)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
-    [R2APISubmoduleDependency(nameof(DotAPI), nameof(ResourcesAPI), nameof(PrefabAPI), nameof(BuffAPI), nameof(NetworkingAPI),
+    [R2APISubmoduleDependency(nameof(DotAPI), nameof(ResourcesAPI), nameof(PrefabAPI), nameof(BuffAPI),
                               nameof(LoadoutAPI), nameof(LanguageAPI))]
     public class ClassicItemsPlugin : BaseUnityPlugin
     {
