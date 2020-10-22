@@ -135,7 +135,6 @@ namespace Chen.ClassicItems
                 orig(self);
                 if (self && self.HasBuff(regenBuff))
                 {
-                    ClassicItemsPlugin._logger.LogMessage(self.GetBuffCount(regenBuff));
                     self.regen += currentRegen * self.GetBuffCount(regenBuff);
                 }
             }
