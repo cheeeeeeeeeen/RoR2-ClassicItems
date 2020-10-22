@@ -154,15 +154,32 @@ namespace Chen.ClassicItems
                 x.SetupBehavior();
             }
 
+            Logger.LogDebug("Performing early finalization...");
+            T2Module.SetupAll_PluginStart(chensItemList);
+            CatalogBoilerplate.ConsoleDump(Logger, chensItemList);
+
             Logger.LogDebug("Initial setup done!");
         }
 
         private void Start()
         {
             Logger.LogDebug("Performing late setup:");
-            T2Module.SetupAll_PluginStart(chensItemList);
-            CatalogBoilerplate.ConsoleDump(Logger, chensItemList);
-            Logger.LogDebug("Late setup done!");
+            Logger.LogDebug("Nothing to perform. Early setup was done.");
         }
+    }
+
+    public static class Log
+    {
+        public static void Debug(object data) => logger.LogDebug(data);
+
+        public static void Error(object data) => logger.LogError(data);
+
+        public static void Info(object data) => logger.LogInfo(data);
+
+        public static void Message(object data) => logger.LogMessage(data);
+
+        public static void Warning(object data) => logger.LogWarning(data);
+
+        public static BepInEx.Logging.ManualLogSource logger => ClassicItemsPlugin._logger;
     }
 }
