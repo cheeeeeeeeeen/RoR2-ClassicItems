@@ -1,8 +1,8 @@
 {
   "name": "ChensClassicItems",
-  "version_number": "2.2.0",
+  "version_number": "2.2.1",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "Artifact of Origin joins the artifact vault. Icons are temporary. Feel free to improve them! This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "Artifact of Origin joins the artifact vault. Bugs happened. Icons are temporary. Feel free to improve them! This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
   "dependencies": [
     "ThinkInvis-ClassicItems-4.6.2"
   ]

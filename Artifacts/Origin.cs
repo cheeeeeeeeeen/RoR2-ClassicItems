@@ -102,7 +102,7 @@ namespace Chen.ClassicItems
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
         {
-            run = gameObject.GetComponent<Run>();
+            run = Run.instance;
             origin = Origin.instance;
             if (MonsterTeamGainsItemsArtifactManager.availableTier1Items.Length <= 0) MonsterTeamGainsItemsArtifactManager.GenerateAvailableItemsSet();
             redList = MonsterTeamGainsItemsArtifactManager.availableTier3Items;
@@ -226,9 +226,10 @@ namespace Chen.ClassicItems
             List<ItemIndex> indices = new List<ItemIndex>();
             foreach (PickupIndex pickup in list)
             {
+                if (pickup.pickupDef == null) continue;
                 ItemIndex index = pickup.pickupDef.itemIndex;
                 ItemDef itemDef = ItemCatalog.GetItemDef(index);
-                if (itemDef.ContainsTag(ItemTag.AIBlacklist)) continue;
+                if (itemDef == null || itemDef.ContainsTag(ItemTag.AIBlacklist)) continue;
                 if (!bannedItems.Contains(index)) indices.Add(index);
             }
             return indices.ToArray();

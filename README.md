@@ -48,6 +48,9 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.2.1**
+- Fix a bug with the Aritfact of Origin failing to parse bad items.
+
 **2.2.0**
 - Implement Artifact of Origin!
 - Temporary icons for the new artifact.
