@@ -55,7 +55,7 @@ namespace Chen.ClassicItems
             HealthComponent hc = self.healthComponent;
             if (!hc || !hc.alive || hc.fullHealth <= 0 || hc.health <= 0 || self.moveSpeed < 0 || hc.health > hc.fullHealth) return;
             self.moveSpeed += self.moveSpeed * maximumPossibleSpeedMultiplier * (1 - (hc.health / hc.fullHealth));
-            self.acceleration += self.acceleration * maximumPossibleSpeedMultiplier * (1 - (hc.health / hc.fullHealth));
+            self.acceleration = self.moveSpeed * (self.baseAcceleration / self.baseMoveSpeed);
         }
     }
 }
