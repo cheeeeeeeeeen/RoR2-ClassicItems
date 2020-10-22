@@ -13,6 +13,7 @@ Use **r2modman** mod manager to install this mod.
 ## Current Additions
 ### Artifact
 - Distortion
+- Origin
 - Spirit
 ### Equipment
 - Drone Repair Kit
@@ -46,6 +47,12 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 **Aromatic Sunday#2929** did offer to make icons, and thus included as an alternate version.
 
 ## Changelog
+
+**2.2.0**
+- Implement Artifact of Origin!
+- Temporary icons for the new artifact.
+- Vastly improve the code for Distortion mechanics.
+- Change usage of TILER2 Helpers so that the cards will have proper text.
 
 **2.1.0**
 - Implement Artifact of Distortion!
