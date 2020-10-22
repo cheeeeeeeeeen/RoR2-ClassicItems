@@ -1,15 +1,9 @@
 ﻿using EntityStates;
 using R2API;
-using R2API.Networking;
-using R2API.Networking.Interfaces;
 using RoR2;
 using RoR2.Skills;
-using RoR2.UI;
-using System.Collections;
-using System.Collections.Generic;
 using TILER2;
 using UnityEngine;
-using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 
 namespace Chen.ClassicItems
@@ -21,11 +15,6 @@ namespace Chen.ClassicItems
         [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
         [AutoConfig("The time when skill lockdown shifts in seconds.", AutoConfigFlags.PreventNetMismatch, 0, int.MaxValue)]
         public int intervalBetweenLocks { get; private set; } = 60;
-
-        [AutoConfig("The syncing time for Distortion effects towards Clients. There is no need to modify this unless there is a problem. " +
-                    "Increase this if clients do not get their skills locked. Setting to 0 may cause problems.",
-                    AutoConfigFlags.PreventNetMismatch, 0f, float.MaxValue)]
-        public float syncSeconds { get; private set; } = .5f;
 
         protected override string GetNameString(string langid = null) => displayName;
 
@@ -41,8 +30,6 @@ namespace Chen.ClassicItems
 
         public override void SetupBehavior()
         {
-            NetworkingAPI.RegisterMessageType<SpawnDistortionComponent>();
-
             LanguageAPI.Add("ALL_DISTORTION_LOCKED_NAME", "Distorted");
             LanguageAPI.Add("ALL_DISTORTION_LOCKED_DESCRIPTION", "You forgot how to perform this skill.");
 
@@ -70,29 +57,21 @@ namespace Chen.ClassicItems
         public override void Install()
         {
             base.Install();
-            On.RoR2.CharacterMaster.SpawnBody += CharacterMaster_SpawnBody;
+            CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
         }
 
         public override void Uninstall()
         {
             base.Uninstall();
-            On.RoR2.CharacterMaster.SpawnBody -= CharacterMaster_SpawnBody;
+            CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
         }
 
-        private CharacterBody CharacterMaster_SpawnBody(On.RoR2.CharacterMaster.orig_SpawnBody orig, CharacterMaster self, GameObject bodyPrefab, Vector3 position, Quaternion rotation)
+        private void CharacterBody_onBodyStartGlobal(CharacterBody obj)
         {
-            CharacterBody body = orig(self, bodyPrefab, position, rotation);
-            if (IsActiveAndEnabled() && body && body.isPlayerControlled)
+            if (IsActiveAndEnabled() && obj.isPlayerControlled)
             {
-                DistortionManager.GetOrAddComponent(body);
-                DistortionQueue queue = DistortionQueue.GetOrAddComponent(body.master);
-                NetworkIdentity identity = body.gameObject.GetComponent<NetworkIdentity>();
-                if (queue && identity)
-                {
-                    queue.netIds.Add(identity.netId);
-                }
+                DistortionManager.GetOrAddComponent(obj);
             }
-            return body;
         }
     }
 
@@ -176,89 +155,6 @@ namespace Chen.ClassicItems
         public static DistortionManager GetOrAddComponent(GameObject bodyObject)
         {
             return bodyObject.GetComponent<DistortionManager>() ?? bodyObject.AddComponent<DistortionManager>();
-        }
-    }
-
-    public class DistortionQueue : MonoBehaviour
-    {
-        public List<NetworkInstanceId> netIds { get; private set; } = new List<NetworkInstanceId>();
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
-        private void FixedUpdate()
-        {
-            if (!PauseScreenController.paused && NetworkServer.active && NetworkUser.AllParticipatingNetworkUsersReady() && netIds.Count > 0)
-            {
-                NetworkInstanceId[] copy = new NetworkInstanceId[netIds.Count];
-                netIds.CopyTo(copy);
-                netIds.Clear();
-                for (int i = 0; i < copy.Length; i++)
-                {
-                    StartCoroutine(SendSignal(copy[i]));
-                }
-            }
-        }
-
-        private IEnumerator SendSignal(NetworkInstanceId netId)
-        {
-            yield return new WaitForSeconds(Distortion.instance.syncSeconds);
-            new SpawnDistortionComponent(netId).Send(NetworkDestination.Clients);
-        }
-
-        public static DistortionQueue GetOrAddComponent(CharacterMaster master)
-        {
-            return GetOrAddComponent(master.gameObject);
-        }
-
-        public static DistortionQueue GetOrAddComponent(GameObject masterObject)
-        {
-            return masterObject.GetComponent<DistortionQueue>() ?? masterObject.AddComponent<DistortionQueue>();
-        }
-    }
-
-    public class SpawnDistortionComponent : INetMessage
-    {
-        private NetworkInstanceId ownerBodyId;
-
-        public SpawnDistortionComponent()
-        {
-        }
-
-        public SpawnDistortionComponent(NetworkInstanceId ownerBodyId)
-        {
-            this.ownerBodyId = ownerBodyId;
-        }
-
-        public void Serialize(NetworkWriter writer)
-        {
-            writer.Write(ownerBodyId);
-        }
-
-        public void Deserialize(NetworkReader reader)
-        {
-            ownerBodyId = reader.ReadNetworkId();
-        }
-
-        public void OnReceived()
-        {
-            if (NetworkServer.active) return;
-            GameObject bodyObject = Util.FindNetworkObject(ownerBodyId);
-            if (!bodyObject)
-            {
-                ClassicItemsPlugin._logger.LogWarning($"SpawnDistortionComponent: bodyObject is null.");
-                return;
-            }
-            CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-            if (!body)
-            {
-                ClassicItemsPlugin._logger.LogWarning($"SpawnDistortionComponent: body is null.");
-                return;
-            }
-            if (!body.isPlayerControlled || !body.hasEffectiveAuthority)
-            {
-                ClassicItemsPlugin._logger.LogMessage($"SpawnDistortionComponent: You do not control this character. Skip.");
-                return;
-            }
-            DistortionManager.GetOrAddComponent(bodyObject);
         }
     }
 }
