@@ -48,6 +48,12 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.2.2**
+- Fix the Imps from Origin of a bug that apparently gives them an Equipment.
+- Add more config options for Artifact of origin.
+- Reduced the default values for the config as they are too powerful.
+- Update dependency to use the latest ClassicItems.
+
 **2.2.1**
 - Fix a bug with the Aritfact of Origin failing to parse bad items.
 
