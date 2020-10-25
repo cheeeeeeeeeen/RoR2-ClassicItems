@@ -159,21 +159,18 @@ namespace Chen.ClassicItems
         private void On_ESMineArmingWeak(On.EntityStates.Engi.Mine.MineArmingWeak.orig_FixedUpdate orig, MineArmingWeak self)
         {
             if (self.outer.name != "FootMine(Clone)") orig(self);
-            else if (NetworkServer.active)
+            else if (NetworkServer.active && !self.projectileController.owner)
             {
-                if (!self.projectileController.owner)
+                if (Detonate.explosionEffectPrefab)
                 {
-                    if (Detonate.explosionEffectPrefab)
+                    EffectManager.SpawnEffect(Detonate.explosionEffectPrefab, new EffectData
                     {
-                        EffectManager.SpawnEffect(Detonate.explosionEffectPrefab, new EffectData
-                        {
-                            origin = self.transform.position,
-                            rotation = self.transform.rotation,
-                            scale = Detonate.blastRadius * 0.3f
-                        }, true);
-                    }
-                    EntityState.Destroy(self.gameObject);
+                        origin = self.transform.position,
+                        rotation = self.transform.rotation,
+                        scale = Detonate.blastRadius * 0.3f
+                    }, true);
                 }
+                EntityState.Destroy(self.gameObject);
             }
         }
 
@@ -204,6 +201,16 @@ namespace Chen.ClassicItems
                             DotController.InflictDot(tcpt.gameObject, owner, poisonDot, baseTicks + stackTicks * (icnt - 1), baseDmg + stackDmg * (icnt - 1));
                         }
                     }
+                }
+
+                if (Detonate.explosionEffectPrefab)
+                {
+                    EffectManager.SpawnEffect(Detonate.explosionEffectPrefab, new EffectData
+                    {
+                        origin = self.transform.position,
+                        rotation = self.transform.rotation,
+                        scale = blastRadius
+                    }, true);
                 }
                 EntityState.Destroy(self.gameObject);
             }
