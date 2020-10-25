@@ -13,7 +13,7 @@ Use **r2modman** mod manager to install this mod.
 ## Current Additions
 ### Artifact
 - **Distortion** : Lock a random skill per interval. Both active and passive skills can be locked.
-- **Origin** : Summon the Imp Army to destroy you. Imp Overlords will drop a Pearl or Irradiant Pearl once defeated
+- **Origin** : Summon the Imp Army to destroy you. Imp Overlords will drop a Pearl or Irradiant Pearl once defeated.
 - **Spirit** : Characters (both players and enemies) run faster at lower health.
 ### Equipment
 - **Drone Repair Kit** : Heals all drones you own as well as applying a regeneration buff.
@@ -54,7 +54,7 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 - Fix Dead Man's Foot explosion by actually adding an explosion effect.
 - Add more config options for Artifact of Origin.
 - Add a config for Panic Mines to let it self-destruct when the owner is gone.
-- Reduced the default values for the config as they are too powerful.
+- Reduced the default values for the Origin config as the imps are too powerful.
 - Update dependency to use the latest ClassicItems.
 
 **2.2.1**
