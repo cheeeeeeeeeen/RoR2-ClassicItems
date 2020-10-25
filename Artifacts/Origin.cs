@@ -74,8 +74,7 @@ namespace Chen.ClassicItems
         public static Material originImpMaterial { get; private set; }
         public static PickupDropTable dropTable { get; private set; }
         public static string originSuffix { get; private set; } = "(Origin)";
-
-        private static readonly Xoroshiro128Plus treasureRng = new Xoroshiro128Plus(0UL);
+        public static Xoroshiro128Plus treasureRng { get; private set; } = new Xoroshiro128Plus(0UL);
 
         public Origin()
         {

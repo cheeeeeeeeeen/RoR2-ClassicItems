@@ -4,7 +4,6 @@ using RoR2;
 using RoR2.Skills;
 using TILER2;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Chen.ClassicItems
 {
@@ -21,6 +20,7 @@ namespace Chen.ClassicItems
         protected override string GetDescString(string langid = null) => $"Lock a random active or passive skill every {intervalBetweenLocks} seconds.";
 
         public static SkillDef distortSkill { get; private set; }
+        public static Xoroshiro128Plus distortionRng { get; private set; } = new Xoroshiro128Plus(0UL);
 
         public Distortion()
         {
@@ -127,7 +127,7 @@ namespace Chen.ClassicItems
         {
             if (genericSkills.Length > 1)
             {
-                lockedSkillIndex = Random.Range(0, genericSkills.Length);
+                lockedSkillIndex = Distortion.distortionRng.RangeInt(0, genericSkills.Length);
                 oldSkillDef = genericSkills[lockedSkillIndex].skillDef;
                 genericSkills[lockedSkillIndex].AssignSkill(Distortion.distortSkill);
                 genericSkills[lockedSkillIndex].stock = 0;
