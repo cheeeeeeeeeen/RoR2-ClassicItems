@@ -1,4 +1,6 @@
-﻿using RoR2;
+﻿#undef DEBUG
+
+using RoR2;
 using RoR2.Artifacts;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,8 +67,12 @@ namespace Chen.ClassicItems
 
         protected override string GetDescString(string langid = null) => $"Imps will invade to destroy you every {spawnInterval} minutes.";
 
-        public static SpawnCard overlordSpawnCard;
-        public static SpawnCard impSpawnCard;
+        public static SpawnCard overlordSpawnCard { get; private set; }
+        public static SpawnCard impSpawnCard { get; private set; }
+        public static PickupDropTable dropTable { get; private set; }
+        public static string originSuffix { get; private set; } = "(ver. ORIGIN)";
+
+        private static readonly Xoroshiro128Plus treasureRng = new Xoroshiro128Plus(0UL);
 
         public Origin()
         {
@@ -79,18 +85,21 @@ namespace Chen.ClassicItems
             base.SetupBehavior();
             overlordSpawnCard = Resources.Load<SpawnCard>("spawncards/characterspawncards/cscImpBoss");
             impSpawnCard = Resources.Load<SpawnCard>("spawncards/characterspawncards/cscImp");
+            dropTable = Resources.Load<PickupDropTable>("DropTables/dtPearls");
         }
 
         public override void Install()
         {
             base.Install();
             Run.onRunStartGlobal += Run_onRunStartGlobal;
+            GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
         }
 
         public override void Uninstall()
         {
             base.Uninstall();
             Run.onRunStartGlobal -= Run_onRunStartGlobal;
+            GlobalEventManager.onCharacterDeathGlobal -= GlobalEventManager_onCharacterDeathGlobal;
         }
 
         private void Run_onRunStartGlobal(Run obj)
@@ -98,6 +107,17 @@ namespace Chen.ClassicItems
             if (IsActiveAndEnabled())
             {
                 OriginManager.GetOrAddComponent(obj);
+            }
+        }
+
+        private void GlobalEventManager_onCharacterDeathGlobal(DamageReport obj)
+        {
+            if (!IsActiveAndEnabled() || obj.victimTeamIndex == obj.attackerTeamIndex || !obj.victimMaster) return;
+            if (!obj.victimMaster.name.Contains(originSuffix) || !obj.victimMaster.name.Contains("ImpBoss")) return;
+            PickupIndex pickupIndex = dropTable.GenerateDrop(treasureRng);
+            if (pickupIndex != PickupIndex.none)
+            {
+                PickupDropletController.CreatePickupDroplet(pickupIndex, obj.victimBody.corePosition, Vector3.up * 20f);
             }
         }
     }
@@ -149,7 +169,11 @@ namespace Chen.ClassicItems
 
         private int GetCurrentInvasionCycle()
         {
+#if DEBUG
+            return Mathf.FloorToInt(run.GetRunStopwatch() / 10);
+#else
             return Mathf.FloorToInt(run.GetRunStopwatch() / (origin.spawnInterval * 60));
+#endif
         }
 
         private void PerformInvasion(Xoroshiro128Plus rng)
@@ -183,7 +207,10 @@ namespace Chen.ClassicItems
                     ignoreTeamMemberLimit = true
                 };
                 GameObject leaderMasterObject = DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
-                if (leaderMasterObject) GiveImpItems(leaderMasterObject, true);
+                CharacterMaster master = leaderMasterObject.GetComponent<CharacterMaster>();
+                if (!master) return;
+                GiveImpItems(master, true);
+                leaderMasterObject.name += Origin.originSuffix;
             }
             for (int i = 0; i < origin.impNumber; i++)
             {
@@ -200,14 +227,15 @@ namespace Chen.ClassicItems
                     ignoreTeamMemberLimit = true
                 };
                 GameObject soldierMasterObject = DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
-                if (soldierMasterObject) GiveImpItems(soldierMasterObject, false);
+                CharacterMaster master = soldierMasterObject.GetComponent<CharacterMaster>();
+                if (!master) return;
+                if (soldierMasterObject) GiveImpItems(master, false);
+                soldierMasterObject.name += Origin.originSuffix;
             }
         }
 
-        private void GiveImpItems(GameObject masterObject, bool isLeader)
+        private void GiveImpItems(CharacterMaster master, bool isLeader)
         {
-            CharacterMaster master = masterObject.GetComponent<CharacterMaster>();
-            if (!master) return;
             Inventory inv = master.inventory;
             int redCount = isLeader ? origin.impOverlordRedItems : origin.impRedItems;
             int greenCount = isLeader ? origin.impOverlordGreenItems : origin.impGreenItems;
