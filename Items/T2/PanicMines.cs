@@ -52,8 +52,8 @@ namespace Chen.ClassicItems
             "\"Seriously?\" I said to myself upon reading the details that is attached to what it looked like an odd proximity mine.\n\n" +
             "But if there is one thing about surviving in this damnable place, then I should trust that this equipment will prove itself useful.";
 
-        private static GameObject minePrefab;
-        private static GameObject mineGhostPrefab;
+        public static GameObject minePrefab { get; private set; }
+        public static GameObject mineGhostPrefab { get; private set; }
 
         public override void SetupBehavior()
         {

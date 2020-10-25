@@ -96,7 +96,7 @@ namespace Chen.ClassicItems
             "Turret1"
         };
 
-        private static BuffIndex regenBuff;
+        public static BuffIndex regenBuff { get; private set; }
 
         public override void SetupBehavior()
         {

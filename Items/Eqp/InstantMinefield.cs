@@ -53,8 +53,8 @@ namespace Chen.ClassicItems
             "\"Could have used a better name, though. Instant Minefield doesn't exactly sound legit.\"\n\n" +
             "\"End of log.\"";
 
-        private static GameObject minePrefab;
-        private static GameObject mineGhostPrefab;
+        public static GameObject minePrefab { get; private set; }
+        public static GameObject mineGhostPrefab { get; private set; }
 
         public override void SetupBehavior()
         {

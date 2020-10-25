@@ -62,8 +62,8 @@ namespace Chen.ClassicItems
         protected override string GetLoreString(string langid = null) =>
             "\"She shouldn't notice,\" it says.\n\nWell, that was dark. Few words, but contains heavy intent.\n\nWe will now use it for our survival instead.";
 
-        private static BuffIndex poisonBuff;
-        private static DotController.DotIndex poisonDot;
+        public static BuffIndex poisonBuff { get; private set; }
+        public static DotController.DotIndex poisonDot { get; private set; }
 
         public override void SetupBehavior()
         {

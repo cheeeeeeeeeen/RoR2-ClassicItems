@@ -79,7 +79,7 @@ namespace Chen.ClassicItems
             "\"I'll take it.\"\n\n" +
             "A Mortar Tube, huh? I never knew they actually existed. Is it really a relic of history now? I wonder if it really works. It did look simple... and old.";
 
-        public static GameObject mortarPrefab;
+        public static GameObject mortarPrefab { get; private set; }
 
         public override void SetupBehavior()
         {

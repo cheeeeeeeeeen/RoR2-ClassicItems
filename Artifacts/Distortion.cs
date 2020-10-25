@@ -20,7 +20,7 @@ namespace Chen.ClassicItems
 
         protected override string GetDescString(string langid = null) => $"Lock a random active or passive skill every {intervalBetweenLocks} seconds.";
 
-        public static SkillDef distortSkill;
+        public static SkillDef distortSkill { get; private set; }
 
         public Distortion()
         {

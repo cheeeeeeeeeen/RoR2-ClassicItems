@@ -66,10 +66,10 @@ namespace Chen.ClassicItems
             "I stayed silent, confused as to what I should really feel at the moment: disgust or sadness? I don't know." +
             "\"His foot can be a good trap. We need everything in order to survive.\"";
 
-        private static GameObject minePrefab;
-        private static GameObject mineGhostPrefab;
-        private static BuffIndex poisonBuff;
-        private static DotController.DotIndex poisonDot;
+        public static GameObject minePrefab { get; private set; }
+        public static GameObject mineGhostPrefab { get; private set; }
+        public static BuffIndex poisonBuff { get; private set; }
+        public static DotController.DotIndex poisonDot { get; private set; }
 
         public override void SetupBehavior()
         {
