@@ -48,6 +48,10 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.2.3**
+- Recolor the Imps spawned from Artifact of Origin.
+- Use Xoroshiro128 for randomizing skills in Distortion.
+
 **2.2.2**
 - Allow Imp Overlords spawned from Artifact of origin to drop a Pearl or Irradiant Pearl.
 - Fix the Imps from Origin of a bug that apparently gives them an Equipment.
