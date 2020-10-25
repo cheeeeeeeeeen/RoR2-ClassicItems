@@ -1,4 +1,5 @@
-﻿using EntityStates.Engi.EngiWeapon;
+﻿using EntityStates;
+using EntityStates.Engi.EngiWeapon;
 using EntityStates.Engi.Mine;
 using R2API;
 using RoR2;
@@ -6,6 +7,7 @@ using RoR2.Projectile;
 using System.Collections.ObjectModel;
 using TILER2;
 using UnityEngine;
+using UnityEngine.Networking;
 using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
@@ -31,6 +33,10 @@ namespace Chen.ClassicItems
         [AutoConfig("If true, damage to shield and barrier (from e.g. Personal Shield Generator, Topaz Brooch) will not count towards triggering Panic Mines.")]
         public bool requireHealth { get; private set; } = true;
 
+        [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
+        [AutoConfig("Determines if the Panic Mine will self-destruct when the owner is lost. This will deal no damage.")]
+        public bool selfDestructOnLostOwner { get; private set; } = false;
+
         protected override string GetNameString(string langid = null) => displayName;
 
         protected override string GetPickupString(string langid = null) => "Drop mines when taking heavy damage.";
@@ -42,6 +48,7 @@ namespace Chen.ClassicItems
             desc += $", drop <style=cIsDamage>1</style> mine <style=cStack>(+1 per stack)</style> with <style=cIsDamage>{Pct(baseDmg)}</style>";
             if (stackDmg > 0f) desc += " <style=cStack>(+" + Pct(stackDmg) + " per stack)</style>";
             desc += " damage.";
+            if (selfDestructOnLostOwner) desc += " <style=cDeath>The mine will be destroyed shortly after the owner dies.</style>";
             return desc;
         }
 
@@ -128,6 +135,19 @@ namespace Chen.ClassicItems
             if (self.outer.name != "PanicMine(Clone)") orig(self);
             else
             {
+                if (selfDestructOnLostOwner && NetworkServer.active && !self.projectileController.owner)
+                {
+                    if (Detonate.explosionEffectPrefab)
+                    {
+                        EffectManager.SpawnEffect(Detonate.explosionEffectPrefab, new EffectData
+                        {
+                            origin = self.transform.position,
+                            rotation = self.transform.rotation,
+                            scale = Detonate.blastRadius * 0.3f
+                        }, true);
+                    }
+                    EntityState.Destroy(self.gameObject);
+                }
                 if (self.blastRadiusScale != 1.2f) self.blastRadiusScale = 1.2f;
                 if (self.forceScale != 1f) self.forceScale = 1f;
                 if (self.damageScale != 1f) self.damageScale = 1f;
