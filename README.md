@@ -51,7 +51,9 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 **2.2.2**
 - Allow Imp Overlords spawned from Artifact of origin to drop a Pearl or Irradiant Pearl.
 - Fix the Imps from Origin of a bug that apparently gives them an Equipment.
-- Add more config options for Artifact of origin.
+- Fix Dead Man's Foot explosion by actually adding an explosion effect.
+- Add more config options for Artifact of Origin.
+- Add a config for Panic Mines to let it self-destruct when the owner is gone.
 - Reduced the default values for the config as they are too powerful.
 - Update dependency to use the latest ClassicItems.
 

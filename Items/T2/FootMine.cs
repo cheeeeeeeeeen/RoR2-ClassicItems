@@ -64,7 +64,7 @@ namespace Chen.ClassicItems
             "He looked at me while shrugging." +
             "\"He's dead,\" he told me while sighing, as if he expected it, \"Curiosity killed the cat. Approached one of those hideous bugs, infested him, then he exploded.\"" +
             "I stayed silent, confused as to what I should really feel at the moment: disgust or sadness? I don't know." +
-            "\"His foot can be a good trap. We need everything in order to survive.\"";
+            "\"His foot can be a good trap. We need everything in order to survive. I can make a mine out of this deadly poison.\"";
 
         public static GameObject minePrefab { get; private set; }
         public static GameObject mineGhostPrefab { get; private set; }
