@@ -12,21 +12,21 @@ Use **r2modman** mod manager to install this mod.
 
 ## Current Additions
 ### Artifact
-- Distortion
-- Origin
-- Spirit
+- **Distortion** : Lock a random skill per interval. Both active and passive skills can be locked.
+- **Origin** : Summon the Imp Army to destroy you. Imp Overlords will drop a Pearl or Irradiant Pearl once defeated
+- **Spirit** : Characters (both players and enemies) run faster at lower health.
 ### Equipment
-- Drone Repair Kit
-- Instant Minefield
+- **Drone Repair Kit** : Heals all drones you own as well as applying a regeneration buff.
+- **Instant Minefield** : Drop mines that are quickly fully armed upon landing.
 ### Tier 1
-- Mortar Tube
+- **Mortar Tube** : Launch a mortar. Classic.
 ### Tier 2
-- Arms Race
-- Dead Man's Foot
-- Panic Mines
+- **Arms Race** : All drones you own will launch a missile or a mortar, or both.
+- **Dead Man's Foot** : Throw a mine upon taking *serious damage* that inflicts poison upon exploding.
+- **Panic Mines** : Throw a mine upon taking *serious damage* that inflicts damage. 
 ### Tier 3
-- AtG Missile Mk. 2
-- Thallium
+- **AtG Missile Mk. 2** : AtG Missile Mk. 1 but better.
+- **Thallium** : Chance to inflict poison on enemies based on their own damage.
 
 ## Contact
 - Issue Page: https://github.com/cheeeeeeeeeen/RoR2-ChensGradiusMod/issues
@@ -49,6 +49,7 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 ## Changelog
 
 **2.2.2**
+- Allow Imp Overlords spawned from Artifact of origin to drop a Pearl or Irradiant Pearl.
 - Fix the Imps from Origin of a bug that apparently gives them an Equipment.
 - Add more config options for Artifact of origin.
 - Reduced the default values for the config as they are too powerful.
