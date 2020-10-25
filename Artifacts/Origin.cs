@@ -68,14 +68,12 @@ namespace Chen.ClassicItems
 
         protected override string GetDescString(string langid = null) => $"Imps will invade to destroy you every {spawnInterval} minutes.";
 
+        public static SpawnCard overlordSpawnCard { get; private set; }
+        public static SpawnCard impSpawnCard { get; private set; }
+        public static Material originImpOverlordMaterial { get; private set; }
+        public static Material originImpMaterial { get; private set; }
         public static PickupDropTable dropTable { get; private set; }
         public static string originSuffix { get; private set; } = "(Origin)";
-        public static SpawnCard originImpOverlordSpawnCard { get; private set; }
-        public static GameObject originImpOverlordBodyPrefab { get; private set; }
-        public static GameObject originImpOverlordMasterPrefab { get; private set; }
-        public static SpawnCard originImpSpawnCard { get; private set; }
-        public static GameObject originImpBodyPrefab { get; private set; }
-        public static GameObject originImpMasterPrefab { get; private set; }
 
         private static readonly Xoroshiro128Plus treasureRng = new Xoroshiro128Plus(0UL);
 
@@ -89,49 +87,10 @@ namespace Chen.ClassicItems
         {
             base.SetupBehavior();
             dropTable = Resources.Load<PickupDropTable>("DropTables/dtPearls");
-
-            SpawnCard overlordSpawnCard = Resources.Load<SpawnCard>("spawncards/characterspawncards/cscImpBoss");
-            SpawnCard impSpawnCard = Resources.Load<SpawnCard>("spawncards/characterspawncards/cscImp");
-            originImpSpawnCard = impSpawnCard;
-            Log.Message("NAME OF PREFAB IN SPAWNCARD  " + overlordSpawnCard.prefab.name);
-
-            Log.Message("SETTING UP MASTER");
-            GameObject impBossMasterObject = overlordSpawnCard.prefab;
-            originImpOverlordMasterPrefab = impBossMasterObject.InstantiateClone(impBossMasterObject.name + originSuffix);
-            CharacterMaster impBossMaster = originImpOverlordMasterPrefab.GetComponent<CharacterMaster>();
-
-            Log.Message("SETTING UP BODY");
-            GameObject impBossBodyObject = impBossMaster.bodyPrefab;
-            Log.Message("CLONING BODY");
-            originImpOverlordBodyPrefab = impBossBodyObject.InstantiateClone(impBossBodyObject.name + originSuffix);
-            Log.Message("GET LOCATOR");
-            ModelLocator impBossBodyModelLocator = originImpOverlordBodyPrefab.GetComponent<ModelLocator>();
-            Log.Message("GET MODEL");
-            CharacterModel impBossBodyModel = impBossBodyModelLocator.modelTransform.GetComponent<CharacterModel>();
-            Log.Message("ASSIGN NEW MATERIAL");
-            impBossBodyModel.baseRendererInfos[2].defaultMaterial = Resources.Load<Material>("@ChensClassicItems:Assets/ClassicItems/Imp/matImpBossOrigin.mat");
-            Log.Message("GET CHARACTERBODY");
-            CharacterBody impBossBody = originImpOverlordBodyPrefab.GetComponent<CharacterBody>();
-            Log.Message("SET NAME");
-            impBossBody.baseNameToken = "Imp Overlord (Origin)";
-
-            impBossMaster.bodyPrefab = originImpOverlordBodyPrefab;
-
-            Log.Message("SETTING UP SPAWN CARD");
-            originImpOverlordSpawnCard = ScriptableObject.CreateInstance<SpawnCard>();
-            originImpOverlordSpawnCard.directorCreditCost = overlordSpawnCard.directorCreditCost;
-            originImpOverlordSpawnCard.forbiddenFlags = overlordSpawnCard.forbiddenFlags;
-            originImpOverlordSpawnCard.hullSize = overlordSpawnCard.hullSize;
-            originImpOverlordSpawnCard.nodeGraphType = overlordSpawnCard.nodeGraphType;
-            originImpOverlordSpawnCard.occupyPosition = overlordSpawnCard.occupyPosition;
-            originImpOverlordSpawnCard.requiredFlags = overlordSpawnCard.requiredFlags;
-            originImpOverlordSpawnCard.sendOverNetwork = overlordSpawnCard.sendOverNetwork;
-            originImpOverlordSpawnCard.hideFlags = overlordSpawnCard.hideFlags;
-            originImpOverlordSpawnCard.name = overlordSpawnCard.name + originSuffix;
-            originImpOverlordSpawnCard.prefab = originImpOverlordMasterPrefab;
-
-            Log.Message("NAME OF NEW SPAWNCARD  " + originImpOverlordSpawnCard.name);
-            Log.Message("NEW SPAWNCARD PREFAB NAME  " + originImpOverlordSpawnCard.prefab.name);
+            overlordSpawnCard = Resources.Load<SpawnCard>("spawncards/characterspawncards/cscImpBoss");
+            impSpawnCard = Resources.Load<SpawnCard>("spawncards/characterspawncards/cscImp");
+            originImpOverlordMaterial = Resources.Load<Material>("@ChensClassicItems:Assets/ClassicItems/Imp/matImpBossOrigin.mat");
+            originImpMaterial = Resources.Load<Material>("@ChensClassicItems:Assets/ClassicItems/Imp/matImpOrigin.mat");
         }
 
         public override void Install()
@@ -230,7 +189,7 @@ namespace Chen.ClassicItems
                 if (master.teamIndex == TeamIndex.Player && master.playerCharacterMasterController)
                 {
                     CharacterBody body = master.GetBody();
-                    if (body) SpawnImpArmy(body, Origin.originImpOverlordSpawnCard, Origin.originImpSpawnCard, rng);
+                    if (body) SpawnImpArmy(body, Origin.overlordSpawnCard, Origin.impSpawnCard, rng);
                 }
             }
         }
@@ -253,10 +212,12 @@ namespace Chen.ClassicItems
                     ignoreTeamMemberLimit = true
                 };
                 GameObject leaderMasterObject = DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
-                CharacterMaster master = leaderMasterObject.GetComponent<CharacterMaster>();
-                if (!master) return;
-                GiveImpItems(master, true);
-                leaderMasterObject.name += Origin.originSuffix;
+                CharacterMaster leaderMaster = leaderMasterObject.GetComponent<CharacterMaster>();
+                if (!leaderMaster) return;
+                GiveImpItems(leaderMaster, true);
+                CharacterBody leaderBody = leaderMaster.GetBody();
+                if (!leaderBody) return;
+                PostProcess(leaderMaster, leaderBody, $"Imp Overlord {Origin.originSuffix}", Origin.originImpOverlordMaterial, 2);
             }
             for (int i = 0; i < origin.impNumber; i++)
             {
@@ -273,10 +234,12 @@ namespace Chen.ClassicItems
                     ignoreTeamMemberLimit = true
                 };
                 GameObject soldierMasterObject = DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
-                CharacterMaster master = soldierMasterObject.GetComponent<CharacterMaster>();
-                if (!master) return;
-                if (soldierMasterObject) GiveImpItems(master, false);
-                soldierMasterObject.name += Origin.originSuffix;
+                CharacterMaster soldierMaster = soldierMasterObject.GetComponent<CharacterMaster>();
+                if (!soldierMaster) return;
+                GiveImpItems(soldierMaster, false);
+                CharacterBody soldierBody = soldierMaster.GetBody();
+                if (!soldierBody) return;
+                PostProcess(soldierMaster, soldierBody, $"Imp {Origin.originSuffix}", Origin.originImpMaterial, 0);
             }
         }
 
@@ -303,6 +266,16 @@ namespace Chen.ClassicItems
         {
             ItemIndex index = itemList[run.spawnRng.RangeInt(0, itemList.Length)];
             return index;
+        }
+
+        private void PostProcess(CharacterMaster master, CharacterBody body, string displayName, Material material, int renderInfoIndex)
+        {
+            master.gameObject.name += Origin.originSuffix;
+            body.gameObject.name += Origin.originSuffix;
+            ModelLocator modelLocator = body.gameObject.GetComponent<ModelLocator>();
+            CharacterModel model = modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
+            model.baseRendererInfos[renderInfoIndex].defaultMaterial = material;
+            body.baseNameToken = displayName;
         }
 
         private ItemIndex[] GenerateAvailableItems(List<PickupIndex> list)
