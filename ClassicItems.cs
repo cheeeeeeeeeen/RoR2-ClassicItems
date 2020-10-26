@@ -155,7 +155,6 @@ namespace Chen.ClassicItems
 
             Logger.LogDebug("Performing early finalization...");
             T2Module.SetupAll_PluginStart(chensItemList);
-            CatalogBoilerplate.ConsoleDump(Logger, chensItemList);
 
             Logger.LogDebug("Initial setup done!");
         }
@@ -164,6 +163,7 @@ namespace Chen.ClassicItems
         {
             Logger.LogDebug("Performing late setup:");
             Logger.LogDebug("Nothing to perform. Early setup was done.");
+            CatalogBoilerplate.ConsoleDump(Logger, chensItemList);
         }
     }
 

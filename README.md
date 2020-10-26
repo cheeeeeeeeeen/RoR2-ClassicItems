@@ -51,6 +51,7 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 **2.2.3**
 - Recolor the Imps spawned from Artifact of Origin.
 - Use Xoroshiro128 for randomizing skills in Distortion.
+- Spectators will no longer be shown the wrong Distortion Skill for the player they are spectating.
 
 **2.2.2**
 - Allow Imp Overlords spawned from Artifact of origin to drop a Pearl or Irradiant Pearl.

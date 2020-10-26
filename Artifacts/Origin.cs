@@ -1,6 +1,5 @@
-﻿#define DEBUG
+﻿#undef DEBUG
 
-using R2API;
 using RoR2;
 using RoR2.Artifacts;
 using System.Collections.Generic;

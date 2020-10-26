@@ -34,6 +34,7 @@ namespace Chen.ClassicItems
             LanguageAPI.Add("ALL_DISTORTION_LOCKED_DESCRIPTION", "You forgot how to perform this skill.");
 
             distortSkill = ScriptableObject.CreateInstance<SkillDef>();
+            distortSkill.activationState = new SerializableEntityStateType(typeof(BaseState));
             distortSkill.activationStateMachineName = "Weapon";
             distortSkill.baseMaxStock = 0;
             distortSkill.baseRechargeInterval = 0f;
@@ -58,12 +59,14 @@ namespace Chen.ClassicItems
         {
             base.Install();
             CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
+            CameraRigController.onCameraTargetChanged += CameraRigController_onCameraTargetChanged;
         }
 
         public override void Uninstall()
         {
             base.Uninstall();
             CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
+            CameraRigController.onCameraTargetChanged -= CameraRigController_onCameraTargetChanged;
         }
 
         private void CharacterBody_onBodyStartGlobal(CharacterBody obj)
@@ -71,6 +74,16 @@ namespace Chen.ClassicItems
             if (IsActiveAndEnabled() && obj.isPlayerControlled)
             {
                 DistortionManager.GetOrAddComponent(obj);
+            }
+        }
+
+        private void CameraRigController_onCameraTargetChanged(CameraRigController arg1, GameObject arg2)
+        {
+            CharacterBody body = arg2.GetComponent<CharacterBody>();
+            if (arg1.viewer != Util.LookUpBodyNetworkUser(body))
+            {
+                DistortionManager manager = body.GetComponent<DistortionManager>();
+                if (manager) manager.RemoveOnSpectate();
             }
         }
     }
@@ -145,6 +158,12 @@ namespace Chen.ClassicItems
                 return true;
             }
             return false;
+        }
+
+        public void RemoveOnSpectate()
+        {
+            UnlockSkill();
+            Destroy(this);
         }
 
         public static DistortionManager GetOrAddComponent(CharacterBody body)

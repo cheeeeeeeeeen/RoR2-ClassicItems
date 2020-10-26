@@ -2,7 +2,7 @@
   "name": "ChensClassicItems",
   "version_number": "2.2.3",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "Color the Imps spawned from Origin purple. Icons are temporary. Feel free to improve them! This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "Color the Imps spawned from Origin purple. Some corrections with Distortion as well. Icons are temporary. Feel free to improve them! This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
   "dependencies": [
     "ThinkInvis-ClassicItems-4.6.4"
   ]
