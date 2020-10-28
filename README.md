@@ -44,9 +44,21 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 **Kirbsuke#0352** made the Artifact of Spirit icon.
 - Contact: `kirbydamaster@gmail.com` or through Discord.
 
+**manaboi#4887** made the Artifact of Origin icon.
+- Contact: Through Discord.
+
 **Aromatic Sunday#2929** did offer to make icons, and thus included as an alternate version.
 
 ## Changelog
+
+**2.2.4**
+- Big optimization in Artifact of Origin.
+- Allow Imp Vanguards to be their own monster, a clone of Imp Overlord.
+- Add a config to spawn Imps triggered by Origin in intervals. Configurable. This is to avoid frame drops.
+- Properly add a name and avatar icons for these Imps.
+- Improve Artifact of Spirit by making enemies apply their movement speed changes instantly upon health change.
+- Allow movement speed changed from Artifact of Spirit be limited through a threshold to avoid frame drops.
+- Update the icon of Artifact of Orign into the official one.
 
 **2.2.3**
 - Recolor the Imps spawned from Artifact of Origin.
