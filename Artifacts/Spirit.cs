@@ -1,5 +1,6 @@
 ﻿using RoR2;
 using TILER2;
+using UnityEngine;
 
 namespace Chen.ClassicItems
 {
@@ -40,12 +41,14 @@ namespace Chen.ClassicItems
         {
             base.Install();
             On.RoR2.CharacterBody.RecalculateStats += On_CBRecalcStats;
+            CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
         }
 
         public override void Uninstall()
         {
             base.Uninstall();
             On.RoR2.CharacterBody.RecalculateStats -= On_CBRecalcStats;
+            CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
         }
 
         private void On_CBRecalcStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
@@ -56,6 +59,43 @@ namespace Chen.ClassicItems
             if (!hc || !hc.alive || hc.fullHealth <= 0 || hc.health <= 0 || self.moveSpeed < 0 || hc.health > hc.fullHealth) return;
             self.moveSpeed += self.moveSpeed * maximumPossibleSpeedMultiplier * (1 - (hc.health / hc.fullHealth));
             self.acceleration = self.moveSpeed * (self.baseAcceleration / self.baseMoveSpeed);
+        }
+
+        private void CharacterBody_onBodyStartGlobal(CharacterBody obj)
+        {
+            if (!IsActiveAndEnabled() || obj.isPlayerControlled) return;
+            obj.gameObject.AddComponent<SpiritBehavior>();
+        }
+    }
+
+    public class SpiritBehavior : MonoBehaviour
+    {
+        private float previousHealth;
+        private CharacterBody body;
+        private HealthComponent healthComponent;
+
+        private readonly float threshold = 1f;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
+        private void Awake()
+        {
+            body = gameObject.GetComponent<CharacterBody>();
+            healthComponent = gameObject.GetComponent<HealthComponent>();
+            previousHealth = healthComponent.health;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
+        private void FixedUpdate()
+        {
+            if (IsWithinThreshold()) return;
+            previousHealth = healthComponent.health;
+            body.RecalculateStats();
+        }
+
+        private bool IsWithinThreshold()
+        {
+            return healthComponent.health <= (previousHealth + threshold) &&
+                   healthComponent.health >= (previousHealth - threshold);
         }
     }
 }
