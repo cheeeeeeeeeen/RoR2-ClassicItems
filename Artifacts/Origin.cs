@@ -1,5 +1,6 @@
 ﻿#undef DEBUG
 
+using R2API;
 using RoR2;
 using RoR2.Artifacts;
 using System.Collections.Generic;
@@ -63,17 +64,20 @@ namespace Chen.ClassicItems
                     AutoConfigFlags.None, 0f, float.MaxValue)]
         public float impHpMultiplier { get; private set; } = 3f;
 
+        [AutoConfig("Amount of time in seconds for each Imp to spawn apart from each other which adds a delay in between them " +
+                    "instead of spawning them all at once to avoid frame drops. 0 will spawn them all almost instantly without delay.",
+                    AutoConfigFlags.None, 0f, float.MaxValue)]
+        public float intervalBetweenImps { get; private set; } = .25f;
+
         protected override string GetNameString(string langid = null) => displayName;
 
         protected override string GetDescString(string langid = null) => $"Imps will invade to destroy you every {spawnInterval} minutes.";
 
-        public static SpawnCard overlordSpawnCard { get; private set; }
-        public static SpawnCard impSpawnCard { get; private set; }
-        public static Material originImpOverlordMaterial { get; private set; }
-        public static Material originImpMaterial { get; private set; }
         public static PickupDropTable dropTable { get; private set; }
         public static string originSuffix { get; private set; } = "(Origin)";
         public static Xoroshiro128Plus treasureRng { get; private set; } = new Xoroshiro128Plus(0UL);
+        public static CharacterSpawnCard originOverlordSpawnCard { get; private set; }
+        public static CharacterSpawnCard originImpSpawnCard { get; private set; }
 
         public Origin()
         {
@@ -85,10 +89,16 @@ namespace Chen.ClassicItems
         {
             base.SetupBehavior();
             dropTable = Resources.Load<PickupDropTable>("DropTables/dtPearls");
-            overlordSpawnCard = Resources.Load<SpawnCard>("spawncards/characterspawncards/cscImpBoss");
-            impSpawnCard = Resources.Load<SpawnCard>("spawncards/characterspawncards/cscImp");
-            originImpOverlordMaterial = Resources.Load<Material>("@ChensClassicItems:Assets/ClassicItems/Imp/matImpBossOrigin.mat");
-            originImpMaterial = Resources.Load<Material>("@ChensClassicItems:Assets/ClassicItems/Imp/matImpOrigin.mat");
+            originOverlordSpawnCard =
+                ImpOriginSetup(Resources.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscImpBoss"),
+                               Resources.Load<Material>("@ChensClassicItems:Assets/ClassicItems/Imp/matImpBossOrigin.mat"),
+                               Resources.Load<Texture>("@ChensClassicItems:Assets/ClassicItems/Imp/ImpBossBodyOrigin.png"),
+                               "Imp Vanguard", "Reclaimer", 2);
+            originImpSpawnCard =
+                ImpOriginSetup(Resources.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscImp"),
+                               Resources.Load<Material>("@ChensClassicItems:Assets/ClassicItems/Imp/matImpOrigin.mat"),
+                               Resources.Load<Texture>("@ChensClassicItems:Assets/ClassicItems/Imp/ImpBodyOrigin.png"),
+                               "Imp Soldier", "Defender", 0);
         }
 
         public override void Install()
@@ -96,6 +106,7 @@ namespace Chen.ClassicItems
             base.Install();
             Run.onRunStartGlobal += Run_onRunStartGlobal;
             GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
+            CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
         }
 
         public override void Uninstall()
@@ -103,6 +114,43 @@ namespace Chen.ClassicItems
             base.Uninstall();
             Run.onRunStartGlobal -= Run_onRunStartGlobal;
             GlobalEventManager.onCharacterDeathGlobal -= GlobalEventManager_onCharacterDeathGlobal;
+            CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
+        }
+
+        private CharacterSpawnCard ImpOriginSetup(CharacterSpawnCard origCsc, Material material, Texture icon, string name, string subtitle, int renderInfoIndex)
+        {
+            GameObject masterObject = origCsc.prefab;
+            masterObject = masterObject.InstantiateClone(masterObject.name + originSuffix);
+            MasterCatalog.getAdditionalEntries += (list) => { list.Add(masterObject); };
+            CharacterMaster master = masterObject.GetComponent<CharacterMaster>();
+            GameObject bodyObject = master.bodyPrefab;
+            bodyObject = bodyObject.InstantiateClone(bodyObject.name + originSuffix);
+            BodyCatalog.getAdditionalEntries += (list) => { list.Add(bodyObject); };
+            CharacterBody body = bodyObject.GetComponent<CharacterBody>();
+            body.baseNameToken += originSuffix;
+            body.subtitleNameToken += originSuffix;
+            LanguageAPI.Add(body.baseNameToken, name);
+            LanguageAPI.Add(body.subtitleNameToken, subtitle);
+            body.portraitIcon = icon;
+            ModelLocator bodyModelLocator = bodyObject.GetComponent<ModelLocator>();
+            GameObject bodyModelTransformObject = bodyModelLocator.modelTransform.gameObject;
+            CharacterModel bodyModel = bodyModelTransformObject.GetComponent<CharacterModel>();
+            bodyModel.baseRendererInfos[renderInfoIndex].defaultMaterial = material;
+            master.bodyPrefab = bodyObject;
+            CharacterSpawnCard newCsc = ScriptableObject.CreateInstance<CharacterSpawnCard>();
+            newCsc.name = origCsc.name + originSuffix;
+            newCsc.prefab = masterObject;
+            newCsc.sendOverNetwork = origCsc.sendOverNetwork;
+            newCsc.hullSize = origCsc.hullSize;
+            newCsc.nodeGraphType = origCsc.nodeGraphType;
+            newCsc.requiredFlags = origCsc.requiredFlags;
+            newCsc.forbiddenFlags = origCsc.forbiddenFlags;
+            newCsc.directorCreditCost = origCsc.directorCreditCost;
+            newCsc.occupyPosition = origCsc.occupyPosition;
+            newCsc.loadout = origCsc.loadout;
+            newCsc.noElites = origCsc.noElites;
+            newCsc.forbiddenAsBoss = true;
+            return newCsc;
         }
 
         private void Run_onRunStartGlobal(Run obj)
@@ -123,18 +171,60 @@ namespace Chen.ClassicItems
                 PickupDropletController.CreatePickupDroplet(pickupIndex, obj.victimBody.corePosition, Vector3.up * 20f);
             }
         }
+
+        private void CharacterBody_onBodyStartGlobal(CharacterBody obj)
+        {
+            if (!obj.name.Contains(originSuffix) || !obj.master) return;
+            GiveOriginItems(obj.master, obj.name.Contains("Boss"));
+        }
+
+        private void GiveOriginItems(CharacterMaster master, bool isLeader)
+        {
+            Inventory inv = master.inventory;
+            int redCount = isLeader ? impOverlordRedItems : impRedItems;
+            int greenCount = isLeader ? impOverlordGreenItems : impGreenItems;
+            int whiteCount = isLeader ? impOverlordWhiteItems : impWhiteItems;
+            int blueCount = isLeader ? impOverlordBlueItems : impBlueItems;
+            int yellowCount = isLeader ? impOverlordYellowItems : impYellowItems;
+#if DEBUG
+            Log.Debug($"Giving items to {master.name} ({master.GetInstanceID()})");
+#endif
+            for (int i = 0; i < redCount; i++) inv.GiveItem(DecideRandomItem(OriginManager.redList));
+            for (int i = 0; i < greenCount; i++) inv.GiveItem(DecideRandomItem(OriginManager.greenList));
+            for (int i = 0; i < whiteCount; i++) inv.GiveItem(DecideRandomItem(OriginManager.whiteList));
+            for (int i = 0; i < blueCount; i++) inv.GiveItem(DecideRandomItem(OriginManager.blueList));
+            for (int i = 0; i < yellowCount; i++) inv.GiveItem(DecideRandomItem(OriginManager.yellowList));
+#if DEBUG
+            Log.Debug($"Done. ({master.name} - {master.GetInstanceID()})");
+#endif
+            float hpBoost = Run.instance.difficultyCoefficient;
+            if (isLeader) hpBoost *= impOverlordHpMultiplier;
+            else hpBoost *= impHpMultiplier;
+            inv.GiveItem(ItemIndex.BoostHp, Mathf.RoundToInt(hpBoost));
+        }
+
+        private ItemIndex DecideRandomItem(ItemIndex[] itemList)
+        {
+            ItemIndex index = itemList[Run.instance.spawnRng.RangeInt(0, itemList.Length)];
+#if DEBUG
+            Log.Debug($"Given {index}.");
+#endif
+            return index;
+        }
     }
 
     public class OriginManager : MonoBehaviour
     {
+        public static ItemIndex[] redList;
+        public static ItemIndex[] greenList;
+        public static ItemIndex[] whiteList;
+        public static ItemIndex[] blueList;
+        public static ItemIndex[] yellowList;
+
         private Run run;
         private int previousInvasionCycle = 0;
         private Origin origin = Origin.instance;
-        private ItemIndex[] redList;
-        private ItemIndex[] greenList;
-        private ItemIndex[] whiteList;
-        private ItemIndex[] blueList;
-        private ItemIndex[] yellowList;
+        private float intervalTimer = 0f;
 
         private readonly ItemIndex[] bannedItems = new ItemIndex[]
         {
@@ -142,6 +232,8 @@ namespace Chen.ClassicItems
             ItemIndex.TitanGoldDuringTP, ItemIndex.SprintWisp, ItemIndex.ArtifactKey, ItemIndex.SiphonOnLowHealth, ItemIndex.ScrapYellow,
             ItemIndex.AutoCastEquipment
         };
+
+        private readonly List<DirectorSpawnRequest> spawnQueue = new List<DirectorSpawnRequest>();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
@@ -167,7 +259,28 @@ namespace Chen.ClassicItems
                     previousInvasionCycle = currentInvasionCycle;
                     PerformInvasion(new Xoroshiro128Plus(run.seed + (ulong)currentInvasionCycle));
                 }
+                if (spawnQueue.Count > 0)
+                {
+                    intervalTimer += Time.fixedDeltaTime;
+                    if (intervalTimer >= origin.intervalBetweenImps)
+                    {
+                        DirectorCore.instance.TrySpawnObject(spawnQueue[0]);
+                        spawnQueue.RemoveAt(0);
+                        intervalTimer = 0f;
+                    }
+                }
+                else if (intervalTimer != 0f) intervalTimer = 0f;
             }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
+        private void OnDestroy()
+        {
+            redList = null;
+            greenList = null;
+            whiteList = null;
+            blueList = null;
+            yellowList = null;
         }
 
         private int GetCurrentInvasionCycle()
@@ -187,12 +300,12 @@ namespace Chen.ClassicItems
                 if (master.teamIndex == TeamIndex.Player && master.playerCharacterMasterController)
                 {
                     CharacterBody body = master.GetBody();
-                    if (body) SpawnImpArmy(body, Origin.overlordSpawnCard, Origin.impSpawnCard, rng);
+                    if (body) SpawnImpArmy(body, Origin.originOverlordSpawnCard, Origin.originImpSpawnCard, rng);
                 }
             }
         }
 
-        private void SpawnImpArmy(CharacterBody body, SpawnCard leader, SpawnCard soldier, Xoroshiro128Plus rng)
+        private void SpawnImpArmy(CharacterBody body, CharacterSpawnCard leader, SpawnCard soldier, Xoroshiro128Plus rng)
         {
             Transform spawnOnTarget = body.coreTransform;
             for (int i = 0; i < origin.impOverlordNumber; i++)
@@ -209,13 +322,7 @@ namespace Chen.ClassicItems
                     teamIndexOverride = TeamIndex.Monster,
                     ignoreTeamMemberLimit = true
                 };
-                GameObject leaderMasterObject = DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
-                CharacterMaster leaderMaster = leaderMasterObject.GetComponent<CharacterMaster>();
-                if (!leaderMaster) return;
-                GiveImpItems(leaderMaster, true);
-                CharacterBody leaderBody = leaderMaster.GetBody();
-                if (!leaderBody) return;
-                PostProcess(leaderMaster, leaderBody, $"Imp Overlord {Origin.originSuffix}", Origin.originImpOverlordMaterial, 2);
+                spawnQueue.Add(directorSpawnRequest);
             }
             for (int i = 0; i < origin.impNumber; i++)
             {
@@ -231,49 +338,8 @@ namespace Chen.ClassicItems
                     teamIndexOverride = TeamIndex.Monster,
                     ignoreTeamMemberLimit = true
                 };
-                GameObject soldierMasterObject = DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
-                CharacterMaster soldierMaster = soldierMasterObject.GetComponent<CharacterMaster>();
-                if (!soldierMaster) return;
-                GiveImpItems(soldierMaster, false);
-                CharacterBody soldierBody = soldierMaster.GetBody();
-                if (!soldierBody) return;
-                PostProcess(soldierMaster, soldierBody, $"Imp {Origin.originSuffix}", Origin.originImpMaterial, 0);
+                spawnQueue.Add(directorSpawnRequest);
             }
-        }
-
-        private void GiveImpItems(CharacterMaster master, bool isLeader)
-        {
-            Inventory inv = master.inventory;
-            int redCount = isLeader ? origin.impOverlordRedItems : origin.impRedItems;
-            int greenCount = isLeader ? origin.impOverlordGreenItems : origin.impGreenItems;
-            int whiteCount = isLeader ? origin.impOverlordWhiteItems : origin.impWhiteItems;
-            int blueCount = isLeader ? origin.impOverlordBlueItems : origin.impBlueItems;
-            int yellowCount = isLeader ? origin.impOverlordYellowItems : origin.impYellowItems;
-            for (int i = 0; i < redCount; i++) inv.GiveItem(DecideRandomItem(redList));
-            for (int i = 0; i < greenCount; i++) inv.GiveItem(DecideRandomItem(greenList));
-            for (int i = 0; i < whiteCount; i++) inv.GiveItem(DecideRandomItem(whiteList));
-            for (int i = 0; i < blueCount; i++) inv.GiveItem(DecideRandomItem(blueList));
-            for (int i = 0; i < yellowCount; i++) inv.GiveItem(DecideRandomItem(yellowList));
-            float hpBoost = run.difficultyCoefficient;
-            if (isLeader) hpBoost *= origin.impOverlordHpMultiplier;
-            else hpBoost *= origin.impHpMultiplier;
-            inv.GiveItem(ItemIndex.BoostHp, Mathf.RoundToInt(hpBoost));
-        }
-
-        private ItemIndex DecideRandomItem(ItemIndex[] itemList)
-        {
-            ItemIndex index = itemList[run.spawnRng.RangeInt(0, itemList.Length)];
-            return index;
-        }
-
-        private void PostProcess(CharacterMaster master, CharacterBody body, string displayName, Material material, int renderInfoIndex)
-        {
-            master.gameObject.name += Origin.originSuffix;
-            body.gameObject.name += Origin.originSuffix;
-            ModelLocator modelLocator = body.gameObject.GetComponent<ModelLocator>();
-            CharacterModel model = modelLocator.modelTransform.gameObject.GetComponent<CharacterModel>();
-            model.baseRendererInfos[renderInfoIndex].defaultMaterial = material;
-            body.baseNameToken = displayName;
         }
 
         private ItemIndex[] GenerateAvailableItems(List<PickupIndex> list)
