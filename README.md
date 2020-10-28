@@ -58,7 +58,7 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 - Properly add a name and avatar icons for these Imps.
 - Improve Artifact of Spirit by making enemies apply their movement speed changes instantly upon health change.
 - Allow movement speed changed from Artifact of Spirit be limited through a threshold to avoid frame drops.
-- Update the icon of Artifact of Orign into the official one.
+- Update the icon of Artifact of Origin into the official one.
 
 **2.2.3**
 - Recolor the Imps spawned from Artifact of Origin.
