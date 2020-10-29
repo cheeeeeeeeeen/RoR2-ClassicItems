@@ -51,6 +51,12 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.2.6**
+- Small bug fix regarding the randomness of Imp Soldiers dropping Pearls, for some reason.
+- Changed the internal mechanics on how the Pearls drop.
+- Only one Imp Overlord per player will drop the Pearl if Artifact of Swarm is enabled.
+- Dio's Best Friend revival will no longer duplicate the drop.
+
 **2.2.5**
 - Add soft dependency for EnemyItemDisplays so that Origin Imps will also be supported.
 - Update the icon for Artifact of Distortion into an official one.

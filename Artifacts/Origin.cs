@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TILER2;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Chen.ClassicItems
 {
@@ -106,7 +107,6 @@ namespace Chen.ClassicItems
         {
             base.Install();
             Run.onRunStartGlobal += Run_onRunStartGlobal;
-            GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
             CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
         }
 
@@ -114,7 +114,6 @@ namespace Chen.ClassicItems
         {
             base.Uninstall();
             Run.onRunStartGlobal -= Run_onRunStartGlobal;
-            GlobalEventManager.onCharacterDeathGlobal -= GlobalEventManager_onCharacterDeathGlobal;
             CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
         }
 
@@ -159,17 +158,6 @@ namespace Chen.ClassicItems
             if (IsActiveAndEnabled())
             {
                 OriginManager.GetOrAddComponent(obj);
-            }
-        }
-
-        private void GlobalEventManager_onCharacterDeathGlobal(DamageReport obj)
-        {
-            if (!IsActiveAndEnabled() || obj.victimTeamIndex == obj.attackerTeamIndex || !obj.victimMaster) return;
-            if (!obj.victimMaster.name.Contains(originSuffix) || !obj.victimMaster.name.Contains("ImpBoss")) return;
-            PickupIndex pickupIndex = dropTable.GenerateDrop(treasureRng);
-            if (pickupIndex != PickupIndex.none)
-            {
-                PickupDropletController.CreatePickupDroplet(pickupIndex, obj.victimBody.corePosition, Vector3.up * 20f);
             }
         }
 
@@ -234,7 +222,7 @@ namespace Chen.ClassicItems
             ItemIndex.AutoCastEquipment
         };
 
-        private readonly List<DirectorSpawnRequest> spawnQueue = new List<DirectorSpawnRequest>();
+        private readonly List<KeyValuePair<DirectorSpawnRequest, bool>> spawnQueue = new List<KeyValuePair<DirectorSpawnRequest, bool>>();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
@@ -265,7 +253,8 @@ namespace Chen.ClassicItems
                     intervalTimer += Time.fixedDeltaTime;
                     if (intervalTimer >= origin.intervalBetweenImps)
                     {
-                        DirectorCore.instance.TrySpawnObject(spawnQueue[0]);
+                        GameObject masterObject = DirectorCore.instance.TrySpawnObject(spawnQueue[0].Key);
+                        if (masterObject && spawnQueue[0].Value) GivePearlDrop(masterObject);
                         spawnQueue.RemoveAt(0);
                         intervalTimer = 0f;
                     }
@@ -323,7 +312,7 @@ namespace Chen.ClassicItems
                     teamIndexOverride = TeamIndex.Monster,
                     ignoreTeamMemberLimit = true
                 };
-                spawnQueue.Add(directorSpawnRequest);
+                spawnQueue.Add(new KeyValuePair<DirectorSpawnRequest, bool>(directorSpawnRequest, i == 0));
             }
             for (int i = 0; i < origin.impNumber; i++)
             {
@@ -339,7 +328,7 @@ namespace Chen.ClassicItems
                     teamIndexOverride = TeamIndex.Monster,
                     ignoreTeamMemberLimit = true
                 };
-                spawnQueue.Add(directorSpawnRequest);
+                spawnQueue.Add(new KeyValuePair<DirectorSpawnRequest, bool>(directorSpawnRequest, false));
             }
         }
 
@@ -357,6 +346,21 @@ namespace Chen.ClassicItems
             return indices.ToArray();
         }
 
+        private bool GivePearlDrop(GameObject masterObject)
+        {
+            CharacterMaster master = masterObject.GetComponent<CharacterMaster>();
+            if (master)
+            {
+                GameObject bodyObject = master.GetBodyObject();
+                if (bodyObject)
+                {
+                    bodyObject.AddComponent<OriginDrop>();
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static OriginManager GetOrAddComponent(Run run)
         {
             return GetOrAddComponent(run.gameObject);
@@ -365,6 +369,33 @@ namespace Chen.ClassicItems
         public static OriginManager GetOrAddComponent(GameObject runObject)
         {
             return runObject.GetComponent<OriginManager>() ?? runObject.AddComponent<OriginManager>();
+        }
+    }
+
+    public class OriginDrop : MonoBehaviour
+    {
+        private CharacterBody body;
+        private HealthComponent healthComponent;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
+        private void Awake()
+        {
+            body = gameObject.GetComponent<CharacterBody>();
+            healthComponent = gameObject.GetComponent<HealthComponent>();
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
+        private void FixedUpdate()
+        {
+            if (NetworkServer.active && !healthComponent.alive)
+            {
+                PickupIndex pickupIndex = Origin.dropTable.GenerateDrop(Origin.treasureRng);
+                if (pickupIndex != PickupIndex.none)
+                {
+                    PickupDropletController.CreatePickupDroplet(pickupIndex, body.corePosition, Vector3.up * 20f);
+                }
+                Destroy(this);
+            }
         }
     }
 }
