@@ -44,12 +44,16 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 **Kirbsuke#0352** made the Artifact of Spirit icon.
 - Contact: `kirbydamaster@gmail.com` or through Discord.
 
-**manaboi#4887** made the Artifact of Origin icon.
+**manaboi#4887** made the Artifact of Origin icon. Artifact of Distortion icon's basis was from them and was improvised.
 - Contact: Through Discord.
 
 **Aromatic Sunday#2929** did offer to make icons, and thus included as an alternate version.
 
 ## Changelog
+
+**2.2.5**
+- Add soft dependency for EnemyItemDisplays so that Origin Imps will also be supported.
+- Update the icon for Artifact of Distortion into an official one.
 
 **2.2.4**
 - Big optimization in Artifact of Origin.

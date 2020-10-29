@@ -1,8 +1,8 @@
 {
   "name": "ChensClassicItems",
-  "version_number": "2.2.4",
+  "version_number": "2.2.5",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "Major improvements on implementation of Origin and Spirit. See changelogs for more details. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "Update the icon of Artifact of Distortion. Also allow Origin Imps to have item displays when EnemyItemDisplays is installed. See changelogs for more details. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
   "dependencies": [
     "ThinkInvis-ClassicItems-4.6.4"
   ]
