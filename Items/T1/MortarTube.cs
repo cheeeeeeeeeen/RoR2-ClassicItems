@@ -52,7 +52,7 @@ namespace Chen.ClassicItems
 
         [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
         [AutoConfig("Amount of mortars launched per stack. It can be set to 0.5 to fire another mortar for every 2nd Mortar Tube gained (excluding the first).",
-                        AutoConfigFlags.None, 0f, float.MaxValue)]
+                    AutoConfigFlags.None, 0f, float.MaxValue)]
         public float stackAmount { get; private set; } = 0f;
 
         protected override string GetNameString(string langID = null) => displayName;

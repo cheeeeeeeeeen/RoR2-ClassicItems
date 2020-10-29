@@ -26,7 +26,7 @@ namespace Chen.ClassicItems
 
         [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
         [AutoConfig("Amount of HP healed per drone. If healing type is Percentage, 1 = 100%; based on max health. " +
-                        "If Fixed, the amount here is the HP restored to Drones. Affected by Embryo.", AutoConfigFlags.None, 0f, float.MaxValue)]
+                    "If Fixed, the amount here is the HP restored to Drones. Affected by Embryo.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float healthRestoreAmount { get; private set; } = 1f;
 
         [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
@@ -34,9 +34,9 @@ namespace Chen.ClassicItems
         public int regenType { get; private set; } = 0;
 
         [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
-        [AutoConfig("Amount of regenration per drone. If healing type is Percentage, 1 = 100%; based on BASE max health of the drone. " +
-                        "Base Max health is the unmodified max health of the drone. Scales with level. Affected by Embryo." +
-                        "If Fixed, the amount here is the HP restored to Drones.", AutoConfigFlags.None, 0f, float.MaxValue)]
+        [AutoConfig("Amount of regeneration per drone. If healing type is Percentage, 1 = 100%; based on BASE max health of the drone. " +
+                    "Base Max health is the unmodified max health of the drone. Scales with level. Affected by Embryo." +
+                    "If Fixed, the amount here is the HP restored to Drones.", AutoConfigFlags.None, 0f, float.MaxValue)]
         public float healthRegenAmount { get; private set; } = .01f;
 
         [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
