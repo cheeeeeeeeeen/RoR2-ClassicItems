@@ -88,6 +88,7 @@ namespace Chen.ClassicItems
         public override void SetupBehavior()
         {
             base.SetupBehavior();
+            EnemyItemDisplaysCompatibility.Setup();
             dropTable = Resources.Load<PickupDropTable>("DropTables/dtPearls");
             originOverlordSpawnCard =
                 ImpOriginSetup(Resources.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscImpBoss"),

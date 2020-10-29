@@ -31,6 +31,9 @@
     <Reference Include="ClassicItems">
       <HintPath>lib\ClassicItems.dll</HintPath>
     </Reference>
+    <Reference Include="EnemyItemDisplays">
+      <HintPath>lib\EnemyItemDisplays.dll</HintPath>
+    </Reference>
     <Reference Include="ItemStats">
       <HintPath>lib\ItemStats.dll</HintPath>
     </Reference>
