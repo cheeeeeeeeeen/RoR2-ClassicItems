@@ -93,7 +93,7 @@ namespace Chen.ClassicItems
         public GenericSkill[] genericSkills;
         private bool init = true;
         private CharacterBody body;
-        private int timer = -1;
+        private float timer = -1;
         private int lockedSkillIndex = -1;
         public SkillDef oldSkillDef;
 
@@ -112,16 +112,20 @@ namespace Chen.ClassicItems
             {
                 if (timer < 0)
                 {
-                    timer++;
+                    timer = 0f;
                     LockRandomSkill();
                 }
                 if (timer > 60 * Distortion.instance.intervalBetweenLocks)
                 {
-                    timer = 0;
+                    timer = 0f;
                     UnlockSkill();
                     LockRandomSkill();
                 }
-                else timer++;
+                else timer += Time.fixedDeltaTime;
+                if (oldSkillDef.skillNameToken == genericSkills[lockedSkillIndex].skillDef.skillNameToken)
+                {
+                    LockSkill();
+                }
             }
         }
 
@@ -142,11 +146,16 @@ namespace Chen.ClassicItems
             {
                 lockedSkillIndex = Distortion.distortionRng.RangeInt(0, genericSkills.Length);
                 oldSkillDef = genericSkills[lockedSkillIndex].skillDef;
-                genericSkills[lockedSkillIndex].AssignSkill(Distortion.distortSkill);
-                genericSkills[lockedSkillIndex].stock = 0;
+                LockSkill();
                 return lockedSkillIndex;
             }
             return -1;
+        }
+
+        private void LockSkill()
+        {
+            genericSkills[lockedSkillIndex].AssignSkill(Distortion.distortSkill);
+            genericSkills[lockedSkillIndex].stock = 0;
         }
 
         private bool UnlockSkill()
