@@ -51,6 +51,11 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.2.7**
+- Another bug fixes regarding Artifact of Distortion.
+- Distortion skills will lock skills again after being replaced by another skill. Example is Engineer's Thermal Harpoons replacing the 1st and 2nd skill upon use of the 3rd skill.
+- Actually use real time in seconds as a timer instead of an integer being incremented by 1.
+
 **2.2.6**
 - Small bug fix regarding the randomness of Imp Soldiers dropping Pearls, for some reason.
 - Changed the internal mechanics on how the Pearls drop.
