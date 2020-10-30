@@ -2,7 +2,6 @@
 
 using R2API;
 using RoR2;
-using RoR2.Artifacts;
 using System.Collections.Generic;
 using System.Linq;
 using TILER2;
@@ -229,10 +228,9 @@ namespace Chen.ClassicItems
         {
             run = Run.instance;
             origin = Origin.instance;
-            if (MonsterTeamGainsItemsArtifactManager.availableTier1Items.Length <= 0) MonsterTeamGainsItemsArtifactManager.GenerateAvailableItemsSet();
-            redList = MonsterTeamGainsItemsArtifactManager.availableTier3Items;
-            greenList = MonsterTeamGainsItemsArtifactManager.availableTier2Items;
-            whiteList = MonsterTeamGainsItemsArtifactManager.availableTier1Items;
+            redList = GenerateAvailableItems(run.availableTier1DropList);
+            greenList = GenerateAvailableItems(run.availableTier2DropList);
+            whiteList = GenerateAvailableItems(run.availableTier3DropList);
             blueList = GenerateAvailableItems(run.availableLunarDropList);
             yellowList = GenerateAvailableItems(run.availableBossDropList);
         }
@@ -337,13 +335,23 @@ namespace Chen.ClassicItems
             List<ItemIndex> indices = new List<ItemIndex>();
             foreach (PickupIndex pickup in list)
             {
-                if (pickup.pickupDef == null) continue;
-                ItemIndex index = pickup.pickupDef.itemIndex;
-                ItemDef itemDef = ItemCatalog.GetItemDef(index);
-                if (itemDef == null || itemDef.ContainsTag(ItemTag.AIBlacklist)) continue;
-                if (!bannedItems.Contains(index)) indices.Add(index);
+                if (pickup.pickupDef != null)
+                {
+                    ItemIndex index = pickup.pickupDef.itemIndex;
+                    ItemDef itemDef = ItemCatalog.GetItemDef(index);
+                    if (IsItemAllowed(itemDef)) indices.Add(index);
+                }
             }
             return indices.ToArray();
+        }
+
+        private bool IsItemAllowed(ItemDef itemDef)
+        {
+            return itemDef != null
+                   && !itemDef.ContainsTag(ItemTag.AIBlacklist)
+                   && !itemDef.ContainsTag(ItemTag.EquipmentRelated)
+                   && !itemDef.ContainsTag(ItemTag.SprintRelated)
+                   && !bannedItems.Contains(itemDef.itemIndex);
         }
 
         private bool GivePearlDrop(GameObject masterObject)
