@@ -52,9 +52,12 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 ## Changelog
 
 **2.2.7**
-- Another bug fixes regarding Artifact of Distortion.
+- Another bug fixes regarding Artifacts of Distortion and Origin.
 - Distortion skills will lock skills again after being replaced by another skill. Example is Engineer's Thermal Harpoons replacing the 1st and 2nd skill upon use of the 3rd skill.
 - Actually use real time in seconds as a timer instead of an integer being incremented by 1.
+- Manually generate item sets for Origin instead of it being dependent on Evolution's manager.
+- Add listing of items that can be given to enemies in both Evolution and Origin for an easier time to debug when a bug happens regarding banning.
+- Actually fix the items given to Imps. Properly give the items from the correct tiers.
 
 **2.2.6**
 - Small bug fix regarding the randomness of Imp Soldiers dropping Pearls, for some reason.

@@ -134,7 +134,7 @@ namespace Chen.ClassicItems
             body = gameObject.GetComponent<CharacterBody>();
             if (!body)
             {
-                ClassicItemsPlugin._logger.LogWarning("DistortionManager.FixedUpdate: Body is not found.");
+                Log.Warning("DistortionManager.FixedUpdate: Body is not found.");
                 return false;
             }
             return true;

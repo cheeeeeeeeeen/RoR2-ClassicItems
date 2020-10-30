@@ -69,6 +69,9 @@ namespace Chen.ClassicItems
                     AutoConfigFlags.None, 0f, float.MaxValue)]
         public float intervalBetweenImps { get; private set; } = .25f;
 
+        [AutoConfig("Used for logging items that can be given to Imps. Makes it easier to report bugs related to items being received by Origin Imps.")]
+        public bool logOriginItemList { get; private set; } = true;
+
         protected override string GetNameString(string langid = null) => displayName;
 
         protected override string GetDescString(string langid = null) => $"Imps will invade to destroy you every {spawnInterval} minutes.";
@@ -157,6 +160,15 @@ namespace Chen.ClassicItems
             if (IsActiveAndEnabled())
             {
                 OriginManager.GetOrAddComponent(obj);
+                if (logOriginItemList)
+                {
+                    Log.Message("Listing items that can be given to Origin Imps...");
+                    Log.ListItems("COMMON:", OriginManager.whiteList);
+                    Log.ListItems("UNCOMMON:", OriginManager.greenList);
+                    Log.ListItems("RARE:", OriginManager.redList);
+                    Log.ListItems("BOSS:", OriginManager.yellowList);
+                    Log.ListItems("LUNAR:", OriginManager.blueList);
+                }
             }
         }
 
@@ -218,7 +230,7 @@ namespace Chen.ClassicItems
         {
             ItemIndex.GoldOnHit, ItemIndex.LunarTrinket, ItemIndex.FocusConvergence, ItemIndex.MonstersOnShrineUse,
             ItemIndex.TitanGoldDuringTP, ItemIndex.SprintWisp, ItemIndex.ArtifactKey, ItemIndex.SiphonOnLowHealth, ItemIndex.ScrapYellow,
-            ItemIndex.AutoCastEquipment
+            ItemIndex.AutoCastEquipment, ItemIndex.BonusGoldPackOnKill
         };
 
         private readonly List<KeyValuePair<DirectorSpawnRequest, bool>> spawnQueue = new List<KeyValuePair<DirectorSpawnRequest, bool>>();
@@ -228,9 +240,9 @@ namespace Chen.ClassicItems
         {
             run = Run.instance;
             origin = Origin.instance;
-            redList = GenerateAvailableItems(run.availableTier1DropList);
+            redList = GenerateAvailableItems(run.availableTier3DropList);
             greenList = GenerateAvailableItems(run.availableTier2DropList);
-            whiteList = GenerateAvailableItems(run.availableTier3DropList);
+            whiteList = GenerateAvailableItems(run.availableTier1DropList);
             blueList = GenerateAvailableItems(run.availableLunarDropList);
             yellowList = GenerateAvailableItems(run.availableBossDropList);
         }

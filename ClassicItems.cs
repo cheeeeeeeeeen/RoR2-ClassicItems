@@ -5,6 +5,7 @@ using BepInEx.Configuration;
 using R2API;
 using R2API.Utils;
 using RoR2;
+using RoR2.Artifacts;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -34,6 +35,7 @@ namespace Chen.ClassicItems
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";
 
+        public static readonly GlobalConfig globalCfg = new GlobalConfig();
         private static ConfigFile cfgFile;
 
         internal static FilingDictionary<CatalogBoilerplate> chensItemList = new FilingDictionary<CatalogBoilerplate>();
@@ -80,14 +82,14 @@ namespace Chen.ClassicItems
         {
             _logger = Logger;
 
-            Logger.LogDebug("Performing plugin setup:");
+            Log.Debug("Performing plugin setup:");
 
 #if DEBUG
-            Logger.LogWarning("Running test build with debug enabled! Report to CHEN if you're seeing this!");
+            Log.Warning("Running test build with debug enabled! Report to CHEN if you're seeing this!");
             On.RoR2.Networking.GameNetworkManager.OnClientConnect += (self, user, t) => { };
 #endif
 
-            Logger.LogDebug("Loading assets...");
+            Log.Debug("Loading assets...");
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ChensClassicItems.chensclassicitems_assets"))
             {
                 var bundle = AssetBundle.LoadFromStream(stream);
@@ -97,10 +99,10 @@ namespace Chen.ClassicItems
 
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 
-            Logger.LogDebug("Loading global configs...");
-            Logger.LogDebug("Skip. Global configs are based on ThinkInvis.ClassicItems.");
+            Log.Debug("Loading global configs...");
+            globalCfg.BindAll(cfgFile, ModName, "Global");
 
-            Logger.LogDebug("Instantiating item classes...");
+            Log.Debug("Instantiating item classes...");
             chensItemList = T2Module.InitAll<CatalogBoilerplate>(new T2Module.ModInfo
             {
                 displayName = "Chen's Classic Items",
@@ -109,7 +111,7 @@ namespace Chen.ClassicItems
                 mainConfigFile = cfgFile
             });
 
-            Logger.LogDebug("Loading item configs...");
+            Log.Debug("Loading item configs...");
             foreach (CatalogBoilerplate x in chensItemList)
             {
                 x.SetupConfig();
@@ -131,7 +133,7 @@ namespace Chen.ClassicItems
                 };
             }
 
-            Logger.LogDebug("Registering item attributes...");
+            Log.Debug("Registering item attributes...");
             foreach (CatalogBoilerplate x in chensItemList)
             {
                 string mpnOvr = null;
@@ -148,23 +150,63 @@ namespace Chen.ClassicItems
                 x.SetupAttributes();
             }
 
-            Logger.LogDebug("Registering item behaviors...");
+            Log.Debug("Registering item behaviors...");
             foreach (CatalogBoilerplate x in chensItemList)
             {
                 x.SetupBehavior();
             }
 
-            Logger.LogDebug("Performing early finalization...");
+            Log.Debug("Performing early finalization...");
             T2Module.SetupAll_PluginStart(chensItemList);
 
-            Logger.LogDebug("Initial setup done!");
+            if (globalCfg.logEvolutionItemList)
+            {
+                RunArtifactManager.onArtifactEnabledGlobal += OnEvolutionDisable;
+                RunArtifactManager.onArtifactDisabledGlobal += OnEvolutionEnable;
+            }
+
+            Log.Debug("Initial setup done!");
+        }
+
+        private void OnEvolutionDisable([JetBrains.Annotations.NotNull] RunArtifactManager runArtifactManager,
+                                        [JetBrains.Annotations.NotNull] ArtifactDef artifactDef)
+        {
+            if (artifactDef == RoR2Content.Artifacts.monsterTeamGainsItemsArtifactDef)
+            {
+                Run.onRunStartGlobal -= EvolutionListItems;
+            }
+        }
+
+        private void OnEvolutionEnable([JetBrains.Annotations.NotNull] RunArtifactManager runArtifactManager,
+                                       [JetBrains.Annotations.NotNull] ArtifactDef artifactDef)
+        {
+            if (artifactDef == RoR2Content.Artifacts.monsterTeamGainsItemsArtifactDef)
+            {
+                Run.onRunStartGlobal += EvolutionListItems;
+            }
+        }
+
+
+        private void EvolutionListItems(Run run)
+        {
+            Log.Message("Starting to display items that can be given to enemies by Evolution...");
+            Log.ListItems("COMMON:", MonsterTeamGainsItemsArtifactManager.availableTier1Items);
+            Log.ListItems("UNCOMMON:", MonsterTeamGainsItemsArtifactManager.availableTier2Items);
+            Log.ListItems("RARE:", MonsterTeamGainsItemsArtifactManager.availableTier3Items);
         }
 
         private void Start()
         {
-            Logger.LogDebug("Performing late setup:");
-            Logger.LogDebug("Nothing to perform. Early setup was done.");
+            Log.Debug("Performing late setup:");
+            Log.Debug("Nothing to perform. Early setup was done.");
             CatalogBoilerplate.ConsoleDump(Logger, chensItemList);
+        }
+
+        public class GlobalConfig : AutoConfigContainer
+        {
+            [AutoConfig("Used for logging items that can be given to enemies when Evolution is on. " +
+                        "Makes it easier to report bugs related to Evolution and modded items.")]
+            public bool logEvolutionItemList { get; private set; } = true;
         }
     }
 
@@ -179,6 +221,15 @@ namespace Chen.ClassicItems
         public static void Message(object data) => logger.LogMessage(data);
 
         public static void Warning(object data) => logger.LogWarning(data);
+
+        public static void ListItems(string start, ItemIndex[] list)
+        {
+            Message(start);
+            foreach (var item in list)
+            {
+                Message($"-> {ItemCatalog.GetItemDef(item).name}");
+            }
+        }
 
         public static BepInEx.Logging.ManualLogSource logger => ClassicItemsPlugin._logger;
     }
