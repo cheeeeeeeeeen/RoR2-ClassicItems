@@ -114,7 +114,7 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 - Update Artifact of Spirit icon.
 
 **1.4.4**
-- Fix bugs found with the Artifact of Spirit about misbhaving characters, like zooming off the map.
+- Fix bugs found with the Artifact of Spirit about misbehaving characters, like zooming off the map.
 - Let Artifact of Spirit modify acceleration also to mitigate for their own new speed.
 
 **1.4.3**
@@ -142,7 +142,7 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 **1.3.0**
 - Implement Drone Repair Kit!
-- Remove the the sync logging as it apparently caused heavy lag.
+- Remove the sync logging as it apparently caused heavy lag.
 - Add a config setting where the Options of Flame Drones will have reduced quality of effects to lessen the stress of processing and syncing.
 - Add lore for Instant Minefield.
 - Slight adjustments for config options in regards with TILER2 for correctness.
@@ -172,11 +172,11 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 - Fix the Drones with Options hard crashing the game when entering bazaar.
 - Fix the Options being duplicated when the player is revived in a stage by any means.
 - Fix Multiplayer desync issues regarding the Option Spawning upon item pickup of Gradius' Option.
-- Implement a queueing system for syncing to lessen desync and lessen bandwidth usage.
+- Implement a queuing system for syncing to lessen desync and lessen bandwidth usage.
 - Improve the code by letting linear behavior into client sided execution to lessen bandwidth usage.
 - Allow destruction of Options upon losing the owner.
 - Fix the flamethrower effect of Options to sync in multiplayer.
-- Add a config for sync time to allow Options to behave properly in Multiplayer at the cost of delay through the queueing system.
+- Add a config for sync time to allow Options to behave properly in Multiplayer at the cost of delay through the queuing system.
 
 **1.0.1**
 - Fix some random exceptions found in mines related to animations.
