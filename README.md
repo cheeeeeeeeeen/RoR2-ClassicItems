@@ -51,6 +51,10 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.2.8**
+- Register custom cloned projectiles to avoid errors.
+- Fix a possible bug with Arms Race where in the mortar from drones will not launch if Mortar Tube is disabled in config.
+
 **2.2.7**
 - Another bug fixes regarding Artifacts of Distortion and Origin.
 - Distortion skills will lock skills again after being replaced by another skill. Example is Engineer's Thermal Harpoons replacing the 1st and 2nd skill upon use of the 3rd skill.

@@ -1,8 +1,8 @@
 {
   "name": "ChensClassicItems",
-  "version_number": "2.2.7",
+  "version_number": "2.2.8",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "Bug fixes regarding Artifacts of Distortion and Origin yet again. See changelogs for more details. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "More bug fixes related to unregistered projectiles. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
   "dependencies": [
     "ThinkInvis-ClassicItems-4.6.4"
   ]
