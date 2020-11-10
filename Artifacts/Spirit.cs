@@ -76,7 +76,6 @@ namespace Chen.ClassicItems
 
         private readonly float threshold = 1f;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
         {
             body = gameObject.GetComponent<CharacterBody>();
@@ -84,7 +83,6 @@ namespace Chen.ClassicItems
             previousHealth = healthComponent.health;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
             if (IsWithinThreshold()) return;

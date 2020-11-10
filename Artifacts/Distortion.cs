@@ -97,7 +97,6 @@ namespace Chen.ClassicItems
         private int lockedSkillIndex = -1;
         public SkillDef oldSkillDef;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
             if (init)

@@ -235,7 +235,6 @@ namespace Chen.ClassicItems
 
         private readonly List<KeyValuePair<DirectorSpawnRequest, bool>> spawnQueue = new List<KeyValuePair<DirectorSpawnRequest, bool>>();
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
         {
             run = Run.instance;
@@ -247,7 +246,6 @@ namespace Chen.ClassicItems
             yellowList = GenerateAvailableItems(run.availableBossDropList);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
             if (gameObject)
@@ -273,7 +271,6 @@ namespace Chen.ClassicItems
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void OnDestroy()
         {
             redList = null;
@@ -397,14 +394,12 @@ namespace Chen.ClassicItems
         private CharacterBody body;
         private HealthComponent healthComponent;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
         {
             body = gameObject.GetComponent<CharacterBody>();
             healthComponent = gameObject.GetComponent<HealthComponent>();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
             if (NetworkServer.active && !healthComponent.alive)

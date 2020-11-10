@@ -195,7 +195,6 @@ namespace Chen.ClassicItems
     {
         private ProjectileSimple projSimp;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void Awake()
         {
             projSimp = gameObject.GetComponent<ProjectileSimple>();
@@ -203,7 +202,6 @@ namespace Chen.ClassicItems
             projSimp.velocity *= MortarTube.instance.velocityMultiplier;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by UnityEngine")]
         private void FixedUpdate()
         {
             if (!projSimp) return;
