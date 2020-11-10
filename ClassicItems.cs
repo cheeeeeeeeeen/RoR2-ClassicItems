@@ -186,7 +186,6 @@ namespace Chen.ClassicItems
             }
         }
 
-
         private void EvolutionListItems(Run run)
         {
             Log.Message("Starting to display items that can be given to enemies by Evolution...");
