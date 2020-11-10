@@ -84,9 +84,8 @@ namespace Chen.ClassicItems
         public override void SetupBehavior()
         {
             base.SetupBehavior();
-            GameObject paladinRocket = Resources.Load<GameObject>("prefabs/projectiles/PaladinRocket");
-            mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile");
-            mortarPrefab.AddComponent<MortarGravity>();
+
+            SetupMortarProjectile();
 
             if (Compat_ItemStats.enabled)
             {
@@ -124,6 +123,15 @@ namespace Chen.ClassicItems
         {
             base.Uninstall();
             On.RoR2.GlobalEventManager.OnHitEnemy -= On_GEMOnHitEnemy;
+        }
+
+        public void SetupMortarProjectile()
+        {
+            if (mortarPrefab) return;
+            GameObject paladinRocket = Resources.Load<GameObject>("prefabs/projectiles/PaladinRocket");
+            mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile");
+            mortarPrefab.AddComponent<MortarGravity>();
+            ProjectileCatalog.getAdditionalEntries += list => list.Add(mortarPrefab);
         }
 
         private void On_GEMOnHitEnemy(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)

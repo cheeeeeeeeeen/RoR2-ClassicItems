@@ -75,6 +75,8 @@ namespace Chen.ClassicItems
             mesh.material.color = new Color32(255, 168, 0, 255);
             minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
+            ProjectileCatalog.getAdditionalEntries += list => list.Add(minePrefab);
+
             if (Compat_ItemStats.enabled)
             {
                 Compat_ItemStats.CreateItemStatDef(itemDef,

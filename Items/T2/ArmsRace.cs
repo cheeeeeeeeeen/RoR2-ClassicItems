@@ -74,6 +74,9 @@ namespace Chen.ClassicItems
         public override void SetupBehavior()
         {
             base.SetupBehavior();
+            
+            MortarTube.instance.SetupMortarProjectile();
+
             if (Compat_ItemStats.enabled)
             {
                 Compat_ItemStats.CreateItemStatDef(itemDef,

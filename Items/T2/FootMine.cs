@@ -84,6 +84,8 @@ namespace Chen.ClassicItems
             mesh.material.color = Color.green;
             minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
+            ProjectileCatalog.getAdditionalEntries += list => list.Add(minePrefab);
+
             CustomBuff poisonBuffDef = new CustomBuff(new BuffDef
             {
                 //buffColor = new Color32(1, 121, 91, 255),
