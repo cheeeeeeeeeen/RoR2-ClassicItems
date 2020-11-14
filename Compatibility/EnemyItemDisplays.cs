@@ -1,6 +1,4 @@
-﻿using EnemyItemDisplays;
-
-namespace Chen.ClassicItems
+﻿namespace Chen.ClassicItems
 {
     public static class EnemyItemDisplaysCompatibility
     {
