@@ -1,8 +1,8 @@
 {
   "name": "ChensClassicItems",
-  "version_number": "2.2.8",
+  "version_number": "2.2.9",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "More bug fixes related to unregistered projectiles. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "And yet more bug fixes. Read changelog for the details. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
   "dependencies": [
     "ThinkInvis-ClassicItems-4.6.4"
   ]

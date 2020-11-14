@@ -51,6 +51,9 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.2.9**
+- Fix a bug regarding compatibility code with EnemyItemDisplays if it is not installed.
+
 **2.2.8**
 - Register custom cloned projectiles to avoid errors.
 - Fix a possible bug with Arms Race where in the mortar from drones will not launch if Mortar Tube is disabled in config.
