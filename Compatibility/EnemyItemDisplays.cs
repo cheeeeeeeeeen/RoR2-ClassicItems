@@ -12,7 +12,7 @@ namespace Chen.ClassicItems
             {
                 if (_enabled == null)
                 {
-                    _enabled = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(EnemyItemDisplaysPlugin.MODUID);
+                    _enabled = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.rob.EnemyItemDisplays");
                 }
                 return (bool)_enabled;
             }
