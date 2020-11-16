@@ -2,7 +2,7 @@
   "name": "ChensClassicItems",
   "version_number": "2.2.9",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "And yet more bug fixes. Read changelog for the details. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "Publicize a method in Arms for triggering artillery so custom drones will be able to call it. More bug fixes. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
   "dependencies": [
     "ThinkInvis-ClassicItems-4.6.4"
   ]
