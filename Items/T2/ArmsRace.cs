@@ -235,10 +235,10 @@ namespace Chen.ClassicItems
         /// <summary>
         /// Used to trigger Arms Race effect in launching artillery.
         /// </summary>
-        /// <param name="body"></param>
-        /// <param name="damage"></param>
-        /// <param name="crit"></param>
-        /// <param name="procChainMask"></param>
+        /// <param name="body">The drone's body</param>
+        /// <param name="damage">Damage to be computed against the coefficients of Arms Race projectiles</param>
+        /// <param name="crit">Determines if this should be a critical hit</param>
+        /// <param name="procChainMask">The proc chain mask</param>
         public void TriggerArtillery(CharacterBody body, float damage, bool crit, ProcChainMask procChainMask = default)
         {
             if (damage <= 0 || !body.master || !body.master.minionOwnership || !body.master.minionOwnership.ownerMaster
