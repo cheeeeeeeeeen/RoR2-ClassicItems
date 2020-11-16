@@ -51,6 +51,11 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.2.10**
+- Minor update. Fix documentation of the publicized method.
+- Fix grammar errors found in Arms race description.
+- Also fix an error in the manifest.
+
 **2.2.9**
 - Fix a bug regarding compatibility code with EnemyItemDisplays if it is not installed.
 - Publicize the TriggerArtillery method in Arms Race so that other mods may call it for their custom drones.
