@@ -174,21 +174,6 @@ namespace Chen.ClassicItems
             return (1f - Mathf.Pow(1 - procChance / 100f, stack)) * 100f;
         }
 
-        private void TriggerArtillery(CharacterBody body, float damage, bool crit, ProcChainMask procChainMask = default)
-        {
-            if (damage <= 0 || !body.master || !body.master.minionOwnership || !body.master.minionOwnership.ownerMaster) return;
-            int itemCount = GetCount(body.master.minionOwnership.ownerMaster);
-            if (itemCount <= 0) return;
-            if (Util.CheckRoll(ProcComputation(mortarProcChance, itemCount), body.master))
-            {
-                LaunchMortar(body, procChainMask, damage, crit, itemCount);
-            }
-            if (Util.CheckRoll(ProcComputation(missileProcChance, itemCount), body.master))
-            {
-                ProcMissile(body, procChainMask, damage, crit, itemCount);
-            }
-        }
-
         private void ProcMissile(CharacterBody attackerBody, ProcChainMask procChainMask, float damage, bool crit, int stack)
         {
             GameObject gameObject = attackerBody.gameObject;
@@ -245,6 +230,29 @@ namespace Chen.ClassicItems
                 rotation = Util.QuaternionSafeLookRotation(direction)
             };
             ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+        }
+
+        /// <summary>
+        /// Used to trigger Arms Race effect in launching artillery.
+        /// </summary>
+        /// <param name="body"></param>
+        /// <param name="damage"></param>
+        /// <param name="crit"></param>
+        /// <param name="procChainMask"></param>
+        public void TriggerArtillery(CharacterBody body, float damage, bool crit, ProcChainMask procChainMask = default)
+        {
+            if (damage <= 0 || !body.master || !body.master.minionOwnership || !body.master.minionOwnership.ownerMaster
+                || procChainMask.HasProc(ProcType.Missile)) return;
+            int itemCount = GetCount(body.master.minionOwnership.ownerMaster);
+            if (itemCount <= 0) return;
+            if (Util.CheckRoll(ProcComputation(mortarProcChance, itemCount), body.master))
+            {
+                LaunchMortar(body, procChainMask, damage, crit, itemCount);
+            }
+            if (Util.CheckRoll(ProcComputation(missileProcChance, itemCount), body.master))
+            {
+                ProcMissile(body, procChainMask, damage, crit, itemCount);
+            }
         }
     }
 }

@@ -53,6 +53,8 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 **2.2.9**
 - Fix a bug regarding compatibility code with EnemyItemDisplays if it is not installed.
+- Publicize the TriggerArtillery method in Arms Race so that other mods may call it for their custom drones.
+- Add a check for Arms Race regarding Proc Chain Masks to avoid infinite procs.
 
 **2.2.8**
 - Register custom cloned projectiles to avoid errors.
