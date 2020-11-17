@@ -2,12 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.2.10</Version>
+    <Version>2.2.11</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants></DefineConstants>
     <Optimize>true</Optimize>
+    <DefaultDocumentationFileNameMode>Md5</DefaultDocumentationFileNameMode>
+    <DefaultDocumentationInvalidCharReplacement>+</DefaultDocumentationInvalidCharReplacement>
+    <DocumentationFile>C:\Users\Chen\Documents\Visual Studio 2019\Risk of Rain 2\RoR2-ClassicItems\Documentation\ChensClassicItems_API.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -89,6 +91,14 @@
     <Folder Include="Items\TBoss\" />
     <Folder Include="Items\TLunar\" />
     <Folder Include="Build\" />
+    <Folder Include="Documentation\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DefaultDocumentation" Version="0.6.12">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

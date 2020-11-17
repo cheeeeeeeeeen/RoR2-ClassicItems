@@ -30,7 +30,7 @@ namespace Chen.ClassicItems
 #if DEBUG
             "0." +
 #endif
-            "2.2.10";
+            "2.2.11";
 
         public const string ModName = "ChensClassicItems";
         public const string ModGuid = "com.Chen.ChensClassicItems";
@@ -161,8 +161,8 @@ namespace Chen.ClassicItems
 
             if (globalCfg.logEvolutionItemList)
             {
-                RunArtifactManager.onArtifactEnabledGlobal += OnEvolutionDisable;
-                RunArtifactManager.onArtifactDisabledGlobal += OnEvolutionEnable;
+                RunArtifactManager.onArtifactEnabledGlobal += OnEvolutionEnable;
+                RunArtifactManager.onArtifactDisabledGlobal += OnEvolutionDisable;
             }
 
             Log.Debug("Initial setup done!");

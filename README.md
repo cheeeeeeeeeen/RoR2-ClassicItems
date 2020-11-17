@@ -51,6 +51,10 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.2.11**
+- Fix a "fatal" bug that might make it hard to report bugs due to logging not working.
+- Generate documentation for API. Wiki created for this as well.
+
 **2.2.10**
 - Minor update. Fix documentation of the publicized method.
 - Fix grammar errors found in Arms race description.

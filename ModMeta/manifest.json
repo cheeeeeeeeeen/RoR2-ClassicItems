@@ -1,8 +1,8 @@
 {
   "name": "ChensClassicItems",
-  "version_number": "2.2.10",
+  "version_number": "2.2.11",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "Pepega happened. Sorry. Publicize a method in Arms Race for triggering artillery so custom drones will be able to call it. More bug fixes. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "Minor bug fix. Still appropriate since it is related to making bug reports easier. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
   "dependencies": [
     "ThinkInvis-ClassicItems-4.6.4"
   ]

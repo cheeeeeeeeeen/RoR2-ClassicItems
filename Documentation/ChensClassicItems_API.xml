@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ChensClassicItems</name>
+    </assembly>
+    <members>
+        <member name="M:Chen.ClassicItems.ArmsRace.TriggerArtillery(RoR2.CharacterBody,System.Single,System.Boolean,RoR2.ProcChainMask)">
+            <summary>
+            Used to trigger Arms Race effect in launching artillery.
+            </summary>
+            <param name="body">The drone's body</param>
+            <param name="damage">Damage to be computed against the coefficients of Arms Race projectiles</param>
+            <param name="crit">Determines if this should be a critical hit</param>
+            <param name="procChainMask">The proc chain mask</param>
+        </member>
+    </members>
+</doc>
