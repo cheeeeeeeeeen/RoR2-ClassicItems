@@ -33,7 +33,7 @@ Use **r2modman** mod manager to install this mod.
 - Email: `blancfaye7@gmail.com`
 - Discord: `Chen#1218`
 - RoR2 Modding Server: https://discord.com/invite/5MbXZvd
-Give a tip through Ko-fi: https://ko-fi.com/cheeeeeeeeeen
+- Give a tip through Ko-fi: https://ko-fi.com/cheeeeeeeeeen
 
 ## More Information
 
