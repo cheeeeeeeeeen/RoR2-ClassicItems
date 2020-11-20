@@ -51,6 +51,9 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.2.12**
+- Fix a huge and nasty bug found in the Artifact of Origin when played in multiplayer.
+
 **2.2.11**
 - Fix a "fatal" bug that might make it hard to report bugs due to logging not working.
 - Generate documentation for API. Wiki created for this as well.
