@@ -4,7 +4,6 @@ using R2API;
 using RoR2;
 using System.Collections.Generic;
 using System.Linq;
-using ThinkInvisible.ClassicItems;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
