@@ -4,6 +4,7 @@ using R2API;
 using RoR2;
 using System.Collections.Generic;
 using System.Linq;
+using ThinkInvisible.ClassicItems;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -157,7 +158,7 @@ namespace Chen.ClassicItems
 
         private void Run_onRunStartGlobal(Run obj)
         {
-            if (IsActiveAndEnabled())
+            if (NetworkServer.active && IsActiveAndEnabled())
             {
                 OriginManager.GetOrAddComponent(obj);
                 if (logOriginItemList)
@@ -174,7 +175,7 @@ namespace Chen.ClassicItems
 
         private void CharacterBody_onBodyStartGlobal(CharacterBody obj)
         {
-            if (!obj.name.Contains(originSuffix) || !obj.master) return;
+            if (!NetworkServer.active || !obj.name.Contains(originSuffix) || !obj.master) return;
             GiveOriginItems(obj.master, obj.name.Contains("Boss"));
         }
 
