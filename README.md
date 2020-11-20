@@ -29,7 +29,7 @@ Use **r2modman** mod manager to install this mod.
 - **Thallium** : Chance to inflict poison on enemies based on their own damage.
 
 ## Contact
-- Issue Page: https://github.com/cheeeeeeeeeen/RoR2-ChensGradiusMod/issues
+- Issue Page: https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/issues
 - Email: `blancfaye7@gmail.com`
 - Discord: `Chen#1218`
 - RoR2 Modding Server: https://discord.com/invite/5MbXZvd
