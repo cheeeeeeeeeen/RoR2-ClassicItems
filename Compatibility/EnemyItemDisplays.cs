@@ -20,7 +20,7 @@ namespace Chen.ClassicItems
 
         public static void Setup()
         {
-            Log.Message("EnemyItemDisplays mod is found. There is actually nothing to do here except to let it load first.");
+            Log.Debug("EnemyItemDisplays mod is found. There is actually nothing to do here except to let it load first.");
         }
     }
 }

@@ -12,6 +12,7 @@ using System.Reflection;
 using TILER2;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using static TILER2.MiscUtil;
 using Path = System.IO.Path;
 using ThinkInvisCI = ThinkInvisible.ClassicItems;
@@ -173,7 +174,7 @@ namespace Chen.ClassicItems
         private void OnEvolutionDisable([JetBrains.Annotations.NotNull] RunArtifactManager runArtifactManager,
                                         [JetBrains.Annotations.NotNull] ArtifactDef artifactDef)
         {
-            if (artifactDef == RoR2Content.Artifacts.monsterTeamGainsItemsArtifactDef)
+            if (NetworkServer.active && artifactDef == RoR2Content.Artifacts.monsterTeamGainsItemsArtifactDef)
             {
                 Run.onRunStartGlobal -= EvolutionListItems;
             }
@@ -182,7 +183,7 @@ namespace Chen.ClassicItems
         private void OnEvolutionEnable([JetBrains.Annotations.NotNull] RunArtifactManager runArtifactManager,
                                        [JetBrains.Annotations.NotNull] ArtifactDef artifactDef)
         {
-            if (artifactDef == RoR2Content.Artifacts.monsterTeamGainsItemsArtifactDef)
+            if (NetworkServer.active && artifactDef == RoR2Content.Artifacts.monsterTeamGainsItemsArtifactDef)
             {
                 Run.onRunStartGlobal += EvolutionListItems;
             }
