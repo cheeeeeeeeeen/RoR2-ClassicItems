@@ -385,7 +385,9 @@ namespace Chen.ClassicItems
 
         public static OriginManager GetOrAddComponent(GameObject runObject)
         {
-            return runObject.GetComponent<OriginManager>() ?? runObject.AddComponent<OriginManager>();
+            OriginManager manager = runObject.GetComponent<OriginManager>();
+            if (!manager) manager = runObject.AddComponent<OriginManager>();
+            return manager;
         }
     }
 
