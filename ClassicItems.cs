@@ -2,17 +2,19 @@
 
 using BepInEx;
 using BepInEx.Configuration;
+using Chen.Helpers;
+using Chen.Helpers.GeneralHelpers;
+using Chen.Helpers.LogHelpers;
 using R2API;
 using R2API.Utils;
 using RoR2;
 using RoR2.Artifacts;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Reflection;
 using TILER2;
 using TMPro;
-using UnityEngine;
 using UnityEngine.Networking;
+using static Chen.Helpers.GeneralHelpers.AssetsManager;
 using static TILER2.MiscUtil;
 using Path = System.IO.Path;
 using ThinkInvisCI = ThinkInvisible.ClassicItems;
@@ -21,6 +23,7 @@ namespace Chen.ClassicItems
 {
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [BepInDependency(ThinkInvisCI.ClassicItemsPlugin.ModGuid, ThinkInvisCI.ClassicItemsPlugin.ModVer)]
+    [BepInDependency(HelperPlugin.ModGuid, HelperPlugin.ModVer)]
     [BepInDependency(EnemyItemDisplays.EnemyItemDisplaysPlugin.MODUID, BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [R2APISubmoduleDependency(nameof(DotAPI), nameof(ResourcesAPI), nameof(PrefabAPI), nameof(BuffAPI),
@@ -49,41 +52,28 @@ namespace Chen.ClassicItems
             {ItemTier.Tier3, "RareCard"}
         });
 
-        internal static BepInEx.Logging.ManualLogSource _logger;
+        internal static Log Log;
 
         public bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
 
-#if DEBUG
-
-        public void Update()
+        public static void ListItems(string start, ItemIndex[] list)
         {
-            var i3 = Input.GetKeyDown(KeyCode.F3);
-            var i4 = Input.GetKeyDown(KeyCode.F4);
-            var i5 = Input.GetKeyDown(KeyCode.F5);
-            var i6 = Input.GetKeyDown(KeyCode.F6);
-            var i7 = Input.GetKeyDown(KeyCode.F7);
-            var i8 = Input.GetKeyDown(KeyCode.F8);
-            if (i3 || i4 || i5 || i6 || i7 || i8)
+            Log.Message(start);
+            foreach (var item in list)
             {
-                var trans = PlayerCharacterMasterController.instances[0].master.GetBodyObject().transform;
-
-                List<PickupIndex> spawnList;
-                if (i3) spawnList = Run.instance.availableTier1DropList;
-                else if (i4) spawnList = Run.instance.availableTier2DropList;
-                else if (i5) spawnList = Run.instance.availableTier3DropList;
-                else if (i6) spawnList = Run.instance.availableEquipmentDropList;
-                else if (i7) spawnList = Run.instance.availableLunarDropList;
-                else spawnList = Run.instance.availableBossDropList;
-
-                PickupDropletController.CreatePickupDroplet(spawnList[Run.instance.spawnRng.RangeInt(0, spawnList.Count)], trans.position, new Vector3(0f, -5f, 0f));
+                Log.Message($"-> {ItemCatalog.GetItemDef(item).name}");
             }
         }
+
+#if DEBUG
+
+        private void Update() => DropletGenerator.Update();
 
 #endif
 
         private void Awake()
         {
-            _logger = Logger;
+            Log = new Log(Logger);
 
             Log.Debug("Performing plugin setup:");
 
@@ -93,12 +83,8 @@ namespace Chen.ClassicItems
 #endif
 
             Log.Debug("Loading assets...");
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ChensClassicItems.chensclassicitems_assets"))
-            {
-                var bundle = AssetBundle.LoadFromStream(stream);
-                var provider = new AssetBundleResourcesProvider("@ChensClassicItems", bundle);
-                ResourcesAPI.AddProvider(provider);
-            }
+            BundleInfo bundleInfo = new BundleInfo("@ChensClassicItems", "ChensClassicItems.chensclassicitems_assets", BundleType.UnityAssetBundle);
+            new AssetsManager(bundleInfo).RegisterAll();
 
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 
@@ -124,8 +110,9 @@ namespace Chen.ClassicItems
                     var y = sender as CatalogBoilerplate;
                     if (y.pickupDef != null)
                     {
-                        var ctsf = y.pickupDef.displayPrefab?.transform;
-                        if (!ctsf) return;
+                        var c = y.pickupDef.displayPrefab;
+                        if (!c) return;
+                        var ctsf = c.transform;
                         var cfront = ctsf.Find("cardfront");
                         if (!cfront) return;
 
@@ -192,9 +179,9 @@ namespace Chen.ClassicItems
         private void EvolutionListItems(Run run)
         {
             Log.Message("Starting to display items that can be given to enemies by Evolution...");
-            Log.ListItems("COMMON:", MonsterTeamGainsItemsArtifactManager.availableTier1Items);
-            Log.ListItems("UNCOMMON:", MonsterTeamGainsItemsArtifactManager.availableTier2Items);
-            Log.ListItems("RARE:", MonsterTeamGainsItemsArtifactManager.availableTier3Items);
+            ListItems("COMMON:", MonsterTeamGainsItemsArtifactManager.availableTier1Items);
+            ListItems("UNCOMMON:", MonsterTeamGainsItemsArtifactManager.availableTier2Items);
+            ListItems("RARE:", MonsterTeamGainsItemsArtifactManager.availableTier3Items);
         }
 
         private void Start()
@@ -210,29 +197,5 @@ namespace Chen.ClassicItems
                         "Makes it easier to report bugs related to Evolution and modded items.")]
             public bool logEvolutionItemList { get; private set; } = true;
         }
-    }
-
-    public static class Log
-    {
-        public static void Debug(object data) => logger.LogDebug(data);
-
-        public static void Error(object data) => logger.LogError(data);
-
-        public static void Info(object data) => logger.LogInfo(data);
-
-        public static void Message(object data) => logger.LogMessage(data);
-
-        public static void Warning(object data) => logger.LogWarning(data);
-
-        public static void ListItems(string start, ItemIndex[] list)
-        {
-            Message(start);
-            foreach (var item in list)
-            {
-                Message($"-> {ItemCatalog.GetItemDef(item).name}");
-            }
-        }
-
-        public static BepInEx.Logging.ManualLogSource logger => ClassicItemsPlugin._logger;
     }
 }

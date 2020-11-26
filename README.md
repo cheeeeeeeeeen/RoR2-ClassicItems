@@ -6,6 +6,8 @@ An extension mod for **ThinkInvis.ClassicItems**!
 
 This mod also adds items (and artifacts) from Risk of Rain 1 that did not make it to Risk of Rain 2.
 
+For this mod's API, the documentation can be found in the [wiki](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/wiki/xeu4S0yNjk4zZlj9T72lMw) or at GitHub Pages.
+
 ## Installation
 
 Use **r2modman** mod manager to install this mod.

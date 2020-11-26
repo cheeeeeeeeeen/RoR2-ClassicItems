@@ -1,5 +1,6 @@
 ﻿#undef DEBUG
 
+using Chen.Helpers.UnityHelpers;
 using R2API;
 using RoR2;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
+using static Chen.ClassicItems.ClassicItemsPlugin;
 
 namespace Chen.ClassicItems
 {
@@ -159,15 +161,15 @@ namespace Chen.ClassicItems
         {
             if (NetworkServer.active && IsActiveAndEnabled())
             {
-                OriginManager.GetOrAddComponent(obj);
+                obj.gameObject.GetOrAddComponent<OriginManager>();
                 if (logOriginItemList)
                 {
                     Log.Message("Listing items that can be given to Origin Imps...");
-                    Log.ListItems("COMMON:", OriginManager.whiteList);
-                    Log.ListItems("UNCOMMON:", OriginManager.greenList);
-                    Log.ListItems("RARE:", OriginManager.redList);
-                    Log.ListItems("BOSS:", OriginManager.yellowList);
-                    Log.ListItems("LUNAR:", OriginManager.blueList);
+                    ListItems("COMMON:", OriginManager.whiteList);
+                    ListItems("UNCOMMON:", OriginManager.greenList);
+                    ListItems("RARE:", OriginManager.redList);
+                    ListItems("BOSS:", OriginManager.yellowList);
+                    ListItems("LUNAR:", OriginManager.blueList);
                 }
             }
         }
@@ -376,18 +378,6 @@ namespace Chen.ClassicItems
                 }
             }
             return false;
-        }
-
-        public static OriginManager GetOrAddComponent(Run run)
-        {
-            return GetOrAddComponent(run.gameObject);
-        }
-
-        public static OriginManager GetOrAddComponent(GameObject runObject)
-        {
-            OriginManager manager = runObject.GetComponent<OriginManager>();
-            if (!manager) manager = runObject.AddComponent<OriginManager>();
-            return manager;
         }
     }
 

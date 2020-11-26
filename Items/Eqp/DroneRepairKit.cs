@@ -1,4 +1,5 @@
-﻿using R2API;
+﻿using Chen.Helpers.GeneralHelpers;
+using R2API;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,6 @@ using ThinkInvisible.ClassicItems;
 using TILER2;
 using UnityEngine;
 using static TILER2.MiscUtil;
-using Object = UnityEngine.Object;
 
 namespace Chen.ClassicItems
 {
@@ -166,19 +166,14 @@ namespace Chen.ClassicItems
 
         private void LoopAllMinionOwnerships(CharacterMaster ownerMaster, Action<CharacterBody> actionToRun)
         {
-            MinionOwnership[] minionOwnerships = Object.FindObjectsOfType<MinionOwnership>();
-            foreach (MinionOwnership minionOwnership in minionOwnerships)
+            ownerMaster.LoopMinions((minionMaster) =>
             {
-                if (minionOwnership && minionOwnership.ownerMaster && minionOwnership.ownerMaster == ownerMaster)
+                if (minionMaster && DronesList.Exists((item) => minionMaster.name.Contains(item)))
                 {
-                    CharacterMaster minionMaster = minionOwnership.GetComponent<CharacterMaster>();
-                    if (minionMaster && DronesList.Exists((item) => minionMaster.name.Contains(item)))
-                    {
-                        CharacterBody minionBody = minionMaster.GetBody();
-                        if (minionBody) actionToRun(minionBody);
-                    }
+                    CharacterBody minionBody = minionMaster.GetBody();
+                    if (minionBody) actionToRun(minionBody);
                 }
-            }
+            });
         }
 
         private void ApplyHealing(HealthComponent healthComponent, CharacterBody body = null)

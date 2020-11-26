@@ -1,9 +1,11 @@
-﻿using EntityStates;
+﻿using Chen.Helpers.UnityHelpers;
+using EntityStates;
 using R2API;
 using RoR2;
 using RoR2.Skills;
 using TILER2;
 using UnityEngine;
+using static Chen.ClassicItems.ClassicItemsPlugin;
 
 namespace Chen.ClassicItems
 {
@@ -73,7 +75,7 @@ namespace Chen.ClassicItems
         {
             if (IsActiveAndEnabled() && obj.isPlayerControlled)
             {
-                DistortionManager.GetOrAddComponent(obj);
+                obj.gameObject.GetOrAddComponent<DistortionManager>();
             }
         }
 
@@ -172,16 +174,6 @@ namespace Chen.ClassicItems
         {
             UnlockSkill();
             Destroy(this);
-        }
-
-        public static DistortionManager GetOrAddComponent(CharacterBody body)
-        {
-            return GetOrAddComponent(body.gameObject);
-        }
-
-        public static DistortionManager GetOrAddComponent(GameObject bodyObject)
-        {
-            return bodyObject.GetComponent<DistortionManager>() ?? bodyObject.AddComponent<DistortionManager>();
         }
     }
 }

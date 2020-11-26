@@ -1,4 +1,5 @@
 ﻿using EnemyItemDisplays;
+using static Chen.ClassicItems.ClassicItemsPlugin;
 
 namespace Chen.ClassicItems
 {
