@@ -78,8 +78,7 @@ namespace Chen.ClassicItems
             Log.Debug("Performing plugin setup:");
 
 #if DEBUG
-            Log.Warning("Running test build with debug enabled! Report to CHEN if you're seeing this!");
-            On.RoR2.Networking.GameNetworkManager.OnClientConnect += (self, user, t) => { };
+            MultiplayerTest.Enable(Logger, "Running test build with debug enabled! Report to CHEN if you're seeing this!");
 #endif
 
             Log.Debug("Loading assets...");
