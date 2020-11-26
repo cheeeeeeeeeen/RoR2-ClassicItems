@@ -6,7 +6,7 @@ An extension mod for **ThinkInvis.ClassicItems**!
 
 This mod also adds items (and artifacts) from Risk of Rain 1 that did not make it to Risk of Rain 2.
 
-For this mod's API, the documentation can be found in the [wiki](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/wiki/xeu4S0yNjk4zZlj9T72lMw) or at GitHub Pages.
+For this mod's API, the documentation can be found in the [wiki](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/wiki/xeu4S0yNjk4zZlj9T72lMw) or at [GitHub Pages](https://cheeeeeeeeeen.github.io/RoR2-ClassicItems/).
 
 ## Installation
 
@@ -52,6 +52,10 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 **Aromatic Sunday#2929** did offer to make icons, and thus included as an alternate version.
 
 ## Changelog
+
+**2.2.13**
+- Integrate ChensHelpers mod.
+- There should be no notable change except for better documentation and cleaner code. Potential undiscovered bugs could be fixed.
 
 **2.2.12**
 - Fix a huge and nasty bug found in the Artifact of Origin when played in multiplayer.

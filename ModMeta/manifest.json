@@ -1,9 +1,13 @@
 {
   "name": "ChensClassicItems",
-  "version_number": "2.2.12",
+  "version_number": "2.2.13",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "Fixed a nasty bug found in Artifact of origin when played in multiplayer. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "Integrate ChensHelpers. There should be no notable changes except for cleaner code and fix potential bugs. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
   "dependencies": [
+    "bbepis-BepInExPack-5.3.1",
+    "tristanmcpherson-R2API-2.5.14",
+    "Chen-ChensHelpers-1.0.0",
+    "ThinkInvis-TILER2-3.0.4",
     "ThinkInvis-ClassicItems-4.6.4"
   ]
 }
