@@ -58,6 +58,7 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 - Allow Drone Repair Kit to use TILER2 helpers instead of hooking in RecalculateStats.
 - Recompile for some breaking changes and a fatal bug found in ChensHelpers.
 - Fully document the mod for interested mod creators.
+- Fix a bug in Distortion about not changing the skills in seconds but in hours.
 
 **2.2.13**
 - Integrate ChensHelpers mod.

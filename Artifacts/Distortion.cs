@@ -129,7 +129,7 @@ namespace Chen.ClassicItems
                     timer = 0f;
                     LockRandomSkill();
                 }
-                if (timer > 60 * Distortion.instance.intervalBetweenLocks)
+                if (timer > Distortion.instance.intervalBetweenLocks)
                 {
                     timer = 0f;
                     UnlockSkill();
