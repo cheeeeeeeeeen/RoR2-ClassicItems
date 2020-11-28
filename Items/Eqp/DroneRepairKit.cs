@@ -1,4 +1,5 @@
-﻿using Chen.Helpers.GeneralHelpers;
+﻿using Chen.Helpers.CollectionHelpers;
+using Chen.Helpers.GeneralHelpers;
 using R2API;
 using RoR2;
 using System;
@@ -7,11 +8,36 @@ using ThinkInvisible.ClassicItems;
 using TILER2;
 using UnityEngine;
 using static TILER2.MiscUtil;
+using static TILER2.StatHooks;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Singleton equipment class powered by TILER2 that implements Drone Repair Kit functionality.
+    /// </summary>
     public class DroneRepairKit : Equipment_V2<DroneRepairKit>
     {
+        /// <summary>
+        /// The regen buff associated with the Drone Repair Kit to be given to affected drones.
+        /// </summary>
+        public static BuffIndex regenBuff { get; private set; }
+
+        private static readonly List<string> DronesList = new List<string>
+        {
+            "BackupDrone",
+            "BackupDroneOld",
+            "Drone1",
+            "Drone2",
+            "EmergencyDrone",
+            "EquipmentDrone",
+            "FlameDrone",
+            "MegaDrone",
+            "DroneMissile",
+            "MissileDrone",
+            "Turret1"
+        };
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Drone Repair Kit";
 
         public override float cooldown { get; protected set; } = 45f;
@@ -81,23 +107,6 @@ namespace Chen.ClassicItems
             "It looked like nanodrones were inside that box. Ah, for as long as it is put to use, I have no problem with it.\n\n" +
             "\"What are you doing? Wait, are you trying to fuse your own---\"";
 
-        public static readonly List<string> DronesList = new List<string>
-        {
-            "BackupDrone",
-            "BackupDroneOld",
-            "Drone1",
-            "Drone2",
-            "EmergencyDrone",
-            "EquipmentDrone",
-            "FlameDrone",
-            "MegaDrone",
-            "DroneMissile",
-            "MissileDrone",
-            "Turret1"
-        };
-
-        public static BuffIndex regenBuff { get; private set; }
-
         public override void SetupBehavior()
         {
             base.SetupBehavior();
@@ -117,28 +126,13 @@ namespace Chen.ClassicItems
         public override void Install()
         {
             base.Install();
-            On.RoR2.CharacterBody.RecalculateStats += CharacterBody_RecalculateStats;
+            GetStatCoefficients += DroneRepairKit_GetStatCoefficients;
         }
 
         public override void Uninstall()
         {
             base.Uninstall();
-            On.RoR2.CharacterBody.RecalculateStats -= CharacterBody_RecalculateStats;
-        }
-
-        private void CharacterBody_RecalculateStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            if (enableRegenBuff)
-            {
-                float currentRegen = healthRegenAmount;
-                if (regenType == 0) currentRegen *= self.baseMaxHealth + self.levelMaxHealth * (self.level - 1);
-                orig(self);
-                if (self && self.HasBuff(regenBuff))
-                {
-                    self.regen += currentRegen * self.GetBuffCount(regenBuff);
-                }
-            }
-            else orig(self);
+            GetStatCoefficients -= DroneRepairKit_GetStatCoefficients;
         }
 
         protected override bool PerformEquipmentAction(EquipmentSlot slot)
@@ -147,7 +141,6 @@ namespace Chen.ClassicItems
             if (!body) return false;
             CharacterMaster master = body.master;
             if (!master) return false;
-            bool embryoProc = instance.CheckEmbryoProc(body);
             LoopAllMinionOwnerships(master, (minionBody) =>
             {
                 HealthComponent healthComponent = minionBody.healthComponent;
@@ -158,10 +151,23 @@ namespace Chen.ClassicItems
                     effectData.SetNetworkedObjectReference(minion);
                     EffectManager.SpawnEffect(Resources.Load<GameObject>("prefabs/effects/MedkitHealEffect"), effectData, true);
                     ApplyHealing(healthComponent, minionBody);
-                    if (embryoProc) ApplyHealing(healthComponent, minionBody);
                 }
             });
             return true;
+        }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
+        private void DroneRepairKit_GetStatCoefficients(CharacterBody sender, StatHookEventArgs args)
+        {
+            if (enableRegenBuff)
+            {
+                float currentRegen = healthRegenAmount;
+                if (regenType == 0) currentRegen *= sender.baseMaxHealth + sender.levelMaxHealth * (sender.level - 1);
+                if (sender && sender.HasBuff(regenBuff))
+                {
+                    args.baseRegenAdd += currentRegen * sender.GetBuffCount(regenBuff);
+                }
+            }
         }
 
         private void LoopAllMinionOwnerships(CharacterMaster ownerMaster, Action<CharacterBody> actionToRun)
@@ -178,10 +184,37 @@ namespace Chen.ClassicItems
 
         private void ApplyHealing(HealthComponent healthComponent, CharacterBody body = null)
         {
+            bool embryoProc = instance.CheckEmbryoProc(body);
+            float restore = healthRestoreAmount;
+            if (embryoProc) restore *= 2f;
             if (!body) body = healthComponent.body;
-            if (healType == 0) healthComponent.HealFraction(healthRestoreAmount, default);
-            else healthComponent.Heal(healthRestoreAmount, default);
-            if (enableRegenBuff) body.AddTimedBuff(regenBuff, regenDuration);
+            if (healType == 0) healthComponent.HealFraction(restore, default);
+            else healthComponent.Heal(restore, default);
+            if (enableRegenBuff)
+            {
+                body.AddTimedBuff(regenBuff, regenDuration);
+                if (embryoProc) body.AddTimedBuff(regenBuff, regenDuration);
+            }
+        }
+
+        /// <summary>
+        /// Adds a support for a custom drone so that Drone Repair Kit also heals and applies regen to them.
+        /// </summary>
+        /// <param name="masterName">The CharacterMaster name of the drone.</param>
+        /// <returns>True if the drone is supported. False if it is already supported.</returns>
+        public bool SupportCustomDrone(string masterName)
+        {
+            return DronesList.ConditionalAdd(masterName, item => item == masterName);
+        }
+
+        /// <summary>
+        /// Removes support for a custom drone, thus removing them from Drone Repair Kit's scope.
+        /// </summary>
+        /// <param name="masterName">The CharacterMaster name of the drone.</param>
+        /// <returns>True if the drone is unsupported. False if it is already unsupported.</returns>
+        public bool UnsupportCustomDrone(string masterName)
+        {
+            return DronesList.ConditionalAdd(masterName, item => item == masterName);
         }
     }
 }
