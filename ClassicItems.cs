@@ -21,6 +21,9 @@ using ThinkInvisCI = ThinkInvisible.ClassicItems;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Mother plugin of this mod that is responsible for loading items.
+    /// </summary>
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [BepInDependency(ThinkInvisCI.ClassicItemsPlugin.ModGuid, ThinkInvisCI.ClassicItemsPlugin.ModVer)]
     [BepInDependency(HelperPlugin.ModGuid, HelperPlugin.ModVer)]
@@ -30,19 +33,28 @@ namespace Chen.ClassicItems
                               nameof(LoadoutAPI), nameof(LanguageAPI))]
     public class ClassicItemsPlugin : BaseUnityPlugin
     {
+        /// <summary>
+        /// This mod's version.
+        /// </summary>
         public const string ModVer =
 #if DEBUG
             "0." +
 #endif
             "2.2.13";
-
+        /// <summary>
+        /// This mod's name.
+        /// </summary>
         public const string ModName = "ChensClassicItems";
+        /// <summary>
+        /// This mod's GUID.
+        /// </summary>
         public const string ModGuid = "com.Chen.ChensClassicItems";
 
-        public static readonly GlobalConfig globalCfg = new GlobalConfig();
-        private static ConfigFile cfgFile;
-
+        internal static readonly GlobalConfig globalCfg = new GlobalConfig();
         internal static FilingDictionary<CatalogBoilerplate> chensItemList = new FilingDictionary<CatalogBoilerplate>();
+        internal static Log Log;
+
+        internal bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
 
         private static readonly ReadOnlyDictionary<ItemTier, string> modelNameMap = new ReadOnlyDictionary<ItemTier, string>(new Dictionary<ItemTier, string>{
             {ItemTier.Boss, "BossCard"},
@@ -51,12 +63,9 @@ namespace Chen.ClassicItems
             {ItemTier.Tier2, "UncommonCard"},
             {ItemTier.Tier3, "RareCard"}
         });
+        private static ConfigFile cfgFile;
 
-        internal static Log Log;
-
-        public bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
-
-        public static void ListItems(string start, ItemIndex[] list)
+        internal static void ListItems(string start, ItemIndex[] list)
         {
             Log.Message(start);
             foreach (var item in list)
@@ -190,7 +199,7 @@ namespace Chen.ClassicItems
             CatalogBoilerplate.ConsoleDump(Logger, chensItemList);
         }
 
-        public class GlobalConfig : AutoConfigContainer
+        internal class GlobalConfig : AutoConfigContainer
         {
             [AutoConfig("Used for logging items that can be given to enemies when Evolution is on. " +
                         "Makes it easier to report bugs related to Evolution and modded items.")]

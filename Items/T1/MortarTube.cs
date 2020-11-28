@@ -9,8 +9,17 @@ using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Singleton item class powered by TILER2 that implements Mortar Tube functionality.
+    /// </summary>
     public class MortarTube : Item_V2<MortarTube>
     {
+        /// <summary>
+        /// Contains the mortar projectile prefab. Must invoke SetupMortarProjectile() for it to be initialized.
+        /// </summary>
+        public static GameObject mortarPrefab { get; private set; }
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Mortar Tube";
         public override ItemTier itemTier => ItemTier.Tier1;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
@@ -79,8 +88,6 @@ namespace Chen.ClassicItems
             "\"I'll take it.\"\n\n" +
             "A Mortar Tube, huh? I never knew they actually existed. Is it really a relic of history now? I wonder if it really works. It did look simple... and old.";
 
-        public static GameObject mortarPrefab { get; private set; }
-
         public override void SetupBehavior()
         {
             base.SetupBehavior();
@@ -124,15 +131,7 @@ namespace Chen.ClassicItems
             base.Uninstall();
             On.RoR2.GlobalEventManager.OnHitEnemy -= On_GEMOnHitEnemy;
         }
-
-        public void SetupMortarProjectile()
-        {
-            if (mortarPrefab) return;
-            GameObject paladinRocket = Resources.Load<GameObject>("prefabs/projectiles/PaladinRocket");
-            mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile");
-            mortarPrefab.AddComponent<MortarGravity>();
-            ProjectileCatalog.getAdditionalEntries += list => list.Add(mortarPrefab);
-        }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void On_GEMOnHitEnemy(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
@@ -197,9 +196,21 @@ namespace Chen.ClassicItems
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo);
             }
         }
+
+        /// <summary>
+        /// Sets up the mortar projectile. Always invoke the method if one needs to borrow the mortar prefab.
+        /// </summary>
+        public static void SetupMortarProjectile()
+        {
+            if (mortarPrefab) return;
+            GameObject paladinRocket = Resources.Load<GameObject>("prefabs/projectiles/PaladinRocket");
+            mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile");
+            mortarPrefab.AddComponent<MortarGravity>();
+            ProjectileCatalog.getAdditionalEntries += list => list.Add(mortarPrefab);
+        }
     }
 
-    public class MortarGravity : MonoBehaviour
+    internal class MortarGravity : MonoBehaviour
     {
         private ProjectileSimple projSimp;
 

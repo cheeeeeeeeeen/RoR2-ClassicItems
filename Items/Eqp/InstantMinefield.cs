@@ -10,8 +10,21 @@ using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Singleton equipment class powered by TILER2 that implements Instant Minefield functionality.
+    /// </summary>
     public class InstantMinefield : Equipment_V2<InstantMinefield>
     {
+        /// <summary>
+        /// The mine prefab used to deploy the mines triggered by Instant Minefield.
+        /// </summary>
+        public static GameObject minePrefab { get; private set; }
+        /// <summary>
+        /// The ghost projectile prefab for the mine prefab of Instant Minefield.
+        /// </summary>
+        public static GameObject mineGhostPrefab { get; private set; }
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Instant Minefield";
 
         public override float cooldown { get; protected set; } = 45f;
@@ -52,9 +65,6 @@ namespace Chen.ClassicItems
             "\"Seems to be safe as advertised. Look at it go. It deployed mines almost instantly.\"\n\n" +
             "\"Could have used a better name, though. Instant Minefield doesn't exactly sound legit.\"\n\n" +
             "\"End of log.\"";
-
-        public static GameObject minePrefab { get; private set; }
-        public static GameObject mineGhostPrefab { get; private set; }
 
         public override void SetupBehavior()
         {
@@ -100,6 +110,7 @@ namespace Chen.ClassicItems
 
             return true;
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void DropMines(CharacterBody userBody, GameObject userGameObject, float yMult = 1f)
         {

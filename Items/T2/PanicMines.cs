@@ -12,8 +12,21 @@ using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Singleton item class powered by TILER2 that implements Panic Mines functionality.
+    /// </summary>
     public class PanicMines : Item_V2<PanicMines>
     {
+        /// <summary>
+        /// The mine prefab used to deploy the mines triggered by Panic Mines.
+        /// </summary>
+        public static GameObject minePrefab { get; private set; }
+        /// <summary>
+        /// The ghost projectile prefab for the mine prefab of Panic Mines.
+        /// </summary>
+        public static GameObject mineGhostPrefab { get; private set; }
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Panic Mines";
         public override ItemTier itemTier => ItemTier.Tier2;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
@@ -59,9 +72,6 @@ namespace Chen.ClassicItems
             "\"Seriously?\" I said to myself upon reading the details that is attached to what it looked like an odd proximity mine.\n\n" +
             "But if there is one thing about surviving in this damnable place, then I should trust that this equipment will prove itself useful.";
 
-        public static GameObject minePrefab { get; private set; }
-        public static GameObject mineGhostPrefab { get; private set; }
-
         public override void SetupBehavior()
         {
             base.SetupBehavior();
@@ -104,6 +114,7 @@ namespace Chen.ClassicItems
             On.RoR2.HealthComponent.TakeDamage -= On_HCTakeDamage;
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate -= On_ESMineArmingWeak;
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void On_HCTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)
         {

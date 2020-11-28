@@ -9,8 +9,21 @@ using static Chen.ClassicItems.ClassicItemsPlugin;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Singleton artifact class powered by TILER2 that implements the Artifact of Distortion functionality.
+    /// </summary>
     public class Distortion : Artifact_V2<Distortion>
     {
+        /// <summary>
+        /// The SkillDef of the distorted skill that is assigned to characters to disable skills randomly.
+        /// </summary>
+        public static SkillDef distortSkill { get; private set; }
+        /// <summary>
+        /// The RNG used for the Artifact of Distortion.
+        /// </summary>
+        public static Xoroshiro128Plus distortionRng { get; private set; } = new Xoroshiro128Plus(0UL);
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Artifact of Distortion";
 
         [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
@@ -20,9 +33,6 @@ namespace Chen.ClassicItems
         protected override string GetNameString(string langid = null) => displayName;
 
         protected override string GetDescString(string langid = null) => $"Lock a random active or passive skill every {intervalBetweenLocks} seconds.";
-
-        public static SkillDef distortSkill { get; private set; }
-        public static Xoroshiro128Plus distortionRng { get; private set; } = new Xoroshiro128Plus(0UL);
 
         public Distortion()
         {
@@ -70,6 +80,7 @@ namespace Chen.ClassicItems
             CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
             CameraRigController.onCameraTargetChanged -= CameraRigController_onCameraTargetChanged;
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void CharacterBody_onBodyStartGlobal(CharacterBody obj)
         {
@@ -90,7 +101,7 @@ namespace Chen.ClassicItems
         }
     }
 
-    public class DistortionManager : MonoBehaviour
+    internal class DistortionManager : MonoBehaviour
     {
         public GenericSkill[] genericSkills;
         private bool init = true;

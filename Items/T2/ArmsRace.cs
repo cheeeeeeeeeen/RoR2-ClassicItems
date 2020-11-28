@@ -10,8 +10,12 @@ using MageWeapon = EntityStates.Mage.Weapon;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Singleton item class powered by TILER2 that implements Arms Race functionality.
+    /// </summary>
     public class ArmsRace : Item_V2<ArmsRace>
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Arms Race";
         public override ItemTier itemTier => ItemTier.Tier2;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
@@ -75,7 +79,7 @@ namespace Chen.ClassicItems
         {
             base.SetupBehavior();
 
-            MortarTube.instance.SetupMortarProjectile();
+            MortarTube.SetupMortarProjectile();
 
             if (Compat_ItemStats.enabled)
             {
@@ -122,6 +126,7 @@ namespace Chen.ClassicItems
             On.EntityStates.Mage.Weapon.Flamethrower.FireGauntlet -= Flamethrower_FireGauntlet;
             On.EntityStates.Squid.SquidWeapon.FireSpine.FireOrbArrow -= FireSpine_FireOrbArrow;
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void Flamethrower_FireGauntlet(On.EntityStates.Mage.Weapon.Flamethrower.orig_FireGauntlet orig, MageWeapon.Flamethrower self, string muzzleString)
         {

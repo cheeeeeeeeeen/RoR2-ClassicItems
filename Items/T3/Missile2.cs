@@ -8,8 +8,12 @@ using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Singleton item class powered by TILER2 that implements AtG Missile Mk. II functionality.
+    /// </summary>
     public class Missile2 : Item_V2<Missile2>
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "AtG Missile Mk. 2";
         public override ItemTier itemTier => ItemTier.Tier3;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
@@ -95,6 +99,7 @@ namespace Chen.ClassicItems
             base.Uninstall();
             On.RoR2.GlobalEventManager.OnHitEnemy -= On_GEMOnHitEnemy;
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void On_GEMOnHitEnemy(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {

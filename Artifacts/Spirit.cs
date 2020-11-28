@@ -4,8 +4,12 @@ using UnityEngine;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Singleton artifact class powered by TILER2 that implements Artifact of Spirit functionality.
+    /// </summary>
     public class Spirit : Artifact_V2<Spirit>
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Artifact of Spirit";
 
         [AutoConfig("The percentage of which maximum movement speed can be multiplied according to health loss. 1 = 100%. " +
@@ -50,6 +54,7 @@ namespace Chen.ClassicItems
             On.RoR2.CharacterBody.RecalculateStats -= On_CBRecalcStats;
             CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void On_CBRecalcStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
@@ -68,7 +73,7 @@ namespace Chen.ClassicItems
         }
     }
 
-    public class SpiritBehavior : MonoBehaviour
+    internal class SpiritBehavior : MonoBehaviour
     {
         private float previousHealth;
         private CharacterBody body;

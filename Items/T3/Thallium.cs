@@ -9,8 +9,21 @@ using static TILER2.StatHooks;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Singleton item class powered by TILER2 that implements Thallium functionality.
+    /// </summary>
     public class Thallium : Item_V2<Thallium>
     {
+        /// <summary>
+        /// The BuffIndex of Thallium Poisoning debuff.
+        /// </summary>
+        public static BuffIndex poisonBuff { get; private set; }
+        /// <summary>
+        /// The DotIndex of Thallium Poisoning debuff.
+        /// </summary>
+        public static DotController.DotIndex poisonDot { get; private set; }
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Thallium";
         public override ItemTier itemTier => ItemTier.Tier3;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
@@ -61,9 +74,6 @@ namespace Chen.ClassicItems
 
         protected override string GetLoreString(string langid = null) =>
             "\"She shouldn't notice,\" it says.\n\nWell, that was dark. Few words, but contains heavy intent.\n\nWe will now use it for our survival instead.";
-
-        public static BuffIndex poisonBuff { get; private set; }
-        public static DotController.DotIndex poisonDot { get; private set; }
 
         public override void SetupBehavior()
         {
@@ -136,6 +146,7 @@ namespace Chen.ClassicItems
             On.RoR2.GlobalEventManager.OnHitEnemy -= On_GEMOnHitEnemy;
             GetStatCoefficients -= Thallium_GetStatCoefficients;
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void On_GEMOnHitEnemy(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {

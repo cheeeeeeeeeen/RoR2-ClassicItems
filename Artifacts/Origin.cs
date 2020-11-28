@@ -12,8 +12,35 @@ using static Chen.ClassicItems.ClassicItemsPlugin;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Singleton artifact class powered by TILER2 that implements the Artifact of Origin functionality.
+    /// </summary>
     public class Origin : Artifact_V2<Origin>
     {
+        /// <summary>
+        /// The suffix appended on the Imps spawned by Artifact of Origin.
+        /// Might be useful if one wants to fetch the objects related to these Imps through their name.
+        /// </summary>
+        public const string originSuffix = "(Origin)";
+
+        /// <summary>
+        /// The drop table used for determining the Imp Vanguard's drops.
+        /// </summary>
+        public static PickupDropTable dropTable { get; private set; }
+        /// <summary>
+        /// The RNG used for this artifact.
+        /// </summary>
+        public static Xoroshiro128Plus treasureRng { get; private set; } = new Xoroshiro128Plus(0UL);
+        /// <summary>
+        /// The Spawn Card of the Imp Vanguard.
+        /// </summary>
+        public static CharacterSpawnCard originOverlordSpawnCard { get; private set; }
+        /// <summary>
+        /// The Spawn Card of the Imp Defender.
+        /// </summary>
+        public static CharacterSpawnCard originImpSpawnCard { get; private set; }
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Artifact of Origin";
 
         [AutoConfigUpdateActions(AutoConfigUpdateActionTypes.InvalidateLanguage)]
@@ -78,12 +105,6 @@ namespace Chen.ClassicItems
 
         protected override string GetDescString(string langid = null) => $"Imps will invade to destroy you every {spawnInterval} minutes.";
 
-        public static PickupDropTable dropTable { get; private set; }
-        public static string originSuffix { get; private set; } = "(Origin)";
-        public static Xoroshiro128Plus treasureRng { get; private set; } = new Xoroshiro128Plus(0UL);
-        public static CharacterSpawnCard originOverlordSpawnCard { get; private set; }
-        public static CharacterSpawnCard originImpSpawnCard { get; private set; }
-
         public Origin()
         {
             iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/origin_artifact_on_icon.png";
@@ -120,6 +141,7 @@ namespace Chen.ClassicItems
             Run.onRunStartGlobal -= Run_onRunStartGlobal;
             CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private CharacterSpawnCard ImpOriginSetup(CharacterSpawnCard origCsc, Material material, Texture icon, string name, string subtitle, int renderInfoIndex)
         {
@@ -215,7 +237,7 @@ namespace Chen.ClassicItems
         }
     }
 
-    public class OriginManager : MonoBehaviour
+    internal class OriginManager : MonoBehaviour
     {
         public static ItemIndex[] redList;
         public static ItemIndex[] greenList;
@@ -381,7 +403,7 @@ namespace Chen.ClassicItems
         }
     }
 
-    public class OriginDrop : MonoBehaviour
+    internal class OriginDrop : MonoBehaviour
     {
         private CharacterBody body;
         private HealthComponent healthComponent;

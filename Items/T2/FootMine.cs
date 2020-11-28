@@ -13,8 +13,29 @@ using static TILER2.MiscUtil;
 
 namespace Chen.ClassicItems
 {
+    /// <summary>
+    /// Singleton item class powered by TILER2 that implements Dead Man's Foot functionality.
+    /// </summary>
     public class FootMine : Item_V2<FootMine>
     {
+        /// <summary>
+        /// The mine prefab used to deploy the mines triggered by Dead Man's Foot.
+        /// </summary>
+        public static GameObject minePrefab { get; private set; }
+        /// <summary>
+        /// The ghost projectile prefab for the mine prefab of Dead Man's Foot.
+        /// </summary>
+        public static GameObject mineGhostPrefab { get; private set; }
+        /// <summary>
+        /// The BuffIndex poison debuff used by Dead Man's Foot.
+        /// </summary>
+        public static BuffIndex poisonBuff { get; private set; }
+        /// <summary>
+        /// The DotIndex poison debuff used by Dead Man's Foot.
+        /// </summary>
+        public static DotController.DotIndex poisonDot { get; private set; }
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Dead Man's Foot";
         public override ItemTier itemTier => ItemTier.Tier2;
         public override ReadOnlyCollection<ItemTag> itemTags => new ReadOnlyCollection<ItemTag>(new[] { ItemTag.Damage });
@@ -65,11 +86,6 @@ namespace Chen.ClassicItems
             "\"He's dead,\" he told me while sighing, as if he expected it, \"Curiosity killed the cat. Approached one of those hideous bugs, infested him, then he exploded.\"" +
             "I stayed silent, confused as to what I should really feel at the moment: disgust or sadness? I don't know." +
             "\"His foot can be a good trap. We need everything in order to survive. I can make a mine out of this deadly poison.\"";
-
-        public static GameObject minePrefab { get; private set; }
-        public static GameObject mineGhostPrefab { get; private set; }
-        public static BuffIndex poisonBuff { get; private set; }
-        public static DotController.DotIndex poisonDot { get; private set; }
 
         public override void SetupBehavior()
         {
@@ -134,6 +150,7 @@ namespace Chen.ClassicItems
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate -= On_ESMineArmingWeak;
             On.EntityStates.Engi.Mine.Detonate.Explode -= On_ESDetonate;
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void On_HCTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)
         {

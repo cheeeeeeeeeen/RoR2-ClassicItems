@@ -3,7 +3,7 @@ using static Chen.ClassicItems.ClassicItemsPlugin;
 
 namespace Chen.ClassicItems
 {
-    public static class EnemyItemDisplaysCompatibility
+    internal static class EnemyItemDisplaysCompatibility
     {
         private static bool? _enabled;
 

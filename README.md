@@ -53,6 +53,10 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.2.14**
+- Recompile for some breaking changes and a fatal bug found in ChensHelpers.
+- Document the mod for interested mod creators.
+
 **2.2.13**
 - Integrate ChensHelpers mod.
 - There should be no notable change except for better documentation and cleaner code. Potential undiscovered bugs could be fixed.
