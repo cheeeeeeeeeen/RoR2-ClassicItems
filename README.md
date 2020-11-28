@@ -53,9 +53,11 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
-**2.2.14**
+**2.3.0**
+- Implement API for Drone Repair Kit to support custom drones.
+- Allow Drone Repair Kit to use TILER2 helpers instead of hooking in RecalculateStats.
 - Recompile for some breaking changes and a fatal bug found in ChensHelpers.
-- Document the mod for interested mod creators.
+- Fully document the mod for interested mod creators.
 
 **2.2.13**
 - Integrate ChensHelpers mod.
