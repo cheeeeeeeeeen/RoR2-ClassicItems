@@ -41,10 +41,12 @@ namespace Chen.ClassicItems
             "0." +
 #endif
             "2.2.13";
+
         /// <summary>
         /// This mod's name.
         /// </summary>
         public const string ModName = "ChensClassicItems";
+
         /// <summary>
         /// This mod's GUID.
         /// </summary>
@@ -63,6 +65,7 @@ namespace Chen.ClassicItems
             {ItemTier.Tier2, "UncommonCard"},
             {ItemTier.Tier3, "RareCard"}
         });
+
         private static ConfigFile cfgFile;
 
         internal static void ListItems(string start, ItemIndex[] list)

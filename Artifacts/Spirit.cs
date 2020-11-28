@@ -54,6 +54,7 @@ namespace Chen.ClassicItems
             On.RoR2.CharacterBody.RecalculateStats -= On_CBRecalcStats;
             CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
         }
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void On_CBRecalcStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)

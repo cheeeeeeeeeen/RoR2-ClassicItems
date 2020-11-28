@@ -27,14 +27,17 @@ namespace Chen.ClassicItems
         /// The drop table used for determining the Imp Vanguard's drops.
         /// </summary>
         public static PickupDropTable dropTable { get; private set; }
+
         /// <summary>
         /// The RNG used for this artifact.
         /// </summary>
         public static Xoroshiro128Plus treasureRng { get; private set; } = new Xoroshiro128Plus(0UL);
+
         /// <summary>
         /// The Spawn Card of the Imp Vanguard.
         /// </summary>
         public static CharacterSpawnCard originOverlordSpawnCard { get; private set; }
+
         /// <summary>
         /// The Spawn Card of the Imp Defender.
         /// </summary>
@@ -141,6 +144,7 @@ namespace Chen.ClassicItems
             Run.onRunStartGlobal -= Run_onRunStartGlobal;
             CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
         }
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private CharacterSpawnCard ImpOriginSetup(CharacterSpawnCard origCsc, Material material, Texture icon, string name, string subtitle, int renderInfoIndex)

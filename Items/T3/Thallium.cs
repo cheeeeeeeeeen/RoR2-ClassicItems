@@ -18,6 +18,7 @@ namespace Chen.ClassicItems
         /// The BuffIndex of Thallium Poisoning debuff.
         /// </summary>
         public static BuffIndex poisonBuff { get; private set; }
+
         /// <summary>
         /// The DotIndex of Thallium Poisoning debuff.
         /// </summary>
@@ -146,6 +147,7 @@ namespace Chen.ClassicItems
             On.RoR2.GlobalEventManager.OnHitEnemy -= On_GEMOnHitEnemy;
             GetStatCoefficients -= Thallium_GetStatCoefficients;
         }
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void On_GEMOnHitEnemy(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)

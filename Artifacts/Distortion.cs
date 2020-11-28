@@ -18,6 +18,7 @@ namespace Chen.ClassicItems
         /// The SkillDef of the distorted skill that is assigned to characters to disable skills randomly.
         /// </summary>
         public static SkillDef distortSkill { get; private set; }
+
         /// <summary>
         /// The RNG used for the Artifact of Distortion.
         /// </summary>
@@ -80,6 +81,7 @@ namespace Chen.ClassicItems
             CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
             CameraRigController.onCameraTargetChanged -= CameraRigController_onCameraTargetChanged;
         }
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void CharacterBody_onBodyStartGlobal(CharacterBody obj)

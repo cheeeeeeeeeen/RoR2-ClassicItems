@@ -19,6 +19,7 @@ namespace Chen.ClassicItems
         /// The mine prefab used to deploy the mines triggered by Instant Minefield.
         /// </summary>
         public static GameObject minePrefab { get; private set; }
+
         /// <summary>
         /// The ghost projectile prefab for the mine prefab of Instant Minefield.
         /// </summary>
@@ -110,6 +111,7 @@ namespace Chen.ClassicItems
 
             return true;
         }
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void DropMines(CharacterBody userBody, GameObject userGameObject, float yMult = 1f)

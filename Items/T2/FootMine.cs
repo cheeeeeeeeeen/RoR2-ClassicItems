@@ -22,14 +22,17 @@ namespace Chen.ClassicItems
         /// The mine prefab used to deploy the mines triggered by Dead Man's Foot.
         /// </summary>
         public static GameObject minePrefab { get; private set; }
+
         /// <summary>
         /// The ghost projectile prefab for the mine prefab of Dead Man's Foot.
         /// </summary>
         public static GameObject mineGhostPrefab { get; private set; }
+
         /// <summary>
         /// The BuffIndex poison debuff used by Dead Man's Foot.
         /// </summary>
         public static BuffIndex poisonBuff { get; private set; }
+
         /// <summary>
         /// The DotIndex poison debuff used by Dead Man's Foot.
         /// </summary>
@@ -150,6 +153,7 @@ namespace Chen.ClassicItems
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate -= On_ESMineArmingWeak;
             On.EntityStates.Engi.Mine.Detonate.Explode -= On_ESDetonate;
         }
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void On_HCTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)

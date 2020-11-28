@@ -21,6 +21,7 @@ namespace Chen.ClassicItems
         /// The mine prefab used to deploy the mines triggered by Panic Mines.
         /// </summary>
         public static GameObject minePrefab { get; private set; }
+
         /// <summary>
         /// The ghost projectile prefab for the mine prefab of Panic Mines.
         /// </summary>
@@ -114,6 +115,7 @@ namespace Chen.ClassicItems
             On.RoR2.HealthComponent.TakeDamage -= On_HCTakeDamage;
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate -= On_ESMineArmingWeak;
         }
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void On_HCTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)

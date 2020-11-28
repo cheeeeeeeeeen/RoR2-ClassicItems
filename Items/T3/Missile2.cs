@@ -99,6 +99,7 @@ namespace Chen.ClassicItems
             base.Uninstall();
             On.RoR2.GlobalEventManager.OnHitEnemy -= On_GEMOnHitEnemy;
         }
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         private void On_GEMOnHitEnemy(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
