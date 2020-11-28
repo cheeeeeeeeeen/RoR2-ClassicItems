@@ -9,8 +9,6 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>true</Optimize>
-    <DefaultDocumentationFileNameMode>Md5</DefaultDocumentationFileNameMode>
-    <DefaultDocumentationInvalidCharReplacement>+</DefaultDocumentationInvalidCharReplacement>
     <DocumentationFile>C:\Users\Chen\Documents\Visual Studio 2019\Risk of Rain 2\RoR2-ClassicItems\_docs\ChensClassicItems_API.xml</DocumentationFile>
   </PropertyGroup>
 
