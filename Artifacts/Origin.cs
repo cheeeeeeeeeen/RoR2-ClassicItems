@@ -9,6 +9,7 @@ using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
 using static Chen.ClassicItems.ClassicItemsPlugin;
+using static RoR2.DirectorPlacementRule;
 
 namespace Chen.ClassicItems
 {
@@ -100,6 +101,11 @@ namespace Chen.ClassicItems
                     "instead of spawning them all at once to avoid frame drops. 0 will spawn them all almost instantly without delay.",
                     AutoConfigFlags.None, 0f, float.MaxValue)]
         public float intervalBetweenImps { get; private set; } = .25f;
+
+        [AutoConfig("Type of spawning of the Imp Overlord. 0 = On the player, 1 = Randomly near the player." +
+                    "Setting the spawn type to 0 sometimes causes the player to be catapulted off the map.",
+                    AutoConfigFlags.None, 0, 1)]
+        public int impOverlordSpawnArea { get; private set; } = 1;
 
         [AutoConfig("Used for logging items that can be given to Imps. Makes it easier to report bugs related to items being received by Origin Imps.")]
         public bool logOriginItemList { get; private set; } = true;
@@ -261,7 +267,7 @@ namespace Chen.ClassicItems
             ItemIndex.AutoCastEquipment, ItemIndex.BonusGoldPackOnKill
         };
 
-        private readonly List<KeyValuePair<DirectorSpawnRequest, bool>> spawnQueue = new List<KeyValuePair<DirectorSpawnRequest, bool>>();
+        private readonly Queue<KeyValuePair<DirectorSpawnRequest, bool>> spawnQueue = new Queue<KeyValuePair<DirectorSpawnRequest, bool>>();
 
         private void Awake()
         {
@@ -289,10 +295,11 @@ namespace Chen.ClassicItems
                     intervalTimer += Time.fixedDeltaTime;
                     if (intervalTimer >= origin.intervalBetweenImps)
                     {
-                        GameObject masterObject = DirectorCore.instance.TrySpawnObject(spawnQueue[0].Key);
-                        if (masterObject && spawnQueue[0].Value) GivePearlDrop(masterObject);
-                        spawnQueue.RemoveAt(0);
-                        intervalTimer = 0f;
+                        var pair = spawnQueue.Dequeue();
+                        GameObject masterObject = DirectorCore.instance.TrySpawnObject(pair.Key);
+                        if (!masterObject) spawnQueue.Enqueue(pair);
+                        else if (masterObject && pair.Value) GivePearlDrop(masterObject);
+                        intervalTimer -= origin.intervalBetweenImps;
                     }
                 }
                 else if (intervalTimer != 0f) intervalTimer = 0f;
@@ -339,7 +346,7 @@ namespace Chen.ClassicItems
                 DirectorPlacementRule directorPlacementRule = new DirectorPlacementRule
                 {
                     spawnOnTarget = spawnOnTarget,
-                    placementMode = DirectorPlacementRule.PlacementMode.NearestNode
+                    placementMode = SpawnAreaType()
                 };
                 DirectorCore.GetMonsterSpawnDistance(input, out directorPlacementRule.minDistance, out directorPlacementRule.maxDistance);
                 DirectorSpawnRequest directorSpawnRequest = new DirectorSpawnRequest(leader, directorPlacementRule, rng)
@@ -347,7 +354,7 @@ namespace Chen.ClassicItems
                     teamIndexOverride = TeamIndex.Monster,
                     ignoreTeamMemberLimit = true
                 };
-                spawnQueue.Add(new KeyValuePair<DirectorSpawnRequest, bool>(directorSpawnRequest, i == 0));
+                spawnQueue.Enqueue(new KeyValuePair<DirectorSpawnRequest, bool>(directorSpawnRequest, i == 0));
             }
             for (int i = 0; i < origin.impNumber; i++)
             {
@@ -355,7 +362,7 @@ namespace Chen.ClassicItems
                 DirectorPlacementRule directorPlacementRule = new DirectorPlacementRule
                 {
                     spawnOnTarget = spawnOnTarget,
-                    placementMode = DirectorPlacementRule.PlacementMode.Approximate
+                    placementMode = PlacementMode.Approximate
                 };
                 DirectorCore.GetMonsterSpawnDistance(input, out directorPlacementRule.minDistance, out directorPlacementRule.maxDistance);
                 DirectorSpawnRequest directorSpawnRequest = new DirectorSpawnRequest(soldier, directorPlacementRule, rng)
@@ -363,7 +370,7 @@ namespace Chen.ClassicItems
                     teamIndexOverride = TeamIndex.Monster,
                     ignoreTeamMemberLimit = true
                 };
-                spawnQueue.Add(new KeyValuePair<DirectorSpawnRequest, bool>(directorSpawnRequest, false));
+                spawnQueue.Enqueue(new KeyValuePair<DirectorSpawnRequest, bool>(directorSpawnRequest, false));
             }
         }
 
@@ -404,6 +411,12 @@ namespace Chen.ClassicItems
                 }
             }
             return false;
+        }
+
+        private PlacementMode SpawnAreaType()
+        {
+            if (origin.impOverlordSpawnArea == 0) return PlacementMode.NearestNode;
+            else return PlacementMode.Approximate;
         }
     }
 
