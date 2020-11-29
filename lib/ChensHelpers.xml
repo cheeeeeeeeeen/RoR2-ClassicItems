@@ -1,0 +1,553 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ChensHelpers</name>
+    </assembly>
+    <members>
+        <member name="T:Chen.Helpers.CollectionHelpers.Extensions">
+            <summary>
+            Useful extensions that relate to collection data structures.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.CollectionHelpers.Extensions.ConditionalAdd``1(System.Collections.Generic.List{``0},``0,System.Func{``0,System.Boolean})">
+            <summary>
+            Adds an item into the list if the condition is not met.
+            This is just a combination for Add and Exists.
+            </summary>
+            <typeparam name="T">Type of the items in the list</typeparam>
+            <param name="list">The list in question</param>
+            <param name="value">The value to add into the list</param>
+            <param name="condition">The existence condition check where T is the item from the list</param>
+            <returns>True if the item is added. False if the item already exists.</returns>
+        </member>
+        <member name="M:Chen.Helpers.CollectionHelpers.Extensions.ConditionalRemove``1(System.Collections.Generic.List{``0},``0)">
+            <summary>
+            Removes the item from the list if it exists.
+            This is just a combination for Contains and Remove.
+            </summary>
+            <typeparam name="T">Type of the items in the list</typeparam>
+            <param name="list">The list in question</param>
+            <param name="value">The value to remove from the list</param>
+            <returns>True if the item is removed. False if the item does not exist.</returns>
+        </member>
+        <member name="M:Chen.Helpers.CollectionHelpers.Extensions.Contains``1(``0[],``0)">
+            <summary>
+            Checks if a value exists within the array.
+            </summary>
+            <typeparam name="T">Data type of the array</typeparam>
+            <param name="array">The array to inspect</param>
+            <param name="value">The value to check</param>
+            <returns>True if the value exists in the array. False if not.</returns>
+        </member>
+        <member name="T:Chen.Helpers.GeneralHelpers.AssetsManager">
+            <summary>
+            A helper class that handles registering bundles for use in a mod.
+            Keep an instance of this class internal or local to the mod.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.#ctor">
+            <summary>
+            The default constructor one may use to add bundles later.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.#ctor(Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo[])">
+            <summary>
+            Constructor to use if the bundles are already made.
+            </summary>
+            <param name="bundles">Group of bundles for the helper class to manage</param>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.Add(Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo)">
+            <summary>
+            Used to add a bundle for the manager to handle.
+            </summary>
+            <param name="bundle">A bundle data</param>
+            <returns>True if the bundle is added. False if the bundle already exists or has the same name.</returns>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.Add(System.String,System.String,Chen.Helpers.GeneralHelpers.AssetsManager.BundleType)">
+            <summary>
+            Used to add a bundle for the manager to handle.
+            This is an overload alternative.
+            </summary>
+            <param name="modPrefix">Prefix to use for the bundle</param>
+            <param name="source">Embedded resource path of the bundle</param>
+            <param name="type">Bundle Type</param>
+            <returns>True if the bundle is added. False if the bundle already exists or has the same name.</returns>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.RegisterAll">
+            <summary>
+            Invoke this method to start registering all bundles assigned to this manager.
+            </summary>
+        </member>
+        <member name="T:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo">
+            <summary>
+            A data structure that holds the information about the bundle.
+            This is used by the AssetsManager.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.modPrefix">
+            <summary>
+            The mod prefix is defined to be the identifier to the bundle for accessing. It should always start with "@".
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.source">
+            <summary>
+            The source is the resource path as defined by a mod. The bundle must be Embedded as Resource.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.type">
+            <summary>
+            Type of the bundle.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.#ctor(System.String,System.String,Chen.Helpers.GeneralHelpers.AssetsManager.BundleType)">
+            <summary>
+            Constructor used to build BundleInfo.
+            </summary>
+            <param name="modPrefix">The prefix used to access the bundle</param>
+            <param name="source">The resource path of the bundle</param>
+            <param name="type">Type of the bundle</param>
+        </member>
+        <member name="T:Chen.Helpers.GeneralHelpers.AssetsManager.BundleType">
+            <summary>
+            This is used to identify the type of the bundle for differentiation in registration process.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.GeneralHelpers.AssetsManager.BundleType.UnityAssetBundle">
+            <summary>
+            This Bundle Type refers to the asset bundles generated in Unity through AssetBundleBrowser.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.GeneralHelpers.AssetsManager.BundleType.WWiseSoundBank">
+            <summary>
+            This Bundle Type refers to the sound bank generated by WWise.
+            </summary>
+        </member>
+        <member name="T:Chen.Helpers.GeneralHelpers.DropletGenerator">
+            <summary>
+            A helper that allows listening to function keys to generate pickup droplets in-game.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.DropletGenerator.Update">
+            <summary>
+            Place this in a BaseUnityPlugin.Update() to enable the listeners.
+            </summary>
+        </member>
+        <member name="T:Chen.Helpers.GeneralHelpers.MinionExtensions">
+            <summary>
+            Useful extensions related to Minions.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.MinionExtensions.LoopMinions(RoR2.CharacterMaster,System.Action{RoR2.CharacterMaster})">
+            <summary>
+            Loops through the minions and applies processing for each through an action.
+            </summary>
+            <param name="owner">Master of the minions</param>
+            <param name="logic">Code to apply for each minion of the owner</param>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.MinionExtensions.GetAllMinionComponents``1(RoR2.CharacterMaster)">
+            <summary>
+            Fetches all the minions of an owner and returns a list of the minions' component.
+            </summary>
+            <typeparam name="T">Component to match</typeparam>
+            <param name="owner">Master of the minions</param>
+            <returns>List of components of the minions</returns>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.MinionExtensions.AssignOwner(RoR2.CharacterMaster,RoR2.CharacterMaster,System.Boolean,System.Boolean)">
+            <summary>
+            Assigns a new owner to the minion. This needs to be called on both the Server and the Client.
+            If transmit is true, it only needs to be called on the server.
+            The queuing system provides a way to ensure that all clients will sync the owner. This is a slow process though.
+            Only set useQueue to true if the client cannot see the objects and returns a warning of the object being null.
+            </summary>
+            <param name="minion">Minion to set a new owner with</param>
+            <param name="newOwner">New owner of the minion</param>
+            <param name="transmit">Determines whether the server would send a sync message to other clients</param>
+            <param name="useQueue">Tells the client to use a queuing system if transmit is true</param>
+        </member>
+        <member name="T:Chen.Helpers.GeneralHelpers.MultiplayerTest">
+            <summary>
+            A helper that can enable and disable Multiplayer Testing. Be sure to not enable this in Awake of a mod on release.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.MultiplayerTest.Enable(BepInEx.Logging.ManualLogSource,System.String)">
+            <summary>
+            Enables Multiplayer Testing so that the mod creator can connect using two instances of the game.
+            </summary>
+            <param name="logger">BepInEx logger instance</param>
+            <param name="message">Message to display when Multiplayer Testing is enabled</param>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.MultiplayerTest.Enable(Chen.Helpers.LogHelpers.Log,System.String)">
+            <summary>
+            Enables Multiplayer Testing so that the mod creator can connect using two instances of the game.
+            </summary>
+            <param name="logger">LogHelpers.Log instance</param>
+            <param name="message">Message to display when Multiplayer Testing is enabled</param>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.MultiplayerTest.Disable(BepInEx.Logging.ManualLogSource,System.String)">
+            <summary>
+            Disables Multiplayer Testing.
+            </summary>
+            <param name="logger">BepInEx logger instance</param>
+            <param name="message">Message to display when Multiplayer Testing is disabled</param>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.MultiplayerTest.Disable(Chen.Helpers.LogHelpers.Log,System.String)">
+            <summary>
+            Disables Multiplayer Testing.
+            </summary>
+            <param name="logger">LogHelpers.Log instance</param>
+            <param name="message">Message to display when Multiplayer Testing is disabled</param>
+        </member>
+        <member name="T:Chen.Helpers.HelperPlugin">
+            <summary>
+            The mother plugin so that it can be depended on. It does nothing by itself, though.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.HelperPlugin.ModVer">
+            <summary>
+            Mod version of the plugin. Useful for fetching the version dynamically when depending on it.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.HelperPlugin.ModName">
+            <summary>
+            Mod name of the plugin.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.HelperPlugin.ModGuid">
+            <summary>
+            Mod GUID of the plugin. Useful for referencing this GUID of this mod without the need to look it up.
+            </summary>
+        </member>
+        <member name="T:Chen.Helpers.LogHelpers.Collections">
+            <summary>
+            Extensions for Log to allow logging with collections of data with ease.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Collections.MessageArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
+            <summary>
+            Logs an array of values using the Message format. Use the format parameter to control how the log entry will be displayed. Leave as is for plain logs.
+            The representation parameter will be the token that will be used to display the data that is specified in the format parameter (default is %DATA%).
+            e.g. MessageArray(new string[] { "Chen", "is", "AWESOME" }, "-> %X%..!", "%X%") will yield:
+            -> Chen..!
+            -> is..!
+            -> AWESOME..!
+            </summary>
+            <typeparam name="T">Type of data in the array</typeparam>
+            <param name="logger">Log instance</param>
+            <param name="data">The array</param>
+            <param name="format">The format that will be outputted per item, with the item represented as %DATA%
+            (can be overridden through representation parameter)</param>
+            <param name="representation">Token that will be used as the item when parsing the format</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Collections.InfoArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
+            <summary>
+            Logs an array of values using the Info format. Use the format parameter to control how the log entry will be displayed. Leave as is for plain logs.
+            The representation parameter will be the token that will be used to display the data that is specified in the format parameter (default is %DATA%).
+            e.g. InfoArray(new string[] { "Chen", "is", "AWESOME" }, "-> %X%..!", "%X%") will yield:
+            -> Chen..!
+            -> is..!
+            -> AWESOME..!
+            </summary>
+            <typeparam name="T">Type of data in the array</typeparam>
+            <param name="logger">Log instance</param>
+            <param name="data">The array</param>
+            <param name="format">The format that will be outputted per item, with the item represented as %DATA%
+            (can be overridden through representation parameter)</param>
+            <param name="representation">Token that will be used as the item when parsing the format</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Collections.WarningArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
+            <summary>
+            Logs an array of values using the Warning format. Use the format parameter to control how the log entry will be displayed. Leave as is for plain logs.
+            The representation parameter will be the token that will be used to display the data that is specified in the format parameter (default is %DATA%).
+            e.g. WarningArray(new string[] { "Chen", "is", "AWESOME" }, "-> %X%..!", "%X%") will yield:
+            -> Chen..!
+            -> is..!
+            -> AWESOME..!
+            </summary>
+            <typeparam name="T">Type of data in the array</typeparam>
+            <param name="logger">Log instance</param>
+            <param name="data">The array</param>
+            <param name="format">The format that will be outputted per item, with the item represented as %DATA%
+            (can be overridden through representation parameter)</param>
+            <param name="representation">Token that will be used as the item when parsing the format</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Collections.ErrorArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
+            <summary>
+            Logs an array of values using the Error format. Use the format parameter to control how the log entry will be displayed. Leave as is for plain logs.
+            The representation parameter will be the token that will be used to display the data that is specified in the format parameter (default is %DATA%).
+            e.g. ErrorArray(new string[] { "Chen", "is", "AWESOME" }, "-> %X%..!", "%X%") will yield:
+            -> Chen..!
+            -> is..!
+            -> AWESOME..!
+            </summary>
+            <typeparam name="T">Type of data in the array</typeparam>
+            <param name="logger">Log instance</param>
+            <param name="data">The array</param>
+            <param name="format">The format that will be outputted per item, with the item represented as %DATA%
+            (can be overridden through representation parameter)</param>
+            <param name="representation">Token that will be used as the item when parsing the format</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Collections.DebugArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
+            <summary>
+            Logs an array of values using the Debug format. Use the format parameter to control how the log entry will be displayed. Leave as is for plain logs.
+            The representation parameter will be the token that will be used to display the data that is specified in the format parameter (default is %DATA%).
+            e.g. DebugArray(new string[] { "Chen", "is", "AWESOME" }, "-> %X%..!", "%X%") will yield:
+            -> Chen..!
+            -> is..!
+            -> AWESOME..!
+            </summary>
+            <typeparam name="T">Type of data in the array</typeparam>
+            <param name="logger">Log instance</param>
+            <param name="data">The array</param>
+            <param name="format">The format that will be outputted per item, with the item represented as %DATA%
+            (can be overridden through representation parameter)</param>
+            <param name="representation">Token that will be used as the item when parsing the format</param>
+        </member>
+        <member name="T:Chen.Helpers.LogHelpers.Log">
+            <summary>
+            Helper class for logging.
+            Its purpose is really to shorten the code when invoking it so that typing it would be fast and short.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Log.#ctor(BepInEx.Logging.ManualLogSource)">
+            <summary>
+            Constructor for the Log helper. Always assign this to a variable with an internal access modifier to keep it to the calling assembly's scope.
+            </summary>
+            <param name="logger">BepInEx Logger object</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Log.Debug(System.Object)">
+            <summary>
+            Log using the Debug format of BepInEx logger.
+            </summary>
+            <param name="data">Anything</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Log.Error(System.Object)">
+            <summary>
+            Log using the Error format of BepInEx logger.
+            </summary>
+            <param name="data">Anything</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Log.Info(System.Object)">
+            <summary>
+            Log using the Info format of BepInEx logger.
+            </summary>
+            <param name="data">Anything</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Log.Message(System.Object)">
+            <summary>
+            Log using the Message format of BepInEx logger.
+            </summary>
+            <param name="data">Anything</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Log.Warning(System.Object)">
+            <summary>
+            Log using the Warning format of BepInEx logger.
+            </summary>
+            <param name="data">Anything</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Log.Array``1(``0[],System.String)">
+            <summary>
+            Log an array of values using Message format.
+            </summary>
+            <typeparam name="T">Type of the array</typeparam>
+            <param name="data">Array of T</param>
+            <param name="prefix">Prefix to be inserted before the data</param>
+        </member>
+        <member name="T:Chen.Helpers.MathHelpers.Arithmetic">
+            <summary>
+            Extensions related to computations involving numbers.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Arithmetic.SafeDivide(System.Single,System.Single,System.Single)">
+            <summary>
+            Performs division with a safety check when the divisor is 0.
+            The parameter fallbackResult will be returned instead if the divisor is 0.
+            </summary>
+            <param name="dividend">The number being divided</param>
+            <param name="divisor">The number that will divide the dividend</param>
+            <param name="fallbackResult">Return value if the divisor is 0</param>
+            <returns>The quotient or the fallbackResult</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Arithmetic.SafeDivide(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Performs division with a safety check when the divisor is 0.
+            The parameter fallbackResult will be returned instead if the divisor is 0.
+            </summary>
+            <param name="dividend">The number being divided</param>
+            <param name="divisor">The number that will divide the dividend</param>
+            <param name="fallbackResult">Return value if the divisor is 0</param>
+            <returns>The quotient or the fallbackResult</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Arithmetic.Sum(System.Int32[],System.Func{System.Int32,System.Int32})">
+            <summary>
+            Adds all the values contained in the array. Preprocessing each item is possible before they are computed by providing the logic.
+            e.g. Sum(new int[] { 2, -4, 1 }, item => Mathf.Max(0, item)) will yield a result of 3.
+            </summary>
+            <param name="numbers">Array of numbers</param>
+            <param name="preProcess">Preprocessor code</param>
+            <returns>Sum of the values in the array</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Arithmetic.Sum(System.Single[],System.Func{System.Single,System.Single})">
+            <summary>
+            Adds all the values contained in the array. Preprocessing each item is possible before they are computed by providing the logic.
+            e.g. Sum(new float[] { 2f, -4f, 1f }, item => Mathf.Max(0f, item)) will yield a result of 3f.
+            </summary>
+            <param name="numbers">Array of numbers</param>
+            <param name="preProcess">Preprocessor code</param>
+            <returns>Sum of the values in the array</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Arithmetic.Average(System.Int32[],System.Func{System.Int32,System.Int32})">
+            <summary>
+            Computes for the average of the numbers in the array. Preprocessing each item is possible before they are computed by providing the logic.
+            e.g. Average(new int[] { 2, -4, 2 }, item => Mathf.Max(2, item)) will yield a result of 2.
+            </summary>
+            <param name="numbers">Array of numbers</param>
+            <param name="preProcess">Preprocessor code</param>
+            <returns>Average of the values in the array</returns>
+            <exception cref="T:System.DivideByZeroException">Raised when the array length is 0 when division is performed.</exception>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Arithmetic.Average(System.Single[],System.Func{System.Single,System.Single})">
+            <summary>
+            Computes for the average of the numbers in the array. Preprocessing each item is possible before they are computed by providing the logic.
+            e.g. Average(new float[] { 2f, -4f, 2f }, item => Mathf.Max(2f, item)) will yield a result of 2f.
+            </summary>
+            <param name="numbers">Array of numbers</param>
+            <param name="preProcess">Preprocessor code</param>
+            <returns>Average of the values in the array</returns>
+            <exception cref="T:System.DivideByZeroException">Raised when the array length is 0 when division is performed.</exception>
+        </member>
+        <member name="T:Chen.Helpers.MathHelpers.Wave">
+            <summary>
+            Math helper for easily computing Wave behaviors.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Wave.Sine(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Computes for a Sine Wave. Always multiply this to the original value.
+            </summary>
+            <param name="phase">Offset from time</param>
+            <param name="frequency">Number of complete cycles in a given time</param>
+            <param name="amplitude">Maximum and minimum values</param>
+            <param name="baseValue">Offset from the result</param>
+            <returns>The computed value for the wave</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Wave.Triangle(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Computes for a Triangle Wave. Always multiply this to the original value.
+            </summary>
+            <param name="phase">Offset from time</param>
+            <param name="frequency">Number of complete cycles in a given time</param>
+            <param name="amplitude">Maximum and minimum values</param>
+            <param name="baseValue">Offset from the result</param>
+            <returns>The computed value for the wave</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Wave.Square(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Computes for a Square Wave. Always multiply this to the original value.
+            </summary>
+            <param name="phase">Offset from time</param>
+            <param name="frequency">Number of complete cycles in a given time</param>
+            <param name="amplitude">Maximum and minimum values</param>
+            <param name="baseValue">Offset from the result</param>
+            <returns>The computed value for the wave</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Wave.Sawtooth(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Computes for a Sawtooth Wave. Always multiply this to the original value.
+            </summary>
+            <param name="phase">Offset from time</param>
+            <param name="frequency">Number of complete cycles in a given time</param>
+            <param name="amplitude">Maximum and minimum values</param>
+            <param name="baseValue">Offset from the result</param>
+            <returns>The computed value for the wave</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Wave.InvertedSawtooth(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Computes for an Inverted Sawtooth Wave. Always multiply this to the original value.
+            </summary>
+            <param name="phase">Offset from time</param>
+            <param name="frequency">Number of complete cycles in a given time</param>
+            <param name="amplitude">Maximum and minimum values</param>
+            <param name="baseValue">Offset from the result</param>
+            <returns>The computed value for the wave</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Wave.Noisy(System.Single,System.Single)">
+            <summary>
+            Computes for a Noisy Wave. Always multiply this to the original value.
+            </summary>
+            <param name="amplitude">Maximum and minimum values</param>
+            <param name="baseValue">Offset from the result</param>
+            <returns>The computed value for the wave</returns>
+        </member>
+        <member name="T:Chen.Helpers.UnityHelpers.Extensions">
+            <summary>
+            Extensions for Unity objects.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.Extensions.GetOrAddComponent``1(UnityEngine.GameObject)">
+            <summary>
+            An extension that allows fetching or adding a component.
+            If the GameObject has the component, it will only fetch it and return the component.
+            If the GameObject does not have the component, it will add one to it and return the component.
+            </summary>
+            <typeparam name="T">A Unity Component</typeparam>
+            <param name="gameObject">The GameObject to fetch from or add to</param>
+            <returns>The component specified as T</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.Extensions.GetOrAddComponent``1(UnityEngine.Component)">
+            <summary>
+            An extension that allows fetching or adding a component through the component of the GameObject.
+            If the GameObject has the component, it will only fetch it and return the component.
+            If the GameObject does not have the component, it will add one to it and return the component.
+            </summary>
+            <typeparam name="T">A Unity Component</typeparam>
+            <param name="component">The GameObject of the component to fetch from or add to</param>
+            <returns>The component specified as T</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.Extensions.GetOrAddComponent``1(UnityEngine.GameObject,System.Action{``0})">
+            <summary>
+            An extension that allows fetching or adding a component.
+            This overload contains post-processing logic of the component.
+            Only used for cleaner code. Otherwise it is equivalent to assigning values after this method call.
+            </summary>
+            <typeparam name="T">A Unity Component</typeparam>
+            <param name="gameObject">The GameObject to fetch from or add to</param>
+            <param name="action">Post-Processor code</param>
+            <returns>The component specified as T</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.Extensions.GetOrAddComponent``1(UnityEngine.Component,System.Action{``0})">
+            <summary>
+            An extension that allows fetching or adding a component through the component of the GameObject.
+            This overload contains post-processing logic of the component.
+            Only used for cleaner code. Otherwise it is equivalent to assigning values after this method call.
+            </summary>
+            <typeparam name="T">A Unity Component</typeparam>
+            <param name="component">The GameObject of the component to fetch from or add to</param>
+            <param name="action">Post-Processor code</param>
+            <returns>The component specified as T</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.Extensions.GetOrAddComponent``1(UnityEngine.GameObject,System.Action{``0},System.Action{``0})">
+            <summary>
+            An extension that allows fetching or adding a component.
+            This overload contains post-processing logic of the component depending whether it was created or fetched.
+            Only used for advanced logic without having to do an if-else statement after the method call.
+            </summary>
+            <typeparam name="T">A Unity Component</typeparam>
+            <param name="gameObject">The GameObject to fetch from or add to</param>
+            <param name="getAction">Post-Processor code for fetching</param>
+            <param name="addAction">Post-Processor code for adding</param>
+            <returns>The component specified as T</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.Extensions.GetOrAddComponent``1(UnityEngine.Component,System.Action{``0},System.Action{``0})">
+            <summary>
+            An extension that allows fetching or adding a component through the component of the GameObject.
+            This overload contains post-processing logic of the component depending whether it was created or fetched.
+            Only used for advanced logic without having to do an if-else statement after the method call.
+            </summary>
+            <typeparam name="T">A Unity Component</typeparam>
+            <param name="component">The GameObject of the component to fetch from or add to</param>
+            <param name="getAction">Post-Processor code for fetching</param>
+            <param name="addAction">Post-Processor code for adding</param>
+            <returns>The component specified as T</returns>
+        </member>
+    </members>
+</doc>
