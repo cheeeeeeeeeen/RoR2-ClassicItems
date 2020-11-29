@@ -1,5 +1,6 @@
 ﻿#undef DEBUG
 
+using Chen.Helpers.LogHelpers.Collections;
 using Chen.Helpers.UnityHelpers;
 using R2API;
 using RoR2;
@@ -197,11 +198,16 @@ namespace Chen.ClassicItems
                 if (logOriginItemList)
                 {
                     Log.Message("Listing items that can be given to Origin Imps...");
-                    ListItems("COMMON:", OriginManager.whiteList);
-                    ListItems("UNCOMMON:", OriginManager.greenList);
-                    ListItems("RARE:", OriginManager.redList);
-                    ListItems("BOSS:", OriginManager.yellowList);
-                    ListItems("LUNAR:", OriginManager.blueList);
+                    Log.Message("COMMON:");
+                    Log.MessageArray(OriginManager.whiteList, ListItemFormat);
+                    Log.Message("UNCOMMON:");
+                    Log.MessageArray(OriginManager.greenList, ListItemFormat);
+                    Log.Message("RARE:");
+                    Log.MessageArray(OriginManager.redList, ListItemFormat);
+                    Log.Message("BOSS:");
+                    Log.MessageArray(OriginManager.yellowList, ListItemFormat);
+                    Log.Message("LUNAR:");
+                    Log.MessageArray(OriginManager.blueList, ListItemFormat);
                 }
             }
         }

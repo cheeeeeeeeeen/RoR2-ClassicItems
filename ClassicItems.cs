@@ -5,6 +5,7 @@ using BepInEx.Configuration;
 using Chen.Helpers;
 using Chen.Helpers.GeneralHelpers;
 using Chen.Helpers.LogHelpers;
+using Chen.Helpers.LogHelpers.Collections;
 using R2API;
 using R2API.Utils;
 using RoR2;
@@ -68,14 +69,7 @@ namespace Chen.ClassicItems
 
         private static ConfigFile cfgFile;
 
-        internal static void ListItems(string start, ItemIndex[] list)
-        {
-            Log.Message(start);
-            foreach (var item in list)
-            {
-                Log.Message($"-> {ItemCatalog.GetItemDef(item).name}");
-            }
-        }
+        internal static string ListItemFormat(ItemIndex item) => $"-> {ItemCatalog.GetItemDef(item).name}";
 
 #if DEBUG
 
@@ -190,9 +184,12 @@ namespace Chen.ClassicItems
         private void EvolutionListItems(Run run)
         {
             Log.Message("Starting to display items that can be given to enemies by Evolution...");
-            ListItems("COMMON:", MonsterTeamGainsItemsArtifactManager.availableTier1Items);
-            ListItems("UNCOMMON:", MonsterTeamGainsItemsArtifactManager.availableTier2Items);
-            ListItems("RARE:", MonsterTeamGainsItemsArtifactManager.availableTier3Items);
+            Log.Message("COMMON:");
+            Log.MessageArray(MonsterTeamGainsItemsArtifactManager.availableTier1Items, ListItemFormat);
+            Log.Message("UNCOMMON:");
+            Log.MessageArray(MonsterTeamGainsItemsArtifactManager.availableTier2Items, ListItemFormat);
+            Log.Message("RARE:");
+            Log.MessageArray(MonsterTeamGainsItemsArtifactManager.availableTier3Items, ListItemFormat);
         }
 
         private void Start()
