@@ -217,12 +217,12 @@
             Mod GUID of the plugin. Useful for referencing this GUID of this mod without the need to look it up.
             </summary>
         </member>
-        <member name="T:Chen.Helpers.LogHelpers.Collections">
+        <member name="T:Chen.Helpers.LogHelpers.Collections.Extensions">
             <summary>
             Extensions for Log to allow logging with collections of data with ease.
             </summary>
         </member>
-        <member name="M:Chen.Helpers.LogHelpers.Collections.MessageArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
+        <member name="M:Chen.Helpers.LogHelpers.Collections.Extensions.MessageArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
             <summary>
             Logs an array of values using the Message format. Use the format parameter to control how the log entry will be displayed. Leave as is for plain logs.
             The representation parameter will be the token that will be used to display the data that is specified in the format parameter (default is %DATA%).
@@ -238,7 +238,16 @@
             (can be overridden through representation parameter)</param>
             <param name="representation">Token that will be used as the item when parsing the format</param>
         </member>
-        <member name="M:Chen.Helpers.LogHelpers.Collections.InfoArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
+        <member name="M:Chen.Helpers.LogHelpers.Collections.Extensions.MessageArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.Func{``0,System.String})">
+            <summary>
+            Logs an array of values using the Message format. Use code logic to control the format directly.
+            </summary>
+            <typeparam name="T">Type of data in the array</typeparam>
+            <param name="logger">Log instance</param>
+            <param name="data">The array</param>
+            <param name="formatter">Logic formatter where T is the item for use</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Collections.Extensions.InfoArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
             <summary>
             Logs an array of values using the Info format. Use the format parameter to control how the log entry will be displayed. Leave as is for plain logs.
             The representation parameter will be the token that will be used to display the data that is specified in the format parameter (default is %DATA%).
@@ -254,7 +263,16 @@
             (can be overridden through representation parameter)</param>
             <param name="representation">Token that will be used as the item when parsing the format</param>
         </member>
-        <member name="M:Chen.Helpers.LogHelpers.Collections.WarningArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
+        <member name="M:Chen.Helpers.LogHelpers.Collections.Extensions.InfoArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.Func{``0,System.String})">
+            <summary>
+            Logs an array of values using the Info format. Use code logic to control the format directly.
+            </summary>
+            <typeparam name="T">Type of data in the array</typeparam>
+            <param name="logger">Log instance</param>
+            <param name="data">The array</param>
+            <param name="formatter">Logic formatter where T is the item for use</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Collections.Extensions.WarningArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
             <summary>
             Logs an array of values using the Warning format. Use the format parameter to control how the log entry will be displayed. Leave as is for plain logs.
             The representation parameter will be the token that will be used to display the data that is specified in the format parameter (default is %DATA%).
@@ -270,7 +288,16 @@
             (can be overridden through representation parameter)</param>
             <param name="representation">Token that will be used as the item when parsing the format</param>
         </member>
-        <member name="M:Chen.Helpers.LogHelpers.Collections.ErrorArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
+        <member name="M:Chen.Helpers.LogHelpers.Collections.Extensions.WarningArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.Func{``0,System.String})">
+            <summary>
+            Logs an array of values using the Warning format. Use code logic to control the format directly.
+            </summary>
+            <typeparam name="T">Type of data in the array</typeparam>
+            <param name="logger">Log instance</param>
+            <param name="data">The array</param>
+            <param name="formatter">Logic formatter where T is the item for use</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Collections.Extensions.ErrorArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
             <summary>
             Logs an array of values using the Error format. Use the format parameter to control how the log entry will be displayed. Leave as is for plain logs.
             The representation parameter will be the token that will be used to display the data that is specified in the format parameter (default is %DATA%).
@@ -286,7 +313,16 @@
             (can be overridden through representation parameter)</param>
             <param name="representation">Token that will be used as the item when parsing the format</param>
         </member>
-        <member name="M:Chen.Helpers.LogHelpers.Collections.DebugArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
+        <member name="M:Chen.Helpers.LogHelpers.Collections.Extensions.ErrorArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.Func{``0,System.String})">
+            <summary>
+            Logs an array of values using the Error format. Use code logic to control the format directly.
+            </summary>
+            <typeparam name="T">Type of data in the array</typeparam>
+            <param name="logger">Log instance</param>
+            <param name="data">The array</param>
+            <param name="formatter">Logic formatter where T is the item for use</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Collections.Extensions.DebugArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.String,System.String)">
             <summary>
             Logs an array of values using the Debug format. Use the format parameter to control how the log entry will be displayed. Leave as is for plain logs.
             The representation parameter will be the token that will be used to display the data that is specified in the format parameter (default is %DATA%).
@@ -301,6 +337,15 @@
             <param name="format">The format that will be outputted per item, with the item represented as %DATA%
             (can be overridden through representation parameter)</param>
             <param name="representation">Token that will be used as the item when parsing the format</param>
+        </member>
+        <member name="M:Chen.Helpers.LogHelpers.Collections.Extensions.DebugArray``1(Chen.Helpers.LogHelpers.Log,``0[],System.Func{``0,System.String})">
+            <summary>
+            Logs an array of values using the Debug format. Use code logic to control the format directly.
+            </summary>
+            <typeparam name="T">Type of data in the array</typeparam>
+            <param name="logger">Log instance</param>
+            <param name="data">The array</param>
+            <param name="formatter">Logic formatter where T is the item for use</param>
         </member>
         <member name="T:Chen.Helpers.LogHelpers.Log">
             <summary>
