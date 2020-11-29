@@ -53,6 +53,11 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.3.1**
+- Add a config option about the Imp Vanguard's Spawn position. It now defaults to spawn like the Imp Soldiers.
+- Refactor the Spawn Queue of the Imps spawned by the Artifact of Origin.
+- Integrate newer helpers from ChensHelpers.
+
 **2.3.0**
 - Implement API for Drone Repair Kit to support custom drones.
 - Allow Drone Repair Kit to use TILER2 helpers instead of hooking in RecalculateStats.

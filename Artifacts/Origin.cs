@@ -41,7 +41,7 @@ namespace Chen.ClassicItems
         public static CharacterSpawnCard originOverlordSpawnCard { get; private set; }
 
         /// <summary>
-        /// The Spawn Card of the Imp Defender.
+        /// The Spawn Card of the Imp Soldier.
         /// </summary>
         public static CharacterSpawnCard originImpSpawnCard { get; private set; }
 
