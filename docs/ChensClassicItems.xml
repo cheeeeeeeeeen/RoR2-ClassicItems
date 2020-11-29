@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ChensClassicItems</name>
+    </assembly>
+    <members>
+        <member name="T:Chen.ClassicItems.Distortion">
+            <summary>
+            Singleton artifact class powered by TILER2 that implements the Artifact of Distortion functionality.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.Distortion.distortSkill">
+            <summary>
+            The SkillDef of the distorted skill that is assigned to characters to disable skills randomly.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.Distortion.distortionRng">
+            <summary>
+            The RNG used for the Artifact of Distortion.
+            </summary>
+        </member>
+        <member name="T:Chen.ClassicItems.Origin">
+            <summary>
+            Singleton artifact class powered by TILER2 that implements the Artifact of Origin functionality.
+            </summary>
+        </member>
+        <member name="F:Chen.ClassicItems.Origin.originSuffix">
+            <summary>
+            The suffix appended on the Imps spawned by Artifact of Origin.
+            Might be useful if one wants to fetch the objects related to these Imps through their name.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.Origin.dropTable">
+            <summary>
+            The drop table used for determining the Imp Vanguard's drops.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.Origin.treasureRng">
+            <summary>
+            The RNG used for this artifact.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.Origin.originOverlordSpawnCard">
+            <summary>
+            The Spawn Card of the Imp Vanguard.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.Origin.originImpSpawnCard">
+            <summary>
+            The Spawn Card of the Imp Soldier.
+            </summary>
+        </member>
+        <member name="T:Chen.ClassicItems.Spirit">
+            <summary>
+            Singleton artifact class powered by TILER2 that implements Artifact of Spirit functionality.
+            </summary>
+        </member>
+        <member name="T:Chen.ClassicItems.ClassicItemsPlugin">
+            <summary>
+            Mother plugin of this mod that is responsible for loading items.
+            </summary>
+        </member>
+        <member name="F:Chen.ClassicItems.ClassicItemsPlugin.ModVer">
+            <summary>
+            This mod's version.
+            </summary>
+        </member>
+        <member name="F:Chen.ClassicItems.ClassicItemsPlugin.ModName">
+            <summary>
+            This mod's name.
+            </summary>
+        </member>
+        <member name="F:Chen.ClassicItems.ClassicItemsPlugin.ModGuid">
+            <summary>
+            This mod's GUID.
+            </summary>
+        </member>
+        <member name="T:Chen.ClassicItems.DroneRepairKit">
+            <summary>
+            Singleton equipment class powered by TILER2 that implements Drone Repair Kit functionality.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.DroneRepairKit.regenBuff">
+            <summary>
+            The regen buff associated with the Drone Repair Kit to be given to affected drones.
+            </summary>
+        </member>
+        <member name="M:Chen.ClassicItems.DroneRepairKit.SupportCustomDrone(System.String)">
+            <summary>
+            Adds a support for a custom drone so that Drone Repair Kit also heals and applies regen to them.
+            </summary>
+            <param name="masterName">The CharacterMaster name of the drone.</param>
+            <returns>True if the drone is supported. False if it is already supported.</returns>
+        </member>
+        <member name="M:Chen.ClassicItems.DroneRepairKit.UnsupportCustomDrone(System.String)">
+            <summary>
+            Removes support for a custom drone, thus removing them from Drone Repair Kit's scope.
+            </summary>
+            <param name="masterName">The CharacterMaster name of the drone.</param>
+            <returns>True if the drone is unsupported. False if it is already unsupported.</returns>
+        </member>
+        <member name="T:Chen.ClassicItems.InstantMinefield">
+            <summary>
+            Singleton equipment class powered by TILER2 that implements Instant Minefield functionality.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.InstantMinefield.minePrefab">
+            <summary>
+            The mine prefab used to deploy the mines triggered by Instant Minefield.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.InstantMinefield.mineGhostPrefab">
+            <summary>
+            The ghost projectile prefab for the mine prefab of Instant Minefield.
+            </summary>
+        </member>
+        <member name="T:Chen.ClassicItems.MortarTube">
+            <summary>
+            Singleton item class powered by TILER2 that implements Mortar Tube functionality.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.MortarTube.mortarPrefab">
+            <summary>
+            Contains the mortar projectile prefab. Must invoke SetupMortarProjectile() for it to be initialized.
+            </summary>
+        </member>
+        <member name="M:Chen.ClassicItems.MortarTube.SetupMortarProjectile">
+            <summary>
+            Sets up the mortar projectile. Always invoke the method if one needs to borrow the mortar prefab.
+            </summary>
+        </member>
+        <member name="T:Chen.ClassicItems.ArmsRace">
+            <summary>
+            Singleton item class powered by TILER2 that implements Arms Race functionality.
+            </summary>
+        </member>
+        <member name="M:Chen.ClassicItems.ArmsRace.TriggerArtillery(RoR2.CharacterBody,System.Single,System.Boolean,RoR2.ProcChainMask)">
+            <summary>
+            Used to trigger Arms Race effect in launching artillery.
+            </summary>
+            <param name="body">The drone's body</param>
+            <param name="damage">Damage to be computed against the coefficients of Arms Race projectiles</param>
+            <param name="crit">Determines if this should be a critical hit</param>
+            <param name="procChainMask">The proc chain mask</param>
+        </member>
+        <member name="T:Chen.ClassicItems.FootMine">
+            <summary>
+            Singleton item class powered by TILER2 that implements Dead Man's Foot functionality.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.FootMine.minePrefab">
+            <summary>
+            The mine prefab used to deploy the mines triggered by Dead Man's Foot.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.FootMine.mineGhostPrefab">
+            <summary>
+            The ghost projectile prefab for the mine prefab of Dead Man's Foot.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.FootMine.poisonBuff">
+            <summary>
+            The BuffIndex poison debuff used by Dead Man's Foot.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.FootMine.poisonDot">
+            <summary>
+            The DotIndex poison debuff used by Dead Man's Foot.
+            </summary>
+        </member>
+        <member name="T:Chen.ClassicItems.PanicMines">
+            <summary>
+            Singleton item class powered by TILER2 that implements Panic Mines functionality.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.PanicMines.minePrefab">
+            <summary>
+            The mine prefab used to deploy the mines triggered by Panic Mines.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.PanicMines.mineGhostPrefab">
+            <summary>
+            The ghost projectile prefab for the mine prefab of Panic Mines.
+            </summary>
+        </member>
+        <member name="T:Chen.ClassicItems.Missile2">
+            <summary>
+            Singleton item class powered by TILER2 that implements AtG Missile Mk. II functionality.
+            </summary>
+        </member>
+        <member name="T:Chen.ClassicItems.Thallium">
+            <summary>
+            Singleton item class powered by TILER2 that implements Thallium functionality.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.Thallium.poisonBuff">
+            <summary>
+            The BuffIndex of Thallium Poisoning debuff.
+            </summary>
+        </member>
+        <member name="P:Chen.ClassicItems.Thallium.poisonDot">
+            <summary>
+            The DotIndex of Thallium Poisoning debuff.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -4,7 +4,7 @@
 ## ClassicItemsPlugin.ModVer Field
 This mod's version.  
 ```csharp
-public const string ModVer = 2.3.0;
+public const string ModVer = 2.3.1;
 ```
 
 #### Field Value
