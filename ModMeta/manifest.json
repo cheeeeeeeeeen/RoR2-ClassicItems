@@ -2,11 +2,11 @@
   "name": "ChensClassicItems",
   "version_number": "2.3.1",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
-  "description": "Add config option for spawn modes of Imp Vanguard. This is to address the issue of players being catapulted off the map. This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1.",
+  "description": "This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1. Fully documented for other interested mod creators.",
   "dependencies": [
     "bbepis-BepInExPack-5.3.1",
     "tristanmcpherson-R2API-2.5.14",
-    "Chen-ChensHelpers-1.0.2",
+    "Chen-ChensHelpers-1.0.3",
     "ThinkInvis-TILER2-3.0.4",
     "ThinkInvis-ClassicItems-4.6.4"
   ]

@@ -20,6 +20,20 @@
             <param name="condition">The existence condition check where T is the item from the list</param>
             <returns>True if the item is added. False if the item already exists.</returns>
         </member>
+        <member name="M:Chen.Helpers.CollectionHelpers.Extensions.ConditionalAddRange``1(System.Collections.Generic.List{``0},``0[],System.Func{``0,``0,System.Boolean})">
+            <summary>
+            Adds a range of values into the list. Each item will be processed from the data and will checked by the given condition.
+            If the item matches the condition, it will not be added.
+            </summary>
+            <typeparam name="T">Type of the items in the list and the array</typeparam>
+            <param name="list">The list in question</param>
+            <param name="data">Array of values</param>
+            <param name="condition">The existence condition check where
+            the first T is the item from the list
+            and the second T is the item from the data array</param>
+            <returns>True if all items are added. False if an item was not added.
+            Items that failed the existence check will still be added.</returns>
+        </member>
         <member name="M:Chen.Helpers.CollectionHelpers.Extensions.ConditionalRemove``1(System.Collections.Generic.List{``0},``0)">
             <summary>
             Removes the item from the list if it exists.
@@ -38,6 +52,14 @@
             <param name="array">The array to inspect</param>
             <param name="value">The value to check</param>
             <returns>True if the value exists in the array. False if not.</returns>
+        </member>
+        <member name="M:Chen.Helpers.CollectionHelpers.Extensions.ToList``1(``0[])">
+            <summary>
+            Converts an array into their List counterpart.
+            </summary>
+            <param name="array">The array to convert</param>
+            <typeparam name="T">Data type of the array</typeparam>
+            <returns>The List equivalent of the array.</returns>
         </member>
         <member name="T:Chen.Helpers.GeneralHelpers.AssetsManager">
             <summary>
@@ -107,6 +129,13 @@
             <param name="source">The resource path of the bundle</param>
             <param name="type">Type of the bundle</param>
         </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.Equals(Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo)">
+            <summary>
+            Defines the equality of this struct. Always use this method to compare BundleInfo data.
+            </summary>
+            <param name="other">The other BundleInfo to compare with</param>
+            <returns>The equality truthiness</returns>
+        </member>
         <member name="T:Chen.Helpers.GeneralHelpers.AssetsManager.BundleType">
             <summary>
             This is used to identify the type of the bundle for differentiation in registration process.
@@ -125,11 +154,48 @@
         <member name="T:Chen.Helpers.GeneralHelpers.DropletGenerator">
             <summary>
             A helper that allows listening to function keys to generate pickup droplets in-game.
+            Press F3 to generate a random white item (or essence).
+            Press F4 to generate a random green item (or essence).
+            Press F5 to generate a random red item (or essence).
+            Press F6 to generate a random orange item (or essence).
+            Press F7 to generate a random blue (both the item and equipment variants) item (or essence).
+            Press F8 to generate a random yellow item (or essence).
             </summary>
         </member>
         <member name="M:Chen.Helpers.GeneralHelpers.DropletGenerator.Update">
             <summary>
             Place this in a BaseUnityPlugin.Update() to enable the listeners.
+            </summary>
+        </member>
+        <member name="T:Chen.Helpers.GeneralHelpers.Instances">
+            <summary>
+            Helper static class that allows the fetching of an instance without the need to write long codes.
+            Checks are done by this helper and should output a debug log in the console.
+            </summary>
+        </member>
+        <member name="P:Chen.Helpers.GeneralHelpers.Instances.hostPcmc">
+            <summary>
+            Gets the instance of the host's PlayerCharacterMasterController.
+            </summary>
+        </member>
+        <member name="P:Chen.Helpers.GeneralHelpers.Instances.hostMaster">
+            <summary>
+            Gets the instance of the host's CharacterMaster component.
+            </summary>
+        </member>
+        <member name="P:Chen.Helpers.GeneralHelpers.Instances.hostMasterObject">
+            <summary>
+            Gets the instance of the host's CharacterMaster GameObject.
+            </summary>
+        </member>
+        <member name="P:Chen.Helpers.GeneralHelpers.Instances.hostBody">
+            <summary>
+            Gets the instance of the host's CharacterBody component.
+            </summary>
+        </member>
+        <member name="P:Chen.Helpers.GeneralHelpers.Instances.hostBodyObject">
+            <summary>
+            Gets the instance of the host's CharacterBody GameObject.
             </summary>
         </member>
         <member name="T:Chen.Helpers.GeneralHelpers.MinionExtensions">
@@ -196,6 +262,62 @@
             </summary>
             <param name="logger">LogHelpers.Log instance</param>
             <param name="message">Message to display when Multiplayer Testing is disabled</param>
+        </member>
+        <member name="T:Chen.Helpers.GeneralHelpers.SoundPlayer">
+            <summary>
+            A helper class that allows playing sounds easily with just the WWise Event ID and a Keybind.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.SoundPlayer.#ctor(Chen.Helpers.GeneralHelpers.SoundPlayer.EventPosterKey[])">
+            <summary>
+            Constructor to create an instance of the class.
+            A group of EventPosterKeys may be passed as parameters to automatically register them.
+            </summary>
+            <param name="eventPosterKeys"></param>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.SoundPlayer.Update">
+            <summary>
+            Place this in a BaseUnityPlugin.Update() to enable the listeners for the keybinds registered.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.SoundPlayer.RegisterKeybind(Chen.Helpers.GeneralHelpers.SoundPlayer.EventPosterKey)">
+            <summary>
+            Registers a keybind for a WWise Event that posts the event upon being pressed.
+            Duplicated EventPosterKeys will be replaced by a later assignment.
+            </summary>
+            <param name="eventPosterKey"></param>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.SoundPlayer.RegisterKeybind(UnityEngine.KeyCode,System.UInt32[])">
+            <summary>
+            Registers a keybind for a WWise Event that posts the event upon being pressed.
+            Duplicated EventPosterKeys will be replaced by a later assignment.
+            Alternative overload that does not use the EVentPosterKey data structure.
+            </summary>
+            <param name="key">The key to be assigned</param>
+            <param name="eventIds">Group of Event IDs</param>
+        </member>
+        <member name="T:Chen.Helpers.GeneralHelpers.SoundPlayer.EventPosterKey">
+            <summary>
+            Represents the data structure for a keybind that is responsible for posting WWise sound events.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.GeneralHelpers.SoundPlayer.EventPosterKey.key">
+            <summary>
+            The key which will be assigned to post Event IDs.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.GeneralHelpers.SoundPlayer.EventPosterKey.eventIds">
+            <summary>
+            List of Event IDs that will be posted when the assigned key is pressed.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.SoundPlayer.EventPosterKey.#ctor(UnityEngine.KeyCode,System.UInt32[])">
+            <summary>
+            Constructor for building the data for binding keys with assigned Event IDs.
+            There may be duplicate Event IDs that can exist in one keybind.
+            </summary>
+            <param name="key">Key to be assigned to</param>
+            <param name="eventIds">Group of Event IDs</param>
         </member>
         <member name="T:Chen.Helpers.HelperPlugin">
             <summary>
@@ -388,14 +510,6 @@
             Log using the Warning format of BepInEx logger.
             </summary>
             <param name="data">Anything</param>
-        </member>
-        <member name="M:Chen.Helpers.LogHelpers.Log.Array``1(``0[],System.String)">
-            <summary>
-            Log an array of values using Message format.
-            </summary>
-            <typeparam name="T">Type of the array</typeparam>
-            <param name="data">Array of T</param>
-            <param name="prefix">Prefix to be inserted before the data</param>
         </member>
         <member name="T:Chen.Helpers.MathHelpers.Arithmetic">
             <summary>
