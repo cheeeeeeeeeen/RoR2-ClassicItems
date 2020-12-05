@@ -171,9 +171,9 @@ namespace Chen.ClassicItems
             }
         }
 
-        private void LoopAllMinionOwnerships(CharacterMaster ownerMaster, Action<CharacterBody> actionToRun)
+        private void LoopAllMinionOwnerships(CharacterMaster triggerer, Action<CharacterBody> actionToRun)
         {
-            ownerMaster.LoopMinions((minionMaster) =>
+            triggerer.LoopMinions((minionMaster) =>
             {
                 if (minionMaster && DronesList.Exists((item) => minionMaster.name.Contains(item)))
                 {

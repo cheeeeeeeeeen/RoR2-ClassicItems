@@ -55,6 +55,9 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**2.3.3**
+- Integrate the change from ChensHelpers so that Drone Repair Kit will allow Equipment Drones to heal allied drones under the same owner.
+
 **2.3.2**
 - Include the XML into the packaging of the mod.
 - Small non-required update for ChensHelpers.

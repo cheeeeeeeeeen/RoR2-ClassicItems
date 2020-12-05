@@ -205,17 +205,17 @@
         </member>
         <member name="M:Chen.Helpers.GeneralHelpers.MinionExtensions.LoopMinions(RoR2.CharacterMaster,System.Action{RoR2.CharacterMaster})">
             <summary>
-            Loops through the minions and applies processing for each through an action.
+            Loops through the minions and fellow minions, then applies processing for each through an action.
             </summary>
-            <param name="owner">Master of the minions</param>
-            <param name="logic">Code to apply for each minion of the owner</param>
+            <param name="ownerOrMinion">Master of the minions or a fellow minion</param>
+            <param name="logic">Code to apply for each minion</param>
         </member>
         <member name="M:Chen.Helpers.GeneralHelpers.MinionExtensions.GetAllMinionComponents``1(RoR2.CharacterMaster)">
             <summary>
-            Fetches all the minions of an owner and returns a list of the minions' component.
+            Fetches all the minions and fellow minions, then returns a list of the minions' component.
             </summary>
             <typeparam name="T">Component to match</typeparam>
-            <param name="owner">Master of the minions</param>
+            <param name="ownerOrMinion">Master of the minions</param>
             <returns>List of components of the minions</returns>
         </member>
         <member name="M:Chen.Helpers.GeneralHelpers.MinionExtensions.AssignOwner(RoR2.CharacterMaster,RoR2.CharacterMaster,System.Boolean,System.Boolean)">
@@ -707,6 +707,30 @@
             <param name="getAction">Post-Processor code for fetching</param>
             <param name="addAction">Post-Processor code for adding</param>
             <returns>The component specified as T</returns>
+        </member>
+        <member name="T:Chen.Helpers.UnityHelpers.RoR2Extensions">
+            <summary>
+            Extensions related to Components defined by Risk of Rain 2.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.RoR2Extensions.BuildRendererInfos(RoR2.CharacterModel,UnityEngine.GameObject)">
+            <summary>
+            Builds the renderer information data structure from scratch based on the given GameObject's MeshRenderer components.
+            This overload uses a ShadowCastingMode of Off and IgnoreOverlays of value false.
+            </summary>
+            <param name="model">Model to apply the new RendererInfos</param>
+            <param name="basisObject">The object basis of where the MeshRenderers will be used to build off with</param>
+            <returns>A new set of RendererInfos</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.RoR2Extensions.BuildRendererInfos(RoR2.CharacterModel,UnityEngine.GameObject,UnityEngine.Rendering.ShadowCastingMode,System.Boolean)">
+            <summary>
+            Builds the renderer information data structure from scratch based on the given GameObject's MeshRenderer components.
+            </summary>
+            <param name="model">Model to apply the new RendererInfos</param>
+            <param name="basisObject">The object basis of where the MeshRenderers will be used to build off with</param>
+            <param name="mode">Mode of shadow casting for each mesh</param>
+            <param name="ignoreOverlays">Determines whether to display effects over the mesh, such as elite prefixes</param>
+            <returns>A new set of RendererInfos</returns>
         </member>
     </members>
 </doc>
