@@ -74,11 +74,4 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 - Fully document the mod for interested mod creators.
 - Fix a bug in Distortion about not changing the skills in seconds but in hours.
 
-**2.2.13**
-- Integrate ChensHelpers mod.
-- There should be no notable change except for better documentation and cleaner code. Potential undiscovered bugs could be fixed.
-
-**2.2.12**
-- Fix a huge and nasty bug found in the Artifact of Origin when played in multiplayer.
-
 *For the full changelog, check this [wiki page](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/wiki/Changelog)*.
