@@ -101,7 +101,7 @@ namespace Chen.ClassicItems
         [AutoConfig("Amount of time in seconds for each Imp to spawn apart from each other which adds a delay in between them " +
                     "instead of spawning them all at once to avoid frame drops. 0 will spawn them all almost instantly without delay.",
                     AutoConfigFlags.None, 0f, float.MaxValue)]
-        public float intervalBetweenImps { get; private set; } = .25f;
+        public float intervalBetweenImps { get; private set; } = .3f;
 
         [AutoConfig("Type of spawning of the Imp Overlord. 0 = On the player, 1 = Randomly near the player." +
                     "Setting the spawn type to 0 sometimes causes the player to be catapulted off the map.",
@@ -251,9 +251,18 @@ namespace Chen.ClassicItems
 #endif
             return index;
         }
+
+        internal static bool DebugCheck()
+        {
+#if DEBUG
+            return true;
+#else
+            return false;
+#endif
+        }
     }
 
-    internal class OriginManager : MonoBehaviour
+    internal class OriginManager : QueueProcessor<KeyValuePair<DirectorSpawnRequest, bool>>
     {
         public static ItemIndex[] redList;
         public static ItemIndex[] greenList;
@@ -261,10 +270,11 @@ namespace Chen.ClassicItems
         public static ItemIndex[] blueList;
         public static ItemIndex[] yellowList;
 
-        private Run run;
+        private readonly Run run = Run.instance;
+        private readonly Origin origin = Origin.instance;
         private int previousInvasionCycle = 0;
-        private Origin origin = Origin.instance;
-        private float intervalTimer = 0f;
+        private GameObject masterObject = null;
+        private float? _processInterval = null;
 
         private readonly ItemIndex[] bannedItems = new ItemIndex[]
         {
@@ -273,20 +283,31 @@ namespace Chen.ClassicItems
             ItemIndex.AutoCastEquipment, ItemIndex.BonusGoldPackOnKill
         };
 
-        private readonly Queue<KeyValuePair<DirectorSpawnRequest, bool>> spawnQueue = new Queue<KeyValuePair<DirectorSpawnRequest, bool>>();
+        protected override int itemsPerFrame { get; set; } = 1;
 
-        private void Awake()
+        protected override float processInterval
         {
-            run = Run.instance;
-            origin = Origin.instance;
-            redList = GenerateAvailableItems(run.availableTier3DropList);
-            greenList = GenerateAvailableItems(run.availableTier2DropList);
-            whiteList = GenerateAvailableItems(run.availableTier1DropList);
-            blueList = GenerateAvailableItems(run.availableLunarDropList);
-            yellowList = GenerateAvailableItems(run.availableBossDropList);
+            get
+            {
+                if (_processInterval == null) _processInterval = origin.intervalBetweenImps;
+                return (float)_processInterval;
+            }
+            set => _processInterval = value;
         }
 
-        private void FixedUpdate()
+        protected override bool Process(KeyValuePair<DirectorSpawnRequest, bool> item)
+        {
+            masterObject = DirectorCore.instance.TrySpawnObject(item.Key);
+            return masterObject;
+        }
+
+        protected override void OnSuccess(KeyValuePair<DirectorSpawnRequest, bool> item)
+        {
+            base.OnSuccess(item);
+            if (masterObject && item.Value) GivePearlDrop(masterObject);
+        }
+
+        protected override void FixedUpdate()
         {
             if (gameObject)
             {
@@ -296,20 +317,17 @@ namespace Chen.ClassicItems
                     previousInvasionCycle = currentInvasionCycle;
                     PerformInvasion(new Xoroshiro128Plus(run.seed + (ulong)currentInvasionCycle));
                 }
-                if (spawnQueue.Count > 0)
-                {
-                    intervalTimer += Time.fixedDeltaTime;
-                    if (intervalTimer >= origin.intervalBetweenImps)
-                    {
-                        var pair = spawnQueue.Dequeue();
-                        GameObject masterObject = DirectorCore.instance.TrySpawnObject(pair.Key);
-                        if (!masterObject) spawnQueue.Enqueue(pair);
-                        else if (masterObject && pair.Value) GivePearlDrop(masterObject);
-                        intervalTimer -= origin.intervalBetweenImps;
-                    }
-                }
-                else if (intervalTimer != 0f) intervalTimer = 0f;
+                base.FixedUpdate();
             }
+        }
+
+        private void Awake()
+        {
+            redList = GenerateAvailableItems(run.availableTier3DropList);
+            greenList = GenerateAvailableItems(run.availableTier2DropList);
+            whiteList = GenerateAvailableItems(run.availableTier1DropList);
+            blueList = GenerateAvailableItems(run.availableLunarDropList);
+            yellowList = GenerateAvailableItems(run.availableBossDropList);
         }
 
         private void OnDestroy()
@@ -360,7 +378,7 @@ namespace Chen.ClassicItems
                     teamIndexOverride = TeamIndex.Monster,
                     ignoreTeamMemberLimit = true
                 };
-                spawnQueue.Enqueue(new KeyValuePair<DirectorSpawnRequest, bool>(directorSpawnRequest, i == 0));
+                Add(new KeyValuePair<DirectorSpawnRequest, bool>(directorSpawnRequest, i == 0));
             }
             for (int i = 0; i < origin.impNumber; i++)
             {
@@ -376,7 +394,7 @@ namespace Chen.ClassicItems
                     teamIndexOverride = TeamIndex.Monster,
                     ignoreTeamMemberLimit = true
                 };
-                spawnQueue.Enqueue(new KeyValuePair<DirectorSpawnRequest, bool>(directorSpawnRequest, false));
+                Add(new KeyValuePair<DirectorSpawnRequest, bool>(directorSpawnRequest, false));
             }
         }
 
