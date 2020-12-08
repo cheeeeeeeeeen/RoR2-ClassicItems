@@ -80,11 +80,4 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 - Refactor the Spawn Queue of the Imps spawned by the Artifact of Origin.
 - Integrate newer helpers from ChensHelpers.
 
-**2.3.0**
-- Implement API for Drone Repair Kit to support custom drones.
-- Allow Drone Repair Kit to use TILER2 helpers instead of hooking in RecalculateStats.
-- Recompile for some breaking changes and a fatal bug found in ChensHelpers.
-- Fully document the mod for interested mod creators.
-- Fix a bug in Distortion about not changing the skills in seconds but in hours.
-
 *For the full changelog, check this [wiki page](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/wiki/Changelog)*.
