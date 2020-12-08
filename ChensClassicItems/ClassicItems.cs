@@ -12,6 +12,7 @@ using RoR2;
 using RoR2.Artifacts;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using TILER2;
 using TMPro;
 using UnityEngine.Networking;
@@ -19,6 +20,8 @@ using static Chen.Helpers.GeneralHelpers.AssetsManager;
 using static TILER2.MiscUtil;
 using Path = System.IO.Path;
 using ThinkInvisCI = ThinkInvisible.ClassicItems;
+
+[assembly: InternalsVisibleTo("ChensClassicItems.Tests")]
 
 namespace Chen.ClassicItems
 {
@@ -204,6 +207,15 @@ namespace Chen.ClassicItems
             [AutoConfig("Used for logging items that can be given to enemies when Evolution is on. " +
                         "Makes it easier to report bugs related to Evolution and modded items.")]
             public bool logEvolutionItemList { get; private set; } = true;
+        }
+
+        internal static bool DebugCheck()
+        {
+#if DEBUG
+            return true;
+#else
+            return false;
+#endif
         }
     }
 }
