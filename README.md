@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-2.3.3-orange)
+![Version](https://img.shields.io/badge/Version-2.3.4-orange)
 ![Build](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/workflows/Build/badge.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Support Chen](https://img.shields.io/badge/Support-Chen-ff69b4)](https://ko-fi.com/cheeeeeeeeeen)
@@ -63,6 +63,10 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 **Aromatic Sunday#2929** did offer to make icons, and thus included as an alternate version.
 
 ## Changelog
+
+**2.3.4**
+- Integrate Queue Processors from ChensHelpers.
+- Also improve on the implementation for Origin Imp spawning so that it has less processes.
 
 **2.3.3**
 - Integrate the change from ChensHelpers so that Drone Repair Kit will allow Equipment Drones to heal allied drones under the same owner.
