@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Chen.ClassicItems.Tests.ClassicItems
+namespace Chen.ClassicItems.Tests
 {
     [TestClass]
-    public class Constants
+    public class ClassicItems
     {
         [TestMethod]
         public void ModVer_Length_ReturnsCorrectFormat()
