@@ -1,0 +1,28 @@
+name: Build
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Setup MSbuild
+        uses: microsoft/setup-msbuild@v1
+      - name: Setup VSTest Path
+        uses: darenm/Setup-VSTest@v1
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.5
+      - name: Clear NuGet cache
+        run: nuget locals all -clear
+      - name: Restore NuGet packages
+        run: nuget restore ChensClassicItems.sln
+      - name: Build packages
+        run: msbuild ChensClassicItems.sln /p:Configuration=Release
+      - name: Run tests
+        run: vstest.console.exe ChensClassicItems.Tests\bin\Release\ChensClassicItems.Tests.dll

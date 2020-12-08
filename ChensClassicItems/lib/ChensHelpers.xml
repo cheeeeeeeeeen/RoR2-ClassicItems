@@ -708,6 +708,105 @@
             <param name="addAction">Post-Processor code for adding</param>
             <returns>The component specified as T</returns>
         </member>
+        <member name="T:Chen.Helpers.UnityHelpers.ListProcessor`1">
+            <summary>
+            A generic component for implementing a List Processor.
+            The List Processor will attempt to process all the items in the data structure in a single frame.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.UnityHelpers.ListProcessor`1.processList">
+            <summary>
+            The data structure where all items are stored for processing.
+            </summary>
+        </member>
+        <member name="P:Chen.Helpers.UnityHelpers.ListProcessor`1.repeatUntilSuccess">
+            <summary>
+            Determines whether the data structure should save failed items back and repeat the process in the same frame.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.ListProcessor`1.Add(`0)">
+            <summary>
+            Adds an item into the data structure for processing. No need to override this, but one may do so for complex implementations.
+            </summary>
+            <param name="item">New item to add</param>
+            <returns>True if the item is added. False if the item already exists.</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.ListProcessor`1.Process(`0)">
+            <summary>
+            A method the contains the main processing logic. It is required to be implemented by the child class.
+            This method returns a boolean that determines the outcome of the item from the list.
+            Returning true will dispose of the item. Returning false will put the item back at the end of the queue.
+            </summary>
+            <param name="item">Item that was dequeued from the list</param>
+            <returns>Return true to send a signal of a successful processing, false otherwise.</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.ListProcessor`1.OnSuccess(`0)">
+            <summary>
+            A post-processing method to perform when the operation process is successful. Always invoke base.OnSuccess.
+            </summary>
+            <param name="item">Item that was dequeued from the list</param>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.ListProcessor`1.OnFailure(`0)">
+            <summary>
+            A post-processing method to perform when the operation process failed. Always invoke base.OnFailure.
+            </summary>
+            <param name="item">Item that was dequeued from the list</param>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.ListProcessor`1.FixedUpdate">
+            <summary>
+            A method powered by Unity's MonoBehaviour. This contains the logic processing the queue and its items.
+            There is no need to override this, however if complex code is required, one may do so.
+            </summary>
+        </member>
+        <member name="T:Chen.Helpers.UnityHelpers.QueueProcessor`1">
+            <summary>
+            A generic component for implementing a Queue Processor.
+            The Queue Processor attempts to process N items per frame, allowing items to be processed over time and not instantaneously.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.UnityHelpers.QueueProcessor`1.processQueue">
+            <summary>
+            The data structure where all items are queued in for processing.
+            </summary>
+        </member>
+        <member name="P:Chen.Helpers.UnityHelpers.QueueProcessor`1.itemsPerFrame">
+            <summary>
+            Number of items to process per frame.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.QueueProcessor`1.Add(`0)">
+            <summary>
+            Adds an item into the data structure for processing. No need to override this, but one may do so for complex implementations.
+            </summary>
+            <param name="item">New item to add</param>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.QueueProcessor`1.Process(`0)">
+            <summary>
+            A method the contains the main processing logic. It is required to be implemented by the child class.
+            This method returns a boolean that determines the outcome of the item from the queue.
+            Returning true will dispose of the item. Returning false will put the item back at the end of the queue.
+            </summary>
+            <param name="item">Item that was dequeued from the data structure</param>
+            <returns>Return true to send a signal of a successful processing, false otherwise.</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.QueueProcessor`1.OnSuccess(`0)">
+            <summary>
+            A post-processing method to perform when the operation process is successful. Always invoke base.OnSuccess.
+            </summary>
+            <param name="item">Item that was dequeued from the data structure</param>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.QueueProcessor`1.OnFailure(`0)">
+            <summary>
+            A post-processing method to perform when the operation process failed. Always invoke base.OnFailure.
+            </summary>
+            <param name="item">Item that was dequeued from the data structure</param>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.QueueProcessor`1.FixedUpdate">
+            <summary>
+            A method powered by Unity's MonoBehaviour. This contains the logic processing the queue and its items.
+            There is no need to override this, however if complex code is required, one may do so.
+            </summary>
+        </member>
         <member name="T:Chen.Helpers.UnityHelpers.RoR2Extensions">
             <summary>
             Extensions related to Components defined by Risk of Rain 2.

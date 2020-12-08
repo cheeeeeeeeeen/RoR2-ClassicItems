@@ -5,4 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Type Safety", "UNT0014:Invalid type for call to GetComponent", Justification = "TestMeshpro is a component. False alarm.", Scope = "member", Target = "~M:Chen.ClassicItems.ClassicItemsPlugin.Awake")]
+[assembly: SuppressMessage("Type Safety", "UNT0014:Invalid type for call to GetComponent", Justification = "TextMeshPro is a component. False alarm.", Scope = "member", Target = "~M:Chen.ClassicItems.ClassicItemsPlugin.Awake")]
