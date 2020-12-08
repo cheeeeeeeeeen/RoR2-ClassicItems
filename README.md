@@ -1,5 +1,5 @@
 ![Version](https://img.shields.io/badge/Version-2.3.3-orange)
-![Build](https://github.com/cheeeeeeeeeen/RoR2-ChensClassicItems/workflows/Build/badge.svg)
+![Build](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/workflows/Build/badge.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Support Chen](https://img.shields.io/badge/Support-Chen-ff69b4)](https://ko-fi.com/cheeeeeeeeeen)
 
