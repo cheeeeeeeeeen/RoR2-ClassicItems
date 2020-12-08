@@ -724,6 +724,11 @@
             Determines whether the data structure should save failed items back and repeat the process in the same frame.
             </summary>
         </member>
+        <member name="P:Chen.Helpers.UnityHelpers.ListProcessor`1.processInterval">
+            <summary>
+            The time gap in seconds in between processes.
+            </summary>
+        </member>
         <member name="M:Chen.Helpers.UnityHelpers.ListProcessor`1.Add(`0)">
             <summary>
             Adds an item into the data structure for processing. No need to override this, but one may do so for complex implementations.
@@ -772,6 +777,11 @@
         <member name="P:Chen.Helpers.UnityHelpers.QueueProcessor`1.itemsPerFrame">
             <summary>
             Number of items to process per frame.
+            </summary>
+        </member>
+        <member name="P:Chen.Helpers.UnityHelpers.QueueProcessor`1.processInterval">
+            <summary>
+            The time gap in seconds in between processes.
             </summary>
         </member>
         <member name="M:Chen.Helpers.UnityHelpers.QueueProcessor`1.Add(`0)">
