@@ -33,5 +33,13 @@ namespace Chen.ClassicItems.Tests
 
             Assert.AreEqual(ModGuid, result);
         }
+
+        [TestMethod]
+        public void DebugCheck_Toggled_ReturnsFalse()
+        {
+            bool result = ClassicItemsPlugin.DebugCheck();
+
+            Assert.IsFalse(result);
+        }
     }
 }

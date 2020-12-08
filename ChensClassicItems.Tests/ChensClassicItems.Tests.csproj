@@ -41,6 +41,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BepInEx">
+      <HintPath>..\ChensClassicItems\lib\BepInEx.dll</HintPath>
+    </Reference>
     <Reference Include="ChensClassicItems">
       <HintPath>..\ChensClassicItems\Build\ChensClassicItems.dll</HintPath>
     </Reference>
@@ -52,8 +55,18 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="TILER2">
+      <HintPath>..\ChensClassicItems\lib\TILER2.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\ChensClassicItems\lib\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\ChensClassicItems\lib\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Artifacts\Origin.cs" />
     <Compile Include="ClassicItems.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
