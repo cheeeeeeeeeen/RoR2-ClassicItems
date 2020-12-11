@@ -10,7 +10,7 @@ using UnityEngine;
 using static TILER2.MiscUtil;
 using static TILER2.StatHooks;
 
-namespace Chen.ClassicItems
+namespace Chen.ClassicItems.Items.Equipment
 {
     /// <summary>
     /// Singleton equipment class powered by TILER2 that implements Drone Repair Kit functionality.

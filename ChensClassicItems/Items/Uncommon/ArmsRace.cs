@@ -1,4 +1,5 @@
-﻿using EntityStates.Drone.DroneWeapon;
+﻿using Chen.ClassicItems.Items.Common;
+using EntityStates.Drone.DroneWeapon;
 using EntityStates.Squid.SquidWeapon;
 using RoR2;
 using RoR2.Projectile;
@@ -8,7 +9,7 @@ using UnityEngine;
 using static TILER2.MiscUtil;
 using MageWeapon = EntityStates.Mage.Weapon;
 
-namespace Chen.ClassicItems
+namespace Chen.ClassicItems.Items.Uncommon
 {
     /// <summary>
     /// Singleton item class powered by TILER2 that implements Arms Race functionality.

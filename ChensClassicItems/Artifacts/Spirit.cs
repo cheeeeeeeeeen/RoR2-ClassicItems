@@ -2,7 +2,7 @@
 using TILER2;
 using UnityEngine;
 
-namespace Chen.ClassicItems
+namespace Chen.ClassicItems.Artifacts
 {
     /// <summary>
     /// Singleton artifact class powered by TILER2 that implements Artifact of Spirit functionality.

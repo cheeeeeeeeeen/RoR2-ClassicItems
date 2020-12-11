@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 using static Chen.ClassicItems.ClassicItemsPlugin;
 using static RoR2.DirectorPlacementRule;
 
-namespace Chen.ClassicItems
+namespace Chen.ClassicItems.Artifacts
 {
     /// <summary>
     /// Singleton artifact class powered by TILER2 that implements the Artifact of Origin functionality.
@@ -124,7 +124,7 @@ namespace Chen.ClassicItems
         public override void SetupBehavior()
         {
             base.SetupBehavior();
-            if (EnemyItemDisplaysCompatibility.enabled) EnemyItemDisplaysCompatibility.Setup();
+            if (Compatibility.EnemyItemDisplays.enabled) Compatibility.EnemyItemDisplays.Setup();
             dropTable = Resources.Load<PickupDropTable>("DropTables/dtPearls");
             originOverlordSpawnCard =
                 ImpOriginSetup(Resources.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscImpBoss"),

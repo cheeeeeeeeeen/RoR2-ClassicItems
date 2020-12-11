@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static TILER2.MiscUtil;
 
-namespace Chen.ClassicItems
+namespace Chen.ClassicItems.Items.Rare
 {
     /// <summary>
     /// Singleton item class powered by TILER2 that implements AtG Missile Mk. II functionality.

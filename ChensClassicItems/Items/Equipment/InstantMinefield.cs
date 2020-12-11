@@ -8,7 +8,7 @@ using TILER2;
 using UnityEngine;
 using static TILER2.MiscUtil;
 
-namespace Chen.ClassicItems
+namespace Chen.ClassicItems.Items.Equipment
 {
     /// <summary>
     /// Singleton equipment class powered by TILER2 that implements Instant Minefield functionality.

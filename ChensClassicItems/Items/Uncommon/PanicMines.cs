@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static TILER2.MiscUtil;
 
-namespace Chen.ClassicItems
+namespace Chen.ClassicItems.Items.Uncommon
 {
     /// <summary>
     /// Singleton item class powered by TILER2 that implements Panic Mines functionality.

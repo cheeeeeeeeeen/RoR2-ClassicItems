@@ -7,7 +7,7 @@ using TILER2;
 using UnityEngine;
 using static Chen.ClassicItems.ClassicItemsPlugin;
 
-namespace Chen.ClassicItems
+namespace Chen.ClassicItems.Artifacts
 {
     /// <summary>
     /// Singleton artifact class powered by TILER2 that implements the Artifact of Distortion functionality.

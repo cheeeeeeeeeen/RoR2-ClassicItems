@@ -1,9 +1,9 @@
 ﻿using EnemyItemDisplays;
 using static Chen.ClassicItems.ClassicItemsPlugin;
 
-namespace Chen.ClassicItems
+namespace Chen.ClassicItems.Compatibility
 {
-    internal static class EnemyItemDisplaysCompatibility
+    internal static class EnemyItemDisplays
     {
         private static bool? _enabled;
 

@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 using static TILER2.MiscUtil;
 using static TILER2.StatHooks;
 
-namespace Chen.ClassicItems
+namespace Chen.ClassicItems.Items.Rare
 {
     /// <summary>
     /// Singleton item class powered by TILER2 that implements Thallium functionality.

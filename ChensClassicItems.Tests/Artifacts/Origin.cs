@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ClassBeingTested = Chen.ClassicItems.Origin;
+using ClassBeingTested = Chen.ClassicItems.Artifacts.Origin;
 
 namespace Chen.ClassicItems.Tests.Artifacts
 {
