@@ -1,10 +1,12 @@
 
+#### [ChensClassicItems](./index 'index')
+
 ### [Chen.ClassicItems](./Chen-ClassicItems 'Chen.ClassicItems').[ClassicItemsPlugin](./Chen-ClassicItems-ClassicItemsPlugin 'Chen.ClassicItems.ClassicItemsPlugin')
 
 ## ClassicItemsPlugin.ModVer Field
 This mod's version.  
 ```csharp
-public const string ModVer = 2.3.4;
+public const string ModVer = 2.3.5;
 ```
 
 #### Field Value

@@ -1,4 +1,6 @@
 
+#### [ChensClassicItems](./index 'index')
+
 ### [Chen.ClassicItems](./Chen-ClassicItems 'Chen.ClassicItems').[ClassicItemsPlugin](./Chen-ClassicItems-ClassicItemsPlugin 'Chen.ClassicItems.ClassicItemsPlugin')
 
 ## ClassicItemsPlugin.ModName Field
