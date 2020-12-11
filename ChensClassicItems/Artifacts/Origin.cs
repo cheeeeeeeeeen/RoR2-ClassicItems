@@ -108,6 +108,10 @@ namespace Chen.ClassicItems.Artifacts
                     AutoConfigFlags.None, 0, 1)]
         public int impOverlordSpawnArea { get; private set; } = 1;
 
+        [AutoConfig("The mode of the Imp invasion. 0 = 1 batch of Origin Imps per player, 1 = 1 batch of Origin Imps in the map.",
+                    AutoConfigFlags.None, 0, 1)]
+        public int impInvasionBatchMode { get; private set; } = 0;
+
         [AutoConfig("Used for logging items that can be given to Imps. Makes it easier to report bugs related to items being received by Origin Imps.")]
         public bool logOriginItemList { get; private set; } = true;
 
@@ -234,9 +238,7 @@ namespace Chen.ClassicItems.Artifacts
             for (int i = 0; i < whiteCount; i++) inv.GiveItem(DecideRandomItem(OriginManager.whiteList));
             for (int i = 0; i < blueCount; i++) inv.GiveItem(DecideRandomItem(OriginManager.blueList));
             for (int i = 0; i < yellowCount; i++) inv.GiveItem(DecideRandomItem(OriginManager.yellowList));
-#if DEBUG
-            Log.Debug($"Done. ({master.name} - {master.GetInstanceID()})");
-#endif
+
             float hpBoost = Run.instance.difficultyCoefficient;
             if (isLeader) hpBoost *= impOverlordHpMultiplier;
             else hpBoost *= impHpMultiplier;
@@ -315,7 +317,7 @@ namespace Chen.ClassicItems.Artifacts
                 if (previousInvasionCycle < currentInvasionCycle)
                 {
                     previousInvasionCycle = currentInvasionCycle;
-                    PerformInvasion(new Xoroshiro128Plus(run.seed + (ulong)currentInvasionCycle));
+                    ProcessInvasionMode(new Xoroshiro128Plus(run.seed + (ulong)currentInvasionCycle));
                 }
                 base.FixedUpdate();
             }
@@ -348,20 +350,35 @@ namespace Chen.ClassicItems.Artifacts
 #endif
         }
 
-        private void PerformInvasion(Xoroshiro128Plus rng)
+        private void ProcessInvasionMode(Xoroshiro128Plus rng)
         {
-            for (int i = CharacterMaster.readOnlyInstancesList.Count - 1; i >= 0; i--)
+            if (origin.impInvasionBatchMode == 0)
             {
-                CharacterMaster master = CharacterMaster.readOnlyInstancesList[i];
-                if (master.teamIndex == TeamIndex.Player && master.playerCharacterMasterController)
+                for (int i = 0; i < PlayerCharacterMasterController.instances.Count; i++)
                 {
-                    CharacterBody body = master.GetBody();
-                    if (body) SpawnImpArmy(body, Origin.originOverlordSpawnCard, Origin.originImpSpawnCard, rng);
+                    PerformInvasion(i, rng);
                 }
+            }
+            else if (origin.impInvasionBatchMode == 1)
+            {
+                int playerCount = PlayerCharacterMasterController.instances.Count;
+                int index = rng.RangeInt(0, playerCount);
+                PerformInvasion(index, rng);
             }
         }
 
-        private void SpawnImpArmy(CharacterBody body, CharacterSpawnCard leader, SpawnCard soldier, Xoroshiro128Plus rng)
+        private void PerformInvasion(int index, Xoroshiro128Plus rng)
+        {
+            PlayerCharacterMasterController pcmc = PlayerCharacterMasterController.instances[index];
+            CharacterMaster master = pcmc.master;
+            if (master.teamIndex == TeamIndex.Player)
+            {
+                CharacterBody body = master.GetBody();
+                if (body) QueueImpArmy(body, Origin.originOverlordSpawnCard, Origin.originImpSpawnCard, rng);
+            }
+        }
+
+        private void QueueImpArmy(CharacterBody body, CharacterSpawnCard leader, SpawnCard soldier, Xoroshiro128Plus rng)
         {
             Transform spawnOnTarget = body.coreTransform;
             for (int i = 0; i < origin.impOverlordNumber; i++)

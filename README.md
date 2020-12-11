@@ -31,13 +31,13 @@ If one does not want to use a mod manager, then get the DLL from **[Thunderstore
 ### Equipment
 - **Drone Repair Kit** : Heals all drones you own as well as applying a regeneration buff.
 - **Instant Minefield** : Drop mines that are quickly fully armed upon landing.
-### Tier 1
+### Common
 - **Mortar Tube** : Launch a mortar. Classic.
-### Tier 2
+### Uncommon
 - **Arms Race** : All drones you own will launch a missile or a mortar, or both.
 - **Dead Man's Foot** : Throw a mine upon taking *serious damage* that inflicts poison upon exploding.
 - **Panic Mines** : Throw a mine upon taking *serious damage* that inflicts damage. 
-### Tier 3
+### Rare
 - **AtG Missile Mk. 2** : AtG Missile Mk. 1 but better.
 - **Thallium** : Chance to inflict poison on enemies based on their own damage.
 
@@ -67,6 +67,7 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 **2.3.5**
 - Improve namespaces on the project so that the code is readable, and follows best practices.
 - Major changes in API due to namespace change. Refer to the code documentation for the new one.
+- Add a config option for determining batch spawning for Artifact of Origin.
 
 **2.3.4**
 - Integrate Queue Processors from ChensHelpers.
