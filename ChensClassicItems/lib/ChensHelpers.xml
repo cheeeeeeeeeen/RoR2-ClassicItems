@@ -574,6 +574,41 @@
             <returns>Average of the values in the array</returns>
             <exception cref="T:System.DivideByZeroException">Raised when the array length is 0 when division is performed.</exception>
         </member>
+        <member name="T:Chen.Helpers.MathHelpers.Percent">
+            <summary>
+            Extensions related to percentages of numbers.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Percent.ToPercent(System.Single)">
+            <summary>
+            Converts the number into its percentage value.
+            </summary>
+            <param name="number">Number to convert from</param>
+            <returns>Converted percentage value</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Percent.ToPercent(System.Single,System.UInt32)">
+            <summary>
+            Converts the number into a string with control of the precision.
+            </summary>
+            <param name="number">Number to modify</param>
+            <param name="precision">Precision to be followed</param>
+            <returns>Formatted string of the number</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Percent.ToDecimal(System.Single)">
+            <summary>
+            Converts the percentage into its decimal value.
+            </summary>
+            <param name="percentage">Percentage to convert from</param>
+            <returns>Converted decimal value</returns>
+        </member>
+        <member name="M:Chen.Helpers.MathHelpers.Percent.ToDecimal(System.Single,System.UInt32)">
+            <summary>
+            Converts the percentage into a string with control of the precision.
+            </summary>
+            <param name="percentage">Percentage to modify</param>
+            <param name="precision">Precision to be followed</param>
+            <returns>Formatted string of the percentage</returns>
+        </member>
         <member name="T:Chen.Helpers.MathHelpers.Wave">
             <summary>
             Math helper for easily computing Wave behaviors.
