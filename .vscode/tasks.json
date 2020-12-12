@@ -8,16 +8,20 @@
             "command": "dotnet",
             "type": "shell",
             "args": [
-                "build",
-                // Ask dotnet build to generate full paths for file names.
-                "/property:GenerateFullPaths=true",
-                // Do not generate summary otherwise it leads to duplicate errors in Problems panel
-                "/consoleloggerparameters:NoSummary"
+                "build"
             ],
             "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "test",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "vstest",
+                "ChensClassicItems.Tests\\bin\\Debug\\ChensClassicItems.Tests.dll"
+            ],
+            "group": "test",
             "problemMatcher": "$msCompile"
         }
     ]
