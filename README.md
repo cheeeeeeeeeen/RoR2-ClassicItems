@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-2.3.5-orange)
+![Version](https://img.shields.io/badge/Version-3.0.0-orange)
 ![Build](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/workflows/Build/badge.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Support Chen](https://img.shields.io/badge/Support-Chen-ff69b4)](https://ko-fi.com/cheeeeeeeeeen)
@@ -64,6 +64,9 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**3.0.0**
+- Update the mod so that it is playable after the anniversary update.
+
 **2.3.5**
 - Improve namespaces on the project so that the code is readable, and follows best practices.
 - Major changes in API due to namespace change. Refer to the code documentation for the new one.
@@ -79,10 +82,5 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 **2.3.2**
 - Include the XML into the packaging of the mod.
 - Small non-required update for ChensHelpers.
-
-**2.3.1**
-- Add a config option about the Imp Vanguard's Spawn position. It now defaults to spawn like the Imp Soldiers.
-- Refactor the Spawn Queue of the Imps spawned by the Artifact of Origin.
-- Integrate newer helpers from ChensHelpers.
 
 *For the full changelog, check this [wiki page](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/wiki/Changelog)*.
