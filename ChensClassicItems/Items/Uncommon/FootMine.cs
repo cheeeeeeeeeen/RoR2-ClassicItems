@@ -10,13 +10,14 @@ using TILER2;
 using UnityEngine;
 using UnityEngine.Networking;
 using static TILER2.MiscUtil;
+using static Chen.ClassicItems.ClassicItemsPlugin;
 
 namespace Chen.ClassicItems.Items.Uncommon
 {
     /// <summary>
     /// Singleton item class powered by TILER2 that implements Dead Man's Foot functionality.
     /// </summary>
-    public class FootMine : Item_V2<FootMine>
+    public class FootMine : Item<FootMine>
     {
         /// <summary>
         /// The mine prefab used to deploy the mines triggered by Dead Man's Foot.
@@ -31,7 +32,7 @@ namespace Chen.ClassicItems.Items.Uncommon
         /// <summary>
         /// The BuffIndex poison debuff used by Dead Man's Foot.
         /// </summary>
-        public static BuffIndex poisonBuff { get; private set; }
+        public static BuffDef poisonBuff { get; private set; }
 
         /// <summary>
         /// The DotIndex poison debuff used by Dead Man's Foot.
@@ -103,17 +104,17 @@ namespace Chen.ClassicItems.Items.Uncommon
             mesh.material.color = Color.green;
             minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
-            ProjectileCatalog.getAdditionalEntries += list => list.Add(minePrefab);
+            ProjectileAPI.Add(minePrefab);
 
-            CustomBuff poisonBuffDef = new CustomBuff(new BuffDef
-            {
-                //buffColor = new Color32(1, 121, 91, 255),
-                canStack = true,
-                isDebuff = true,
-                name = "CCIFootPoison",
-                iconPath = "@ChensClassicItems:Assets/ClassicItems/icons/footmine_buff_icon.png"
-            });
-            poisonBuff = BuffAPI.Add(poisonBuffDef);
+            poisonBuff = ScriptableObject.CreateInstance<BuffDef>();
+            //poisonBuff.buffColor = new Color32(1, 121, 91, 255);
+            poisonBuff.isDebuff = true;
+            poisonBuff.canStack = true;
+            poisonBuff.name = "CCIFootPoison";
+            poisonBuff.iconSprite = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/icons/footmine_buff_icon.png");
+
+            CustomBuff poisonCustomBuff = new CustomBuff(poisonBuff);
+            BuffAPI.Add(poisonCustomBuff);
 
             DotController.DotDef poisonDotDef = new DotController.DotDef
             {

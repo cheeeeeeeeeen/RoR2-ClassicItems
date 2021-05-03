@@ -14,7 +14,7 @@ namespace Chen.ClassicItems.Items.Uncommon
     /// <summary>
     /// Singleton item class powered by TILER2 that implements Arms Race functionality.
     /// </summary>
-    public class ArmsRace : Item_V2<ArmsRace>
+    public class ArmsRace : Item<ArmsRace>
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Arms Race";

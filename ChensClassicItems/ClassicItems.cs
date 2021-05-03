@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using TILER2;
 using TMPro;
+using UnityEngine;
 using UnityEngine.Networking;
 using static Chen.Helpers.GeneralHelpers.AssetsManager;
 using static TILER2.MiscUtil;
@@ -59,6 +60,7 @@ namespace Chen.ClassicItems
         internal static readonly GlobalConfig globalCfg = new GlobalConfig();
         internal static FilingDictionary<CatalogBoilerplate> chensItemList = new FilingDictionary<CatalogBoilerplate>();
         internal static Log Log;
+        internal static AssetBundle assetBundle;
 
         internal bool longDesc { get; private set; } = ThinkInvisCI.ClassicItemsPlugin.globalConfig.longDesc;
 
@@ -72,7 +74,7 @@ namespace Chen.ClassicItems
 
         private static ConfigFile cfgFile;
 
-        internal static string ListItemFormat(ItemIndex item) => $"-> {ItemCatalog.GetItemDef(item).name}";
+        internal static string ListItemFormat(ItemDef item) => $"-> {item.name}";
 
 #if DEBUG
 
@@ -92,7 +94,7 @@ namespace Chen.ClassicItems
 
             Log.Debug("Loading assets...");
             BundleInfo bundleInfo = new BundleInfo("@ChensClassicItems", "Chen.ClassicItems.chensclassicitems_assets", BundleType.UnityAssetBundle);
-            new AssetsManager(bundleInfo).RegisterAll();
+            assetBundle = new AssetsManager(bundleInfo).Register() as AssetBundle;
 
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 
@@ -135,14 +137,14 @@ namespace Chen.ClassicItems
             foreach (CatalogBoilerplate x in chensItemList)
             {
                 string mpnOvr = null;
-                if (x is Item_V2 item) mpnOvr = "@ChensClassicItems:Assets/ClassicItems/models/" + modelNameMap[item.itemTier] + ".prefab";
-                else if (x is Equipment_V2 eqp) mpnOvr = "@ChensClassicItems:Assets/ClassicItems/models/" + (eqp.isLunar ? "LqpCard.prefab" : "EqpCard.prefab");
-                var ipnOvr = "@ChensClassicItems:Assets/ClassicItems/icons/" + x.name + "_icon.png";
+                if (x is Item item) mpnOvr = "Assets/ClassicItems/models/" + modelNameMap[item.itemTier] + ".prefab";
+                else if (x is Equipment eqp) mpnOvr = "Assets/ClassicItems/models/" + (eqp.isLunar ? "LqpCard.prefab" : "EqpCard.prefab");
+                var ipnOvr = "Assets/ClassicItems/icons/" + x.name + "_icon.png";
 
                 if (mpnOvr != null)
                 {
-                    typeof(CatalogBoilerplate).GetProperty(nameof(CatalogBoilerplate.modelResourcePath)).SetValue(x, mpnOvr);
-                    typeof(CatalogBoilerplate).GetProperty(nameof(CatalogBoilerplate.iconResourcePath)).SetValue(x, ipnOvr);
+                    typeof(CatalogBoilerplate).GetProperty(nameof(CatalogBoilerplate.modelResource)).SetValue(x, assetBundle.LoadAsset<GameObject>(mpnOvr));
+                    typeof(CatalogBoilerplate).GetProperty(nameof(CatalogBoilerplate.iconResource)).SetValue(x, assetBundle.LoadAsset<Sprite>(ipnOvr));
                 }
 
                 x.SetupAttributes();
@@ -188,11 +190,22 @@ namespace Chen.ClassicItems
         {
             Log.Message("Starting to display items that can be given to enemies by Evolution...");
             Log.Message("COMMON:");
-            Log.MessageArray(MonsterTeamGainsItemsArtifactManager.availableTier1Items, ListItemFormat);
+            Log.MessageArray(ToItemDefs(MonsterTeamGainsItemsArtifactManager.availableTier1Items), ListItemFormat);
             Log.Message("UNCOMMON:");
-            Log.MessageArray(MonsterTeamGainsItemsArtifactManager.availableTier2Items, ListItemFormat);
+            Log.MessageArray(ToItemDefs(MonsterTeamGainsItemsArtifactManager.availableTier2Items), ListItemFormat);
             Log.Message("RARE:");
-            Log.MessageArray(MonsterTeamGainsItemsArtifactManager.availableTier3Items, ListItemFormat);
+            Log.MessageArray(ToItemDefs(MonsterTeamGainsItemsArtifactManager.availableTier3Items), ListItemFormat);
+        }
+
+        private ItemDef[] ToItemDefs(ItemIndex[] itemIndices)
+        {
+            List<ItemDef> defList = new List<ItemDef>();
+            foreach (ItemIndex index in itemIndices)
+            {
+                defList.Add(ItemCatalog.GetItemDef(index));
+            }
+
+            return defList.ToArray();
         }
 
         private void Start()

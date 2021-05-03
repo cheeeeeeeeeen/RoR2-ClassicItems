@@ -13,7 +13,7 @@ namespace Chen.ClassicItems.Items.Equipment
     /// <summary>
     /// Singleton equipment class powered by TILER2 that implements Instant Minefield functionality.
     /// </summary>
-    public class InstantMinefield : Equipment_V2<InstantMinefield>
+    public class InstantMinefield : Equipment<InstantMinefield>
     {
         /// <summary>
         /// The mine prefab used to deploy the mines triggered by Instant Minefield.
@@ -80,9 +80,9 @@ namespace Chen.ClassicItems.Items.Equipment
             mesh.material.color = new Color32(111, 95, 52, 255);
             minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
-            ProjectileCatalog.getAdditionalEntries += list => list.Add(minePrefab);
+            ProjectileAPI.Add(minePrefab);
 
-            Embryo_V2.instance.Compat_Register(catalogIndex);
+            //Embryo_V2.instance.Compat_Register(catalogIndex);
         }
 
         public override void Install()
@@ -107,7 +107,7 @@ namespace Chen.ClassicItems.Items.Equipment
             GameObject gameObject = body.gameObject;
             Util.PlaySound(FireMines.throwMineSoundString, gameObject);
             DropMines(body, gameObject);
-            if (instance.CheckEmbryoProc(body)) DropMines(body, gameObject, .6f);
+            //if (instance.CheckEmbryoProc(body)) DropMines(body, gameObject, .6f);
 
             return true;
         }

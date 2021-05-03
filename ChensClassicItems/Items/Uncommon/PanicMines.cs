@@ -15,7 +15,7 @@ namespace Chen.ClassicItems.Items.Uncommon
     /// <summary>
     /// Singleton item class powered by TILER2 that implements Panic Mines functionality.
     /// </summary>
-    public class PanicMines : Item_V2<PanicMines>
+    public class PanicMines : Item<PanicMines>
     {
         /// <summary>
         /// The mine prefab used to deploy the mines triggered by Panic Mines.
@@ -86,7 +86,7 @@ namespace Chen.ClassicItems.Items.Uncommon
             mesh.material.color = new Color32(255, 168, 0, 255);
             minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
-            ProjectileCatalog.getAdditionalEntries += list => list.Add(minePrefab);
+            ProjectileAPI.Add(minePrefab);
 
             if (Compat_ItemStats.enabled)
             {

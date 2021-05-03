@@ -4,23 +4,23 @@ using R2API;
 using RoR2;
 using System;
 using System.Collections.Generic;
-using ThinkInvisible.ClassicItems;
 using TILER2;
 using UnityEngine;
 using static TILER2.MiscUtil;
 using static TILER2.StatHooks;
+using static Chen.ClassicItems.ClassicItemsPlugin;
 
 namespace Chen.ClassicItems.Items.Equipment
 {
     /// <summary>
     /// Singleton equipment class powered by TILER2 that implements Drone Repair Kit functionality.
     /// </summary>
-    public class DroneRepairKit : Equipment_V2<DroneRepairKit>
+    public class DroneRepairKit : Equipment<DroneRepairKit>
     {
         /// <summary>
         /// The regen buff associated with the Drone Repair Kit to be given to affected drones.
         /// </summary>
-        public static BuffIndex regenBuff { get; private set; }
+        public static BuffDef regenBuff { get; private set; }
 
         private static readonly List<string> DronesList = new List<string>
         {
@@ -110,17 +110,18 @@ namespace Chen.ClassicItems.Items.Equipment
         public override void SetupBehavior()
         {
             base.SetupBehavior();
-            CustomBuff regenBuffDef = new CustomBuff(new BuffDef
-            {
-                buffColor = Color.green,
-                canStack = true,
-                isDebuff = false,
-                name = "CCIDroneRepairKit",
-                iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/dronerepairkit_buff_icon.png"
-            });
-            regenBuff = BuffAPI.Add(regenBuffDef);
 
-            Embryo_V2.instance.Compat_Register(catalogIndex);
+            regenBuff = ScriptableObject.CreateInstance<BuffDef>();
+            regenBuff.buffColor = Color.green;
+            regenBuff.canStack = true;
+            regenBuff.isDebuff = false;
+            regenBuff.name = "CCIDroneRepairKit";
+            regenBuff.iconSprite = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/Icons/dronerepairkit_buff_icon.png");
+
+            CustomBuff regenCustomBuff = new CustomBuff(regenBuff);
+            BuffAPI.Add(regenCustomBuff);
+
+            //Embryo_V2.instance.Compat_Register(catalogIndex);
         }
 
         public override void Install()
@@ -185,16 +186,16 @@ namespace Chen.ClassicItems.Items.Equipment
 
         private void ApplyHealing(HealthComponent healthComponent, CharacterBody body = null)
         {
-            bool embryoProc = instance.CheckEmbryoProc(body);
+            //bool embryoProc = instance.CheckEmbryoProc(body);
             float restore = healthRestoreAmount;
-            if (embryoProc) restore *= 2f;
+            //if (embryoProc) restore *= 2f;
             if (!body) body = healthComponent.body;
             if (healType == 0) healthComponent.HealFraction(restore, default);
             else healthComponent.Heal(restore, default);
             if (enableRegenBuff)
             {
                 body.AddTimedBuff(regenBuff, regenDuration);
-                if (embryoProc) body.AddTimedBuff(regenBuff, regenDuration);
+                //if (embryoProc) body.AddTimedBuff(regenBuff, regenDuration);
             }
         }
 

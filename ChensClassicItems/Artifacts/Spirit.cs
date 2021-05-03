@@ -1,13 +1,14 @@
 ﻿using RoR2;
 using TILER2;
 using UnityEngine;
+using static Chen.ClassicItems.ClassicItemsPlugin;
 
 namespace Chen.ClassicItems.Artifacts
 {
     /// <summary>
     /// Singleton artifact class powered by TILER2 that implements Artifact of Spirit functionality.
     /// </summary>
-    public class Spirit : Artifact_V2<Spirit>
+    public class Spirit : Artifact<Spirit>
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Artifact of Spirit";
@@ -30,13 +31,13 @@ namespace Chen.ClassicItems.Artifacts
             switch (iconStyle)
             {
                 case 1:
-                    iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/alt_spirit_artifact_on_icon.png";
-                    iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/icons/alt_spirit_artifact_off_icon.png";
+                    iconResource = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/icons/alt_spirit_artifact_on_icon.png");
+                    iconResourceDisabled = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/icons/alt_spirit_artifact_off_icon.png");
                     break;
 
                 default:
-                    iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_on_icon.png";
-                    iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/icons/spirit_artifact_off_icon.png";
+                    iconResource = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/icons/spirit_artifact_on_icon.png");
+                    iconResourceDisabled = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/icons/spirit_artifact_off_icon.png");
                     break;
             }
         }

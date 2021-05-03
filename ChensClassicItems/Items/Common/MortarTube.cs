@@ -12,7 +12,7 @@ namespace Chen.ClassicItems.Items.Common
     /// <summary>
     /// Singleton item class powered by TILER2 that implements Mortar Tube functionality.
     /// </summary>
-    public class MortarTube : Item_V2<MortarTube>
+    public class MortarTube : Item<MortarTube>
     {
         /// <summary>
         /// Contains the mortar projectile prefab. Must invoke SetupMortarProjectile() for it to be initialized.
@@ -207,7 +207,7 @@ namespace Chen.ClassicItems.Items.Common
             GameObject paladinRocket = Resources.Load<GameObject>("prefabs/projectiles/PaladinRocket");
             mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile");
             mortarPrefab.AddComponent<MortarGravity>();
-            ProjectileCatalog.getAdditionalEntries += list => list.Add(mortarPrefab);
+            ProjectileAPI.Add(mortarPrefab);
         }
     }
 
@@ -219,7 +219,7 @@ namespace Chen.ClassicItems.Items.Common
         {
             projSimp = gameObject.GetComponent<ProjectileSimple>();
             if (!projSimp) return;
-            projSimp.velocity *= MortarTube.instance.velocityMultiplier;
+            projSimp.desiredForwardSpeed *= MortarTube.instance.velocityMultiplier;
         }
 
         private void FixedUpdate()

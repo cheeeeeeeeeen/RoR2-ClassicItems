@@ -11,13 +11,14 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static Chen.ClassicItems.ClassicItemsPlugin;
 using static RoR2.DirectorPlacementRule;
+using RoR2Items = RoR2.RoR2Content.Items;
 
 namespace Chen.ClassicItems.Artifacts
 {
     /// <summary>
     /// Singleton artifact class powered by TILER2 that implements the Artifact of Origin functionality.
     /// </summary>
-    public class Origin : Artifact_V2<Origin>
+    public class Origin : Artifact<Origin>
     {
         /// <summary>
         /// The suffix appended on the Imps spawned by Artifact of Origin.
@@ -121,8 +122,8 @@ namespace Chen.ClassicItems.Artifacts
 
         public Origin()
         {
-            iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/origin_artifact_on_icon.png";
-            iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/Icons/origin_artifact_off_icon.png";
+            iconResource = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/icons/origin_artifact_on_icon.png");
+            iconResourceDisabled = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/Icons/origin_artifact_off_icon.png");
         }
 
         public override void SetupBehavior()
@@ -132,13 +133,13 @@ namespace Chen.ClassicItems.Artifacts
             dropTable = Resources.Load<PickupDropTable>("DropTables/dtPearls");
             originOverlordSpawnCard =
                 ImpOriginSetup(Resources.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscImpBoss"),
-                               Resources.Load<Material>("@ChensClassicItems:Assets/ClassicItems/Imp/matImpBossOrigin.mat"),
-                               Resources.Load<Texture>("@ChensClassicItems:Assets/ClassicItems/Imp/ImpBossBodyOrigin.png"),
+                               assetBundle.LoadAsset<Material>("Assets/ClassicItems/Imp/matImpBossOrigin.mat"),
+                               assetBundle.LoadAsset<Texture>("Assets/ClassicItems/Imp/ImpBossBodyOrigin.png"),
                                "Imp Vanguard", "Reclaimer", 2);
             originImpSpawnCard =
                 ImpOriginSetup(Resources.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscImp"),
-                               Resources.Load<Material>("@ChensClassicItems:Assets/ClassicItems/Imp/matImpOrigin.mat"),
-                               Resources.Load<Texture>("@ChensClassicItems:Assets/ClassicItems/Imp/ImpBodyOrigin.png"),
+                               assetBundle.LoadAsset<Material>("Assets/ClassicItems/Imp/matImpOrigin.mat"),
+                               assetBundle.LoadAsset<Texture>("Assets/ClassicItems/Imp/ImpBodyOrigin.png"),
                                "Imp Soldier", "Defender", 0);
         }
 
@@ -242,16 +243,16 @@ namespace Chen.ClassicItems.Artifacts
             float hpBoost = Run.instance.difficultyCoefficient;
             if (isLeader) hpBoost *= impOverlordHpMultiplier;
             else hpBoost *= impHpMultiplier;
-            inv.GiveItem(ItemIndex.BoostHp, Mathf.RoundToInt(hpBoost));
+            inv.GiveItem(RoR2Items.BoostHp, Mathf.RoundToInt(hpBoost));
         }
 
-        private ItemIndex DecideRandomItem(ItemIndex[] itemList)
+        private ItemDef DecideRandomItem(ItemDef[] itemList)
         {
-            ItemIndex index = itemList[Run.instance.spawnRng.RangeInt(0, itemList.Length)];
+            ItemDef itemDef = itemList[Run.instance.spawnRng.RangeInt(0, itemList.Length)];
 #if DEBUG
-            Log.Debug($"Given {index}.");
+            Log.Debug($"Given {itemDef}.");
 #endif
-            return index;
+            return itemDef;
         }
 
         internal static bool DebugCheck()
@@ -266,11 +267,11 @@ namespace Chen.ClassicItems.Artifacts
 
     internal class OriginManager : QueueProcessor<KeyValuePair<DirectorSpawnRequest, bool>>
     {
-        public static ItemIndex[] redList;
-        public static ItemIndex[] greenList;
-        public static ItemIndex[] whiteList;
-        public static ItemIndex[] blueList;
-        public static ItemIndex[] yellowList;
+        public static ItemDef[] redList;
+        public static ItemDef[] greenList;
+        public static ItemDef[] whiteList;
+        public static ItemDef[] blueList;
+        public static ItemDef[] yellowList;
 
         private readonly Run run = Run.instance;
         private readonly Origin origin = Origin.instance;
@@ -278,11 +279,11 @@ namespace Chen.ClassicItems.Artifacts
         private GameObject masterObject = null;
         private float? _processInterval = null;
 
-        private readonly ItemIndex[] bannedItems = new ItemIndex[]
+        private readonly ItemDef[] bannedItems = new ItemDef[]
         {
-            ItemIndex.GoldOnHit, ItemIndex.LunarTrinket, ItemIndex.FocusConvergence, ItemIndex.MonstersOnShrineUse,
-            ItemIndex.TitanGoldDuringTP, ItemIndex.SprintWisp, ItemIndex.ArtifactKey, ItemIndex.SiphonOnLowHealth, ItemIndex.ScrapYellow,
-            ItemIndex.AutoCastEquipment, ItemIndex.BonusGoldPackOnKill
+            RoR2Items.GoldOnHit, RoR2Items.LunarTrinket, RoR2Items.FocusConvergence, RoR2Items.MonstersOnShrineUse,
+            RoR2Items.TitanGoldDuringTP, RoR2Items.SprintWisp, RoR2Items.ArtifactKey, RoR2Items.SiphonOnLowHealth, RoR2Items.ScrapYellow,
+            RoR2Items.AutoCastEquipment, RoR2Items.BonusGoldPackOnKill
         };
 
         protected override int itemsPerFrame { get; set; } = 1;
@@ -415,16 +416,16 @@ namespace Chen.ClassicItems.Artifacts
             }
         }
 
-        private ItemIndex[] GenerateAvailableItems(List<PickupIndex> list)
+        private ItemDef[] GenerateAvailableItems(List<PickupIndex> list)
         {
-            List<ItemIndex> indices = new List<ItemIndex>();
+            List<ItemDef> indices = new List<ItemDef>();
             foreach (PickupIndex pickup in list)
             {
                 if (pickup.pickupDef != null)
                 {
                     ItemIndex index = pickup.pickupDef.itemIndex;
                     ItemDef itemDef = ItemCatalog.GetItemDef(index);
-                    if (IsItemAllowed(itemDef)) indices.Add(index);
+                    if (IsItemAllowed(itemDef)) indices.Add(itemDef);
                 }
             }
             return indices.ToArray();
@@ -436,7 +437,7 @@ namespace Chen.ClassicItems.Artifacts
                    && !itemDef.ContainsTag(ItemTag.AIBlacklist)
                    && !itemDef.ContainsTag(ItemTag.EquipmentRelated)
                    && !itemDef.ContainsTag(ItemTag.SprintRelated)
-                   && !bannedItems.Contains(itemDef.itemIndex);
+                   && !bannedItems.Contains(itemDef);
         }
 
         private bool GivePearlDrop(GameObject masterObject)

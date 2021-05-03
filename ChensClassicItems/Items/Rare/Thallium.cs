@@ -6,18 +6,19 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static TILER2.MiscUtil;
 using static TILER2.StatHooks;
+using static Chen.ClassicItems.ClassicItemsPlugin;
 
 namespace Chen.ClassicItems.Items.Rare
 {
     /// <summary>
     /// Singleton item class powered by TILER2 that implements Thallium functionality.
     /// </summary>
-    public class Thallium : Item_V2<Thallium>
+    public class Thallium : Item<Thallium>
     {
         /// <summary>
         /// The BuffIndex of Thallium Poisoning debuff.
         /// </summary>
-        public static BuffIndex poisonBuff { get; private set; }
+        public static BuffDef poisonBuff { get; private set; }
 
         /// <summary>
         /// The DotIndex of Thallium Poisoning debuff.
@@ -79,15 +80,16 @@ namespace Chen.ClassicItems.Items.Rare
         public override void SetupBehavior()
         {
             base.SetupBehavior();
-            CustomBuff thalliumBuffDef = new CustomBuff(new BuffDef
-            {
-                //buffColor = new Color32(66, 28, 82, 255),
-                canStack = false,
-                isDebuff = true,
-                name = "CCIThalliumPoison",
-                iconPath = "@ChensClassicItems:Assets/ClassicItems/Icons/thallium_buff_icon.png"
-            });
-            poisonBuff = BuffAPI.Add(thalliumBuffDef);
+
+            poisonBuff = ScriptableObject.CreateInstance<BuffDef>();
+            //poisonBuff.buffColor = new Color32(66, 28, 82, 255);
+            poisonBuff.canStack = false;
+            poisonBuff.isDebuff = true;
+            poisonBuff.name = "CCIThalliumPoison";
+            poisonBuff.iconSprite = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/Icons/thallium_buff_icon.png");
+
+            CustomBuff thalliumCustomBuff = new CustomBuff(poisonBuff);
+            BuffAPI.Add(thalliumCustomBuff);
 
             DotController.DotDef thalliumDotDef = new DotController.DotDef
             {

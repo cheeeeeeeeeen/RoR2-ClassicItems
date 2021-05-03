@@ -67,38 +67,17 @@
             Keep an instance of this class internal or local to the mod.
             </summary>
         </member>
-        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.#ctor">
-            <summary>
-            The default constructor one may use to add bundles later.
-            </summary>
-        </member>
-        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.#ctor(Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo[])">
+        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.#ctor(Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo)">
             <summary>
             Constructor to use if the bundles are already made.
             </summary>
-            <param name="bundles">Group of bundles for the helper class to manage</param>
+            <param name="bundleInfo">Bundle for the helper class to manage</param>
         </member>
-        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.Add(Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo)">
+        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.Register">
             <summary>
-            Used to add a bundle for the manager to handle.
+            Invoke this method to start registering the bundle assigned to this manager.
             </summary>
-            <param name="bundle">A bundle data</param>
-            <returns>True if the bundle is added. False if the bundle already exists or has the same name.</returns>
-        </member>
-        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.Add(System.String,System.String,Chen.Helpers.GeneralHelpers.AssetsManager.BundleType)">
-            <summary>
-            Used to add a bundle for the manager to handle.
-            This is an overload alternative.
-            </summary>
-            <param name="modPrefix">Prefix to use for the bundle</param>
-            <param name="source">Embedded resource path of the bundle</param>
-            <param name="type">Bundle Type</param>
-            <returns>True if the bundle is added. False if the bundle already exists or has the same name.</returns>
-        </member>
-        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.RegisterAll">
-            <summary>
-            Invoke this method to start registering all bundles assigned to this manager.
-            </summary>
+            <returns>Null, or an AssetBundle object if the BundleType is a UnityAssetBundle.</returns>
         </member>
         <member name="T:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo">
             <summary>

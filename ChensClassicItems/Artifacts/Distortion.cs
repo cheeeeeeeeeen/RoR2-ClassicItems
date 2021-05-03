@@ -12,7 +12,7 @@ namespace Chen.ClassicItems.Artifacts
     /// <summary>
     /// Singleton artifact class powered by TILER2 that implements the Artifact of Distortion functionality.
     /// </summary>
-    public class Distortion : Artifact_V2<Distortion>
+    public class Distortion : Artifact<Distortion>
     {
         /// <summary>
         /// The SkillDef of the distorted skill that is assigned to characters to disable skills randomly.
@@ -37,8 +37,8 @@ namespace Chen.ClassicItems.Artifacts
 
         public Distortion()
         {
-            iconResourcePath = "@ChensClassicItems:Assets/ClassicItems/icons/distortion_artifact_on_icon.png";
-            iconResourcePathDisabled = "@ChensClassicItems:Assets/ClassicItems/Icons/distortion_artifact_off_icon.png";
+            iconResource = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/icons/distortion_artifact_on_icon.png");
+            iconResourceDisabled = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/Icons/distortion_artifact_off_icon.png");
         }
 
         public override void SetupBehavior()
@@ -54,14 +54,12 @@ namespace Chen.ClassicItems.Artifacts
             distortSkill.canceledFromSprinting = false;
             distortSkill.fullRestockOnAssign = false;
             distortSkill.interruptPriority = InterruptPriority.Any;
-            distortSkill.isBullets = true;
             distortSkill.isCombatSkill = false;
             distortSkill.mustKeyPress = false;
-            distortSkill.noSprint = false;
             distortSkill.rechargeStock = 0;
             distortSkill.requiredStock = 0;
             distortSkill.stockToConsume = 0;
-            distortSkill.icon = Resources.Load<Sprite>("@ChensClassicItems:Assets/ClassicItems/icons/distortion_skill_icon.png");
+            distortSkill.icon = assetBundle.LoadAsset<Sprite>("Assets/ClassicItems/icons/distortion_skill_icon.png");
             distortSkill.skillDescriptionToken = "ALL_DISTORTION_LOCKED_DESCRIPTION";
             distortSkill.skillName = "ALL_DISTORTION_LOCKED_NAME";
             distortSkill.skillNameToken = "ALL_DISTORTION_LOCKED_NAME";

@@ -11,7 +11,7 @@ namespace Chen.ClassicItems.Items.Rare
     /// <summary>
     /// Singleton item class powered by TILER2 that implements AtG Missile Mk. II functionality.
     /// </summary>
-    public class Missile2 : Item_V2<Missile2>
+    public class Missile2 : Item<Missile2>
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "AtG Missile Mk. 2";
