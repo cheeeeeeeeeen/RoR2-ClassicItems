@@ -159,6 +159,8 @@ namespace Chen.ClassicItems
             Log.Debug("Performing early finalization...");
             T2Module.SetupAll_PluginStart(chensItemList);
 
+            new ContentProvider().Initialize();
+
             if (globalCfg.logEvolutionItemList)
             {
                 RunArtifactManager.onArtifactEnabledGlobal += OnEvolutionEnable;

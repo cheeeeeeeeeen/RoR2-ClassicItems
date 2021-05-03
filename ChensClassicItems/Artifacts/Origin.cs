@@ -46,6 +46,9 @@ namespace Chen.ClassicItems.Artifacts
         /// </summary>
         public static CharacterSpawnCard originImpSpawnCard { get; private set; }
 
+        internal static List<GameObject> bodyObjects = new List<GameObject>();
+        internal static List<GameObject> masterObjects = new List<GameObject>();
+
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public override string displayName => "Artifact of Origin";
 
@@ -163,11 +166,11 @@ namespace Chen.ClassicItems.Artifacts
         {
             GameObject masterObject = origCsc.prefab;
             masterObject = masterObject.InstantiateClone(masterObject.name + originSuffix);
-            //MasterCatalog.getAdditionalEntries += (list) => { list.Add(masterObject); };
+            masterObjects.Add(masterObject);
             CharacterMaster master = masterObject.GetComponent<CharacterMaster>();
             GameObject bodyObject = master.bodyPrefab;
             bodyObject = bodyObject.InstantiateClone(bodyObject.name + originSuffix);
-            //BodyCatalog.getAdditionalEntries += (list) => { list.Add(bodyObject); };
+            bodyObjects.Add(bodyObject);
             CharacterBody body = bodyObject.GetComponent<CharacterBody>();
             body.baseNameToken += originSuffix;
             body.subtitleNameToken += originSuffix;
