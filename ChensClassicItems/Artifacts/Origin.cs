@@ -163,11 +163,11 @@ namespace Chen.ClassicItems.Artifacts
         {
             GameObject masterObject = origCsc.prefab;
             masterObject = masterObject.InstantiateClone(masterObject.name + originSuffix);
-            MasterCatalog.getAdditionalEntries += (list) => { list.Add(masterObject); };
+            //MasterCatalog.getAdditionalEntries += (list) => { list.Add(masterObject); };
             CharacterMaster master = masterObject.GetComponent<CharacterMaster>();
             GameObject bodyObject = master.bodyPrefab;
             bodyObject = bodyObject.InstantiateClone(bodyObject.name + originSuffix);
-            BodyCatalog.getAdditionalEntries += (list) => { list.Add(bodyObject); };
+            //BodyCatalog.getAdditionalEntries += (list) => { list.Add(bodyObject); };
             CharacterBody body = bodyObject.GetComponent<CharacterBody>();
             body.baseNameToken += originSuffix;
             body.subtitleNameToken += originSuffix;
