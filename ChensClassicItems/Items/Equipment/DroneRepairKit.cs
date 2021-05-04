@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using TILER2;
 using UnityEngine;
+using static Chen.ClassicItems.ClassicItemsPlugin;
 using static TILER2.MiscUtil;
 using static TILER2.StatHooks;
-using static Chen.ClassicItems.ClassicItemsPlugin;
 
 namespace Chen.ClassicItems.Items.Equipment
 {

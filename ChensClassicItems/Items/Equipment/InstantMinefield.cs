@@ -3,7 +3,6 @@ using EntityStates.Engi.Mine;
 using R2API;
 using RoR2;
 using RoR2.Projectile;
-using ThinkInvisible.ClassicItems;
 using TILER2;
 using UnityEngine;
 using static TILER2.MiscUtil;
