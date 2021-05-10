@@ -7,7 +7,7 @@
 The suffix appended on the Imps spawned by Artifact of Origin.  
 Might be useful if one wants to fetch the objects related to these Imps through their name.  
 ```csharp
-public const string originSuffix = (Origin);
+public const string originSuffix = ChensClassicItemsOrigin;
 ```
 
 #### Field Value

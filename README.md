@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-3.0.1-orange)
+![Version](https://img.shields.io/badge/Version-3.0.2-orange)
 ![Build](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/workflows/Build/badge.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Support Chen](https://img.shields.io/badge/Support-Chen-ff69b4)](https://ko-fi.com/cheeeeeeeeeen)
@@ -64,6 +64,9 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**3.0.2**
+- Fix a bug where the console is complaining about Imps from Origin being invalid.
+
 **3.0.1**
 - Add some content to content packs as defined.
 
@@ -78,8 +81,5 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 **2.3.4**
 - Integrate Queue Processors from ChensHelpers.
 - Also improve on the implementation for Origin Imp spawning so that it has less processes.
-
-**2.3.3**
-- Integrate the change from ChensHelpers so that Drone Repair Kit will allow Equipment Drones to heal allied drones under the same owner.
 
 *For the full changelog, check this [wiki page](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/wiki/Changelog)*.

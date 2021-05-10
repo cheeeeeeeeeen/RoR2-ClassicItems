@@ -24,7 +24,7 @@ namespace Chen.ClassicItems.Artifacts
         /// The suffix appended on the Imps spawned by Artifact of Origin.
         /// Might be useful if one wants to fetch the objects related to these Imps through their name.
         /// </summary>
-        public const string originSuffix = "(Origin)";
+        public const string originSuffix = "ChensClassicItemsOrigin";
 
         /// <summary>
         /// The drop table used for determining the Imp Vanguard's drops.
