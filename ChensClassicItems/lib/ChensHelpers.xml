@@ -88,6 +88,7 @@
         <member name="F:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.modPrefix">
             <summary>
             The mod prefix is defined to be the identifier to the bundle for accessing. It should always start with "@".
+            Do not use this as this is already unused.
             </summary>
         </member>
         <member name="F:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.source">
@@ -102,9 +103,16 @@
         </member>
         <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.#ctor(System.String,System.String,Chen.Helpers.GeneralHelpers.AssetsManager.BundleType)">
             <summary>
-            Constructor used to build BundleInfo.
+            Deprecated constructor used to build BundleInfo.
             </summary>
             <param name="modPrefix">The prefix used to access the bundle</param>
+            <param name="source">The resource path of the bundle</param>
+            <param name="type">Type of the bundle</param>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.#ctor(System.String,Chen.Helpers.GeneralHelpers.AssetsManager.BundleType)">
+            <summary>
+            Constructor used to build BundleInfo.
+            </summary>
             <param name="source">The resource path of the bundle</param>
             <param name="type">Type of the bundle</param>
         </member>
@@ -854,6 +862,15 @@
             <param name="mode">Mode of shadow casting for each mesh</param>
             <param name="ignoreOverlays">Determines whether to display effects over the mesh, such as elite prefixes</param>
             <returns>A new set of RendererInfos</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.RoR2Extensions.ReplaceModel(UnityEngine.GameObject,UnityEngine.GameObject)">
+            <summary>
+            Replaces the model inside a GameObject's Model Base.
+            This is only applicable to GameObjects that have a "ModelBase" or "Model Base" object, as well as a ModelLocator component.
+            The method will do nothing if it cannot find the model base object.
+            </summary>
+            <param name="originalClonedObject">The whole original cloned object</param>
+            <param name="replacementModel">The replacement model loaded from an asset bundle</param>
         </member>
     </members>
 </doc>

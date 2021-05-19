@@ -45,7 +45,7 @@ namespace Chen.ClassicItems
 #if DEBUG
             "0." +
 #endif
-            "3.0.2";
+            "3.0.3";
 
         /// <summary>
         /// This mod's name.
@@ -93,7 +93,7 @@ namespace Chen.ClassicItems
 #endif
 
             Log.Debug("Loading assets...");
-            BundleInfo bundleInfo = new BundleInfo("@ChensClassicItems", "Chen.ClassicItems.chensclassicitems_assets", BundleType.UnityAssetBundle);
+            BundleInfo bundleInfo = new BundleInfo("Chen.ClassicItems.chensclassicitems_assets", BundleType.UnityAssetBundle);
             assetBundle = new AssetsManager(bundleInfo).Register() as AssetBundle;
 
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);

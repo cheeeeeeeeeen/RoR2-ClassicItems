@@ -112,7 +112,7 @@ namespace Chen.ClassicItems.Items.Common
             }
             if (Compat_BetterUI.enabled)
             {
-                Compat_BetterUI.AddEffect(catalogIndex, procChance, stackChance, Compat_BetterUI.ChanceFormatter, Compat_BetterUI.LinearStacking,
+                Compat_BetterUI.AddEffect(itemDef, procChance, stackChance, Compat_BetterUI.ChanceFormatter, Compat_BetterUI.LinearStacking,
                     (value, extraStackValue, procCoefficient) =>
                     {
                         return Mathf.CeilToInt((capChance - value * procCoefficient) / (extraStackValue * procCoefficient)) + 1;

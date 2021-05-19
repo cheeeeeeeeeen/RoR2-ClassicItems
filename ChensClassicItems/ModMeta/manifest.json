@@ -1,12 +1,12 @@
 {
   "name": "ChensClassicItems",
-  "version_number": "3.0.2",
+  "version_number": "3.0.3",
   "website_url": "https://github.com/cheeeeeeeeeen/RoR2-ClassicItems",
   "description": "This mod is based from ThinkInvis.ClassicItems. Add missing classic items from Risk of Rain 1. Fully documented for other interested mod creators.",
   "dependencies": [
     "bbepis-BepInExPack-5.4.9",
     "tristanmcpherson-R2API-3.0.30",
-    "Chen-ChensHelpers-1.0.8",
+    "Chen-ChensHelpers-1.0.10",
     "ThinkInvis-TILER2-4.0.6",
     "ThinkInvis-ClassicItems-5.0.2"
   ]
