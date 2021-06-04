@@ -165,11 +165,11 @@ namespace Chen.ClassicItems.Artifacts
         private CharacterSpawnCard ImpOriginSetup(CharacterSpawnCard origCsc, Material material, Texture icon, string name, string subtitle, int renderInfoIndex)
         {
             GameObject masterObject = origCsc.prefab;
-            masterObject = masterObject.InstantiateClone(masterObject.name + originSuffix);
+            masterObject = masterObject.InstantiateClone(masterObject.name + originSuffix, true);
             masterObjects.Add(masterObject);
             CharacterMaster master = masterObject.GetComponent<CharacterMaster>();
             GameObject bodyObject = master.bodyPrefab;
-            bodyObject = bodyObject.InstantiateClone(bodyObject.name + originSuffix);
+            bodyObject = bodyObject.InstantiateClone(bodyObject.name + originSuffix, true);
             bodyObjects.Add(bodyObject);
             CharacterBody body = bodyObject.GetComponent<CharacterBody>();
             body.baseNameToken += originSuffix;

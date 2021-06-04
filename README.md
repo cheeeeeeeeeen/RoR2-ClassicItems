@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-3.0.3-orange)
+![Version](https://img.shields.io/badge/Version-3.0.4-orange)
 ![Build](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/workflows/Build/badge.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Support Chen](https://img.shields.io/badge/Support-Chen-ff69b4)](https://ko-fi.com/cheeeeeeeeeen)
@@ -19,7 +19,7 @@ For this mod's API, the documentation can be found in the **[wiki](https://githu
 
 ## Installation
 
-Use **[r2modman](https://thunderstore.io/package/ebkr/r2modman/)** mod manager to install this mod.
+Use **[Thunderstore Mod Manager](https://www.overwolf.com/app/Thunderstore-Thunderstore_Mod_Manager)** to install this mod.
 
 If one does not want to use a mod manager, then get the DLL from **[Thunderstore](https://thunderstore.io/package/Chen/ChensClassicItems/)**.
 
@@ -64,8 +64,11 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**3.0.4**
+- Update the code so that it works with latest R2API.
+
 **3.0.3**
-- Fix a bug where COmpat with BetterUI is being neglected due to using item index.
+- Fix a bug where Compat with BetterUI is being neglected due to using item index.
 
 **3.0.2**
 - Fix a bug where the console is complaining about Imps from Origin being invalid.
@@ -75,14 +78,5 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 **3.0.0**
 - Update the mod so that it is playable after the anniversary update.
-
-**2.3.5**
-- Improve namespaces on the project so that the code is readable, and follows best practices.
-- Major changes in API due to namespace change. Refer to the code documentation for the new one.
-- Add a config option for determining batch spawning for Artifact of Origin.
-
-**2.3.4**
-- Integrate Queue Processors from ChensHelpers.
-- Also improve on the implementation for Origin Imp spawning so that it has less processes.
 
 *For the full changelog, check this [wiki page](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/wiki/Changelog)*.

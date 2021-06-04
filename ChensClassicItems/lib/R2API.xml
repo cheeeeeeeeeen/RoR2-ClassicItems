@@ -118,6 +118,403 @@
             If you are doing a buff for a custom elite, don't forget to register your CustomElite before too to fill the eliteIndex field !
             </summary>
         </member>
+        <member name="T:R2API.DamageAPI">
+            <summary>
+            API for handling DamageTypes added by mods
+            </summary>
+        </member>
+        <member name="P:R2API.DamageAPI.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
+            </summary>
+        </member>
+        <member name="P:R2API.DamageAPI.ModdedDamageTypeCount">
+            <summary>
+            Reserved ModdedDamageTypes count
+            </summary>
+        </member>
+        <member name="M:R2API.DamageAPI.ReserveDamageType">
+            <summary>
+            Reserve ModdedDamageType to use it with
+            <see cref="M:R2API.DamageAPI.AddModdedDamageType(RoR2.DamageInfo,R2API.DamageAPI.ModdedDamageType)"/>,
+            <see cref="M:R2API.DamageAPI.RemoveModdedDamageType(RoR2.DamageInfo,R2API.DamageAPI.ModdedDamageType)"/> and
+            <see cref="M:R2API.DamageAPI.HasModdedDamageType(RoR2.DamageInfo,R2API.DamageAPI.ModdedDamageType)"/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.AddModdedDamageType(RoR2.DamageInfo,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Adding ModdedDamageType to DamageInfo instance. You can add more than one damage type to one DamageInfo
+            </summary>
+            <param name="damageInfo"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.AddModdedDamageType(RoR2.BulletAttack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Adding ModdedDamageType to BulletAttack instance. You can add more than one damage type to one BulletAttack
+            </summary>
+            <param name="bulletAttack"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.AddModdedDamageType(RoR2.Orbs.DamageOrb,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Adding ModdedDamageType to DamageOrb instance. You can add more than one damage type to one DamageOrb
+            </summary>
+            <param name="damageOrb"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.AddModdedDamageType(RoR2.Orbs.GenericDamageOrb,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Adding ModdedDamageType to GenericDamageOrb instance. You can add more than one damage type to one GenericDamageOrb
+            </summary>
+            <param name="genericDamageOrb"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.AddModdedDamageType(RoR2.Orbs.LightningOrb,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Adding ModdedDamageType to LightningOrb instance. You can add more than one damage type to one LightningOrb
+            </summary>
+            <param name="lightningOrb"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.AddModdedDamageType(RoR2.BlastAttack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Adding ModdedDamageType to BlastAttack instance. You can add more than one damage type to one BlastAttack
+            </summary>
+            <param name="blastAttack"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.AddModdedDamageType(RoR2.OverlapAttack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Adding ModdedDamageType to OverlapAttack instance. You can add more than one damage type to one OverlapAttack
+            </summary>
+            <param name="overlapAttack"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.AddModdedDamageType(RoR2.DotController.DotStack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Adding ModdedDamageType to DotController.DotStack instance. You can add more than one damage type to one DotController.DotStack
+            </summary>
+            <param name="dotStack"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.RemoveModdedDamageType(RoR2.DamageInfo,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Removing ModdedDamageType from DamageInfo instance.
+            </summary>
+            <param name="damageInfo"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.RemoveModdedDamageType(RoR2.BulletAttack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Removing ModdedDamageType from BulletAttack instance.
+            </summary>
+            <param name="bulletAttack"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.RemoveModdedDamageType(RoR2.Orbs.DamageOrb,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Removing ModdedDamageType from DamageOrb instance.
+            </summary>
+            <param name="damageOrb"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.RemoveModdedDamageType(RoR2.Orbs.GenericDamageOrb,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Removing ModdedDamageType from GenericDamageOrb instance.
+            </summary>
+            <param name="genericDamageOrb"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.RemoveModdedDamageType(RoR2.Orbs.LightningOrb,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Removing ModdedDamageType from LightningOrb instance.
+            </summary>
+            <param name="lightningOrb"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.RemoveModdedDamageType(RoR2.BlastAttack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Removing ModdedDamageType from BlastAttack instance.
+            </summary>
+            <param name="blastAttack"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.RemoveModdedDamageType(RoR2.OverlapAttack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Removing ModdedDamageType from OverlapAttack instance.
+            </summary>
+            <param name="overlapAttack"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.RemoveModdedDamageType(RoR2.DotController.DotStack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Removing ModdedDamageType from DotController.DotStack instance.
+            </summary>
+            <param name="dotStack"></param>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.HasModdedDamageType(RoR2.DamageInfo,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Checks if DamageInfo instance has ModdedDamageType assigned. One DamageInfo can have more than one damage type.
+            </summary>
+            <param name="damageInfo"></param>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.HasModdedDamageType(RoR2.BulletAttack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Checks if BulletAttack instance has ModdedDamageType assigned. One BulletAttack can have more than one damage type.
+            </summary>
+            <param name="bulletAttack"></param>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.HasModdedDamageType(RoR2.Orbs.DamageOrb,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Checks if DamageOrb instance has ModdedDamageType assigned. One DamageOrb can have more than one damage type.
+            </summary>
+            <param name="damageOrb"></param>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.HasModdedDamageType(RoR2.Orbs.GenericDamageOrb,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Checks if GenericDamageOrb instance has ModdedDamageType assigned. One GenericDamageOrb can have more than one damage type.
+            </summary>
+            <param name="genericDamageOrb"></param>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.HasModdedDamageType(RoR2.Orbs.LightningOrb,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Checks if LightningOrb instance has ModdedDamageType assigned. One LightningOrb can have more than one damage type.
+            </summary>
+            <param name="lightningOrb"></param>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.HasModdedDamageType(RoR2.BlastAttack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Checks if BlastAttack instance has ModdedDamageType assigned. One BlastAttack can have more than one damage type.
+            </summary>
+            <param name="blastAttack"></param>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.HasModdedDamageType(RoR2.OverlapAttack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Checks if OverlapAttack instance has ModdedDamageType assigned. One OverlapAttack can have more than one damage type.
+            </summary>
+            <param name="overlapAttack"></param>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.HasModdedDamageType(RoR2.DotController.DotStack,R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Checks if DotController.DotStack instance has ModdedDamageType assigned. One DotController.DotStack can have more than one damage type.
+            </summary>
+            <param name="dotStack"></param>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="T:R2API.DamageAPI.ModdedDamageTypeHolder">
+            <summary>
+            Holds flag values of ModdedDamageType.
+            </summary>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.Add(R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Enable ModdedDamageType for this instance
+            </summary>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.Remove(R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Disable ModdedDamageType for this instance
+            </summary>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.Has(R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Checks if ModdedDamageType is enabled
+            </summary>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.CopyTo(RoR2.DamageInfo)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the DamageInfo instance (completely replacing already set values)
+            </summary>
+            <param name="damageInfo"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.CopyTo(RoR2.BulletAttack)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the BulletAttack instance (completely replacing already set values)
+            </summary>
+            <param name="bulletAttack"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.CopyTo(RoR2.Orbs.DamageOrb)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the DamageOrb instance (completely replacing already set values)
+            </summary>
+            <param name="damageOrb"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.CopyTo(RoR2.Orbs.GenericDamageOrb)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the GenericDamageOrb instance (completely replacing already set values)
+            </summary>
+            <param name="genericDamageOrb"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.CopyTo(RoR2.Orbs.LightningOrb)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the LightningOrb instance (completely replacing already set values)
+            </summary>
+            <param name="lightningOrb"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.CopyTo(RoR2.BlastAttack)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the BlastAttack instance (completely replacing already set values)
+            </summary>
+            <param name="blastAttack"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.CopyTo(RoR2.OverlapAttack)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the OverlapAttack instance (completely replacing already set values)
+            </summary>
+            <param name="overlapAttack"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.CopyTo(RoR2.DotController.DotStack)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the DotController.DotStack instance (completely replacing already set values)
+            </summary>
+            <param name="dotStack"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.MakeCopy">
+            <summary>
+            Makes a copy of this instance 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.ReadFromNetworkReader(UnityEngine.Networking.NetworkReader)">
+            <summary>
+            Reads compressed value from the NerworkReader. More info about that can be found in the PR: https://github.com/risk-of-thunder/R2API/pull/284
+            </summary>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolder.WriteToNetworkWriter(UnityEngine.Networking.NetworkWriter)">
+            <summary>
+            Writes compressed value to the NerworkWriter. More info about that can be found in the PR: https://github.com/risk-of-thunder/R2API/pull/284
+            </summary>
+            <param name="writer"></param>
+        </member>
+        <member name="T:R2API.DamageAPI.ModdedDamageTypeHolderComponent">
+            <summary>
+            Holds flag values of ModdedDamageType. The main usage is for projectiles. Add this component to your prefab.
+            </summary>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.Add(R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Enable ModdedDamageType for this instance
+            </summary>
+            <param name="moddedDamageType"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.Remove(R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Disable ModdedDamageType for this instance
+            </summary>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.Has(R2API.DamageAPI.ModdedDamageType)">
+            <summary>
+            Checks if ModdedDamageType is enabled
+            </summary>
+            <param name="moddedDamageType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.CopyTo(RoR2.DamageInfo)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the DamageInfo instance (completely replacing already set values)
+            </summary>
+            <param name="damageInfo"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.CopyTo(RoR2.BulletAttack)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the BulletAttack instance (completely replacing already set values)
+            </summary>
+            <param name="bulletAttack"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.CopyTo(RoR2.Orbs.DamageOrb)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the DamageOrb instance (completely replacing already set values)
+            </summary>
+            <param name="damageOrb"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.CopyTo(RoR2.Orbs.GenericDamageOrb)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the GenericDamageOrb instance (completely replacing already set values)
+            </summary>
+            <param name="genericDamageOrb"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.CopyTo(RoR2.Orbs.LightningOrb)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the LightningOrb instance (completely replacing already set values)
+            </summary>
+            <param name="lightningOrb"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.CopyTo(RoR2.BlastAttack)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the BlastAttack instance (completely replacing already set values)
+            </summary>
+            <param name="blastAttack"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.CopyTo(RoR2.OverlapAttack)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the OverlapAttack instance (completely replacing already set values)
+            </summary>
+            <param name="overlapAttack"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.CopyTo(RoR2.DotController.DotStack)">
+            <summary>
+            Copies enabled ModdedDamageTypes to the DotController.DotStack instance (completely replacing already set values)
+            </summary>
+            <param name="dotStack"></param>
+        </member>
+        <member name="M:R2API.DamageAPI.ModdedDamageTypeHolderComponent.MakeHolder">
+            <summary>
+            Create ModdedDamageTypeHolder using values of this instance
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:R2API.DeployableAPI">
+            <summary>
+            API for handling deployables added by mods
+            </summary>
+        </member>
+        <member name="P:R2API.DeployableAPI.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
+            </summary>
+        </member>
+        <member name="M:R2API.DeployableAPI.RegisterDeployableSlot(R2API.DeployableAPI.GetDeployableSameSlotLimit)">
+            <summary>
+            Register new DeployableSlot with callback function to get deployable limit.
+            </summary>
+            <param name="getDeployableSameSlotLimit">Will be executed when new deployable added with returned DeployableSlot.</param>
+            <returns>DeployableSlot that you should use when call `CharacterMaster.AddDeployable`</returns>
+        </member>
+        <member name="T:R2API.DeployableAPI.GetDeployableSameSlotLimit">
+            <summary>
+            
+            </summary>
+            <param name="self">Instance of a `CharacterMaster` for which this method is executed</param>
+            <param name="deployableCountMultiplier">Multiplier for minion count (if Swarms artifact is enabled value will be 2).
+            You don't have to use it, but you can for stuff like Beetle Guards</param>
+            <returns></returns>
+        </member>
         <member name="T:R2API.DifficultyAPI">
             <summary>
             API for adding difficulties like Drizzle, Rainstorm, and Monsoon to the game. Does not cover "very easy, easy, ..., HAHAHAHA".
@@ -146,6 +543,17 @@
             If this is called after the DifficultyCatalog inits then this will return -1/DifficultyIndex.Invalid and ignore the difficulty
             </summary>
             <param name="difficulty">The difficulty definition to add.</param>
+            <returns>DifficultyIndex.Invalid if it fails. Your index otherwise.</returns>
+        </member>
+        <member name="M:R2API.DifficultyAPI.AddDifficulty(RoR2.DifficultyDef,UnityEngine.Sprite)">
+            <summary>
+            Add a DifficultyDef to the list of available difficulties.
+            This must be called before the DifficultyCatalog inits, so before plugin.Start()
+            You'll get your new index returned that you can work with for comparing to Run.Instance.selectedDifficulty.
+            If this is called after the DifficultyCatalog inits then this will return -1/DifficultyIndex.Invalid and ignore the difficulty
+            </summary>
+            <param name="difficulty">The difficulty definition to add.</param>
+            <param name="difficultyIcon">Sprite to use as the difficulty's icon.</param>
             <returns>DifficultyIndex.Invalid if it fails. Your index otherwise.</returns>
         </member>
         <member name="M:R2API.DifficultyAPI.AddDifficulty(RoR2.DifficultyDef,System.Boolean)">
@@ -1156,23 +1564,21 @@
             Return true if the submodule is loaded.
             </summary>
         </member>
-        <member name="M:R2API.PrefabAPI.InstantiateClone(UnityEngine.GameObject,System.String,System.Boolean,System.String,System.String,System.Int32)">
+        <member name="M:R2API.PrefabAPI.InstantiateClone(UnityEngine.GameObject,System.String,System.Boolean)">
             <summary>
             Duplicates a GameObject and leaves it in a "sleeping" state where it is inactive, but becomes active when spawned.
             Also registers the clone to network if registerNetwork is not set to false.
-            Do not override the file, member, and line number parameters. They are used to generate a unique hash for the network ID.
             </summary>
             <param name="g">The GameObject to clone</param>
             <param name="nameToSet">The name to give the clone (Should be unique)</param>
             <param name="registerNetwork">Should the object be registered to network</param>
             <returns>The GameObject of the clone</returns>
         </member>
-        <member name="M:R2API.PrefabAPI.RegisterNetworkPrefab(UnityEngine.GameObject,System.String,System.String,System.Int32)">
+        <member name="M:R2API.PrefabAPI.RegisterNetworkPrefab(UnityEngine.GameObject)">
             <summary>
             Registers a prefab so that NetworkServer.Spawn will function properly with it.
             Only will work on prefabs with a NetworkIdentity component.
             Is never needed for existing objects unless you have cloned them.
-            Do not override the file, member, and line number parameters. They are used to generate a unique hash for the network ID.
             </summary>
             <param name="g">The prefab to register</param>
         </member>
@@ -1206,6 +1612,75 @@
             Return true if the specified submodule is loaded.
             </summary>
             <param name="submodule">nameof the submodule</param>
+        </member>
+        <member name="T:R2API.RecalculateStatsAPI">
+            <summary>
+            API for computing bonuses granted by factors inside RecalculateStats.
+            </summary>
+        </member>
+        <member name="P:R2API.RecalculateStatsAPI.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
+            </summary>
+        </member>
+        <member name="T:R2API.RecalculateStatsAPI.StatHookEventArgs">
+            <summary>
+            A collection of modifiers for various stats. It will be passed down the event chain of GetStatCoefficients; add to the contained values to modify stats.
+            </summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.healthMultAdd">
+            <summary>Added to the direct multiplier to base health. MAX_HEALTH ~ (BASE_HEALTH + baseHealthAdd) * (HEALTH_MULT + healthMultAdd).</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.baseHealthAdd">
+            <summary>Added to base health. MAX_HEALTH ~ (BASE_HEALTH + baseHealthAdd) * (HEALTH_MULT + healthMultAdd).</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.baseShieldAdd">
+            <summary>Added to base shield. MAX_SHIELD ~ BASE_SHIELD + baseShieldAdd.</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.regenMultAdd">
+            <summary>Added to the direct multiplier to base health regen. HEALTH_REGEN ~ (BASE_REGEN + baseRegenAdd) * (REGEN_MULT + regenMultAdd).</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.baseRegenAdd">
+            <summary>Added to base health regen. HEALTH_REGEN ~ (BASE_REGEN + baseRegenAdd) * (REGEN_MULT + regenMultAdd).</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.baseMoveSpeedAdd">
+            <summary>Added to base move speed. MOVE_SPEED ~ (BASE_MOVE_SPEED + baseMoveSpeedAdd) * (MOVE_SPEED_MULT + moveSpeedMultAdd)</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.moveSpeedMultAdd">
+            <summary>Added to the direct multiplier to move speed. MOVE_SPEED ~ (BASE_MOVE_SPEED + baseMoveSpeedAdd) * (MOVE_SPEED_MULT + moveSpeedMultAdd)</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.jumpPowerMultAdd">
+            <summary>Added to the direct multiplier to jump power. JUMP_POWER ~ BASE_JUMP_POWER * (JUMP_POWER_MULT + jumpPowerMultAdd)</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.damageMultAdd">
+            <summary>Added to the direct multiplier to base damage. DAMAGE ~ (BASE_DAMAGE + baseDamageAdd) * (DAMAGE_MULT + damageMultAdd).</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.baseDamageAdd">
+            <summary>Added to base damage. DAMAGE ~ (BASE_DAMAGE + baseDamageAdd) * (DAMAGE_MULT + damageMultAdd).</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.baseAttackSpeedAdd">
+            <summary>Added to attack speed. ATTACK_SPEED ~ (BASE_ATTACK_SPEED + baseAttackSpeedAdd) * (ATTACK_SPEED_MULT + attackSpeedMultAdd).</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.attackSpeedMultAdd">
+            <summary>Added to the direct multiplier to attack speed. ATTACK_SPEED ~ (BASE_ATTACK_SPEED + baseAttackSpeedAdd) * (ATTACK_SPEED_MULT + attackSpeedMultAdd).</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.critAdd">
+            <summary>Added to crit chance. CRIT_CHANCE ~ BASE_CRIT_CHANCE + critAdd.</summary>
+        </member>
+        <member name="F:R2API.RecalculateStatsAPI.StatHookEventArgs.armorAdd">
+            <summary>Added to armor. ARMOR ~ BASE_ARMOR + armorAdd.</summary>
+        </member>
+        <member name="T:R2API.RecalculateStatsAPI.StatHookEventHandler">
+            <summary>
+            Used as the delegate type for the GetStatCoefficients event.
+            </summary>
+            <param name="sender">The CharacterBody which RecalculateStats is being called for.</param>
+            <param name="args">An instance of StatHookEventArgs, passed to each subscriber to this event in turn for modification.</param>
+        </member>
+        <member name="E:R2API.RecalculateStatsAPI.GetStatCoefficients">
+            <summary>
+            Subscribe to this event to modify one of the stat hooks which StatHookEventArgs covers. Fired during CharacterBody.RecalculateStats.
+            </summary>
         </member>
         <member name="T:R2API.ResourcesAPI">
             <summary>
@@ -1496,6 +1971,20 @@
             This method may be called at any time.
             </summary>
             <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:R2API.Utils.CompressedFlagArrayUtilities.ReadFromNetworkReader(UnityEngine.Networking.NetworkReader)">
+            <summary>
+            Reads compressed value from the NerworkReader. More info about that can be found in the PR: https://github.com/risk-of-thunder/R2API/pull/284
+            </summary>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:R2API.Utils.CompressedFlagArrayUtilities.WriteToNetworkWriter(System.Byte[],UnityEngine.Networking.NetworkWriter)">
+            <summary>
+            Reads compressed value from the NerworkReader. More info about that can be found in the PR: https://github.com/risk-of-thunder/R2API/pull/284
+            </summary>
+            <param name="values"></param>
+            <param name="writer"></param>
         </member>
         <member name="T:R2API.Utils.DirectMessage">
             <summary>

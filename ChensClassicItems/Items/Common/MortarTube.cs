@@ -205,7 +205,7 @@ namespace Chen.ClassicItems.Items.Common
         {
             if (mortarPrefab) return;
             GameObject paladinRocket = Resources.Load<GameObject>("prefabs/projectiles/PaladinRocket");
-            mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile");
+            mortarPrefab = paladinRocket.InstantiateClone("MortarProjectile", true);
             mortarPrefab.AddComponent<MortarGravity>();
             ProjectileAPI.Add(mortarPrefab);
         }

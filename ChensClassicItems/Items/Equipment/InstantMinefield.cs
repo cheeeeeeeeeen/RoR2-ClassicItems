@@ -70,7 +70,7 @@ namespace Chen.ClassicItems.Items.Equipment
         {
             base.SetupBehavior();
             GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
-            minePrefab = engiMinePrefab.InstantiateClone("InstantMine");
+            minePrefab = engiMinePrefab.InstantiateClone("InstantMine", true);
             Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
 
             GameObject engiMineGhostPrefab = Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost");

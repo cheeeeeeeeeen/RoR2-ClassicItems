@@ -95,7 +95,7 @@ namespace Chen.ClassicItems.Items.Uncommon
         {
             base.SetupBehavior();
             GameObject engiMinePrefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine");
-            minePrefab = engiMinePrefab.InstantiateClone("FootMine");
+            minePrefab = engiMinePrefab.InstantiateClone("FootMine", true);
             Object.Destroy(minePrefab.GetComponent<ProjectileDeployToOwner>());
 
             GameObject engiMineGhostPrefab = Resources.Load<GameObject>("prefabs/projectileghosts/EngiMineGhost");
