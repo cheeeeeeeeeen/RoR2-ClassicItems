@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static Chen.ClassicItems.ClassicItemsPlugin;
 using static TILER2.MiscUtil;
-using static TILER2.StatHooks;
+using static R2API.RecalculateStatsAPI;
 
 namespace Chen.ClassicItems.Items.Rare
 {

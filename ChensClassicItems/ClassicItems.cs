@@ -35,7 +35,7 @@ namespace Chen.ClassicItems
     [BepInDependency(EnemyItemDisplays.EnemyItemDisplaysPlugin.MODUID, BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [R2APISubmoduleDependency(nameof(DotAPI), nameof(ResourcesAPI), nameof(PrefabAPI), nameof(BuffAPI),
-                              nameof(LoadoutAPI), nameof(LanguageAPI))]
+                              nameof(LoadoutAPI), nameof(LanguageAPI), nameof(RecalculateStatsAPI))]
     public class ClassicItemsPlugin : BaseUnityPlugin
     {
         /// <summary>
