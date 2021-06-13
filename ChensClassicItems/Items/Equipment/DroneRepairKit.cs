@@ -9,6 +9,7 @@ using UnityEngine;
 using static Chen.ClassicItems.ClassicItemsPlugin;
 using static TILER2.MiscUtil;
 using static R2API.RecalculateStatsAPI;
+using ThinkInvisible.ClassicItems;
 
 namespace Chen.ClassicItems.Items.Equipment
 {
@@ -120,8 +121,6 @@ namespace Chen.ClassicItems.Items.Equipment
 
             CustomBuff regenCustomBuff = new CustomBuff(regenBuff);
             BuffAPI.Add(regenCustomBuff);
-
-            //Embryo_V2.instance.Compat_Register(catalogIndex);
         }
 
         public override void Install()
@@ -186,16 +185,16 @@ namespace Chen.ClassicItems.Items.Equipment
 
         private void ApplyHealing(HealthComponent healthComponent, CharacterBody body = null)
         {
-            //bool embryoProc = instance.CheckEmbryoProc(body);
+            bool embryoProc = Embryo.instance.CheckEmbryoProc(body);
             float restore = healthRestoreAmount;
-            //if (embryoProc) restore *= 2f;
+            if (embryoProc) restore *= 2f;
             if (!body) body = healthComponent.body;
             if (healType == 0) healthComponent.HealFraction(restore, default);
             else healthComponent.Heal(restore, default);
             if (enableRegenBuff)
             {
                 body.AddTimedBuff(regenBuff, regenDuration);
-                //if (embryoProc) body.AddTimedBuff(regenBuff, regenDuration);
+                if (embryoProc) body.AddTimedBuff(regenBuff, regenDuration);
             }
         }
 

@@ -3,6 +3,7 @@ using EntityStates.Engi.Mine;
 using R2API;
 using RoR2;
 using RoR2.Projectile;
+using ThinkInvisible.ClassicItems;
 using TILER2;
 using UnityEngine;
 using static TILER2.MiscUtil;
@@ -80,8 +81,6 @@ namespace Chen.ClassicItems.Items.Equipment
             minePrefab.GetComponent<ProjectileController>().ghostPrefab = mineGhostPrefab;
 
             ProjectileAPI.Add(minePrefab);
-
-            //Embryo_V2.instance.Compat_Register(catalogIndex);
         }
 
         public override void Install()
@@ -106,7 +105,7 @@ namespace Chen.ClassicItems.Items.Equipment
             GameObject gameObject = body.gameObject;
             Util.PlaySound(FireMines.throwMineSoundString, gameObject);
             DropMines(body, gameObject);
-            //if (instance.CheckEmbryoProc(body)) DropMines(body, gameObject, .6f);
+            if (Embryo.instance.CheckEmbryoProc(body)) DropMines(body, gameObject, .5f);
 
             return true;
         }
