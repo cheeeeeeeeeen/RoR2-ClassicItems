@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-3.0.4-orange)
+![Version](https://img.shields.io/badge/Version-3.0.5-orange)
 ![Build](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/workflows/Build/badge.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Support Chen](https://img.shields.io/badge/Support-Chen-ff69b4)](https://ko-fi.com/cheeeeeeeeeen)
@@ -64,6 +64,9 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**3.0.5**
+- Update the code so that it works with the latest TILER2 and ClassicItems.
+
 **3.0.4**
 - Update the code so that it works with latest R2API.
 
@@ -75,8 +78,5 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 **3.0.1**
 - Add some content to content packs as defined.
-
-**3.0.0**
-- Update the mod so that it is playable after the anniversary update.
 
 *For the full changelog, check this [wiki page](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/wiki/Changelog)*.
