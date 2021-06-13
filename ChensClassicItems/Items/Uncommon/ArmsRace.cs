@@ -133,9 +133,14 @@ namespace Chen.ClassicItems.Items.Uncommon
         private void Flamethrower_FireGauntlet(On.EntityStates.Mage.Weapon.Flamethrower.orig_FireGauntlet orig, MageWeapon.Flamethrower self, string muzzleString)
         {
             orig(self, muzzleString);
-            if (self.characterBody.name.Contains("FlameDrone") && self.characterBody.master.name.Contains("FlameDrone"))
+            CharacterBody body = self.characterBody;
+            if (body)
             {
-                TriggerArtillery(self.characterBody, self.tickDamageCoefficient * self.damageStat, self.isCrit);
+                CharacterMaster master = body.master;
+                if (master && body.name.Contains("FlameDrone") && master.name.Contains("FlameDrone"))
+                {
+                    TriggerArtillery(self.characterBody, self.tickDamageCoefficient * self.damageStat, self.isCrit);
+                }
             }
         }
 
@@ -248,7 +253,7 @@ namespace Chen.ClassicItems.Items.Uncommon
         /// <param name="procChainMask">The proc chain mask</param>
         public void TriggerArtillery(CharacterBody body, float damage, bool crit, ProcChainMask procChainMask = default)
         {
-            if (damage <= 0 || !body.master || !body.master.minionOwnership || !body.master.minionOwnership.ownerMaster
+            if (damage <= 0 || !body || !body.master || !body.master.minionOwnership || !body.master.minionOwnership.ownerMaster
                 || procChainMask.HasProc(ProcType.Missile)) return;
             int itemCount = GetCount(body.master.minionOwnership.ownerMaster);
             if (itemCount <= 0) return;
