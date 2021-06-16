@@ -1,7 +1,7 @@
 #### [ChensClassicItems](index 'index')
 ### [Chen.ClassicItems.Items.Uncommon](Chen_ClassicItems_Items_Uncommon 'Chen.ClassicItems.Items.Uncommon').[FootMine](Chen_ClassicItems_Items_Uncommon_FootMine 'Chen.ClassicItems.Items.Uncommon.FootMine')
 ## FootMine.poisonBuff Property
-The BuffIndex poison debuff used by Dead Man's Foot.  
+The BuffDef poison debuff used by Dead Man's Foot.  
 ```csharp
 public static RoR2.BuffDef poisonBuff { get; set; }
 ```

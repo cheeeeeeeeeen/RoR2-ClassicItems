@@ -30,7 +30,7 @@ namespace Chen.ClassicItems.Items.Uncommon
         public static GameObject mineGhostPrefab { get; private set; }
 
         /// <summary>
-        /// The BuffIndex poison debuff used by Dead Man's Foot.
+        /// The BuffDef poison debuff used by Dead Man's Foot.
         /// </summary>
         public static BuffDef poisonBuff { get; private set; }
 

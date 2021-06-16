@@ -141,7 +141,7 @@
         </member>
         <member name="P:Chen.ClassicItems.Items.Rare.Thallium.poisonBuff">
             <summary>
-            The BuffIndex of Thallium Poisoning debuff.
+            The BuffDef of Thallium Poisoning debuff.
             </summary>
         </member>
         <member name="P:Chen.ClassicItems.Items.Rare.Thallium.poisonDot">
@@ -180,7 +180,7 @@
         </member>
         <member name="P:Chen.ClassicItems.Items.Uncommon.FootMine.poisonBuff">
             <summary>
-            The BuffIndex poison debuff used by Dead Man's Foot.
+            The BuffDef poison debuff used by Dead Man's Foot.
             </summary>
         </member>
         <member name="P:Chen.ClassicItems.Items.Uncommon.FootMine.poisonDot">

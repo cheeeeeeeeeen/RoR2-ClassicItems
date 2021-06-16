@@ -10,5 +10,5 @@ Inheritance [System.Object](https://docs.microsoft.com/en-us/dotnet/api/System.O
 
 | Properties | |
 | :--- | :--- |
-| [poisonBuff](Chen_ClassicItems_Items_Rare_Thallium_poisonBuff 'Chen.ClassicItems.Items.Rare.Thallium.poisonBuff') | The BuffIndex of Thallium Poisoning debuff.<br/> |
+| [poisonBuff](Chen_ClassicItems_Items_Rare_Thallium_poisonBuff 'Chen.ClassicItems.Items.Rare.Thallium.poisonBuff') | The BuffDef of Thallium Poisoning debuff.<br/> |
 | [poisonDot](Chen_ClassicItems_Items_Rare_Thallium_poisonDot 'Chen.ClassicItems.Items.Rare.Thallium.poisonDot') | The DotIndex of Thallium Poisoning debuff.<br/> |

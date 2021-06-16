@@ -1,7 +1,7 @@
 #### [ChensClassicItems](index 'index')
 ### [Chen.ClassicItems.Items.Rare](Chen_ClassicItems_Items_Rare 'Chen.ClassicItems.Items.Rare').[Thallium](Chen_ClassicItems_Items_Rare_Thallium 'Chen.ClassicItems.Items.Rare.Thallium')
 ## Thallium.poisonBuff Property
-The BuffIndex of Thallium Poisoning debuff.  
+The BuffDef of Thallium Poisoning debuff.  
 ```csharp
 public static RoR2.BuffDef poisonBuff { get; set; }
 ```

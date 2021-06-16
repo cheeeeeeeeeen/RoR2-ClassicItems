@@ -12,5 +12,5 @@ Inheritance [System.Object](https://docs.microsoft.com/en-us/dotnet/api/System.O
 | :--- | :--- |
 | [mineGhostPrefab](Chen_ClassicItems_Items_Uncommon_FootMine_mineGhostPrefab 'Chen.ClassicItems.Items.Uncommon.FootMine.mineGhostPrefab') | The ghost projectile prefab for the mine prefab of Dead Man's Foot.<br/> |
 | [minePrefab](Chen_ClassicItems_Items_Uncommon_FootMine_minePrefab 'Chen.ClassicItems.Items.Uncommon.FootMine.minePrefab') | The mine prefab used to deploy the mines triggered by Dead Man's Foot.<br/> |
-| [poisonBuff](Chen_ClassicItems_Items_Uncommon_FootMine_poisonBuff 'Chen.ClassicItems.Items.Uncommon.FootMine.poisonBuff') | The BuffIndex poison debuff used by Dead Man's Foot.<br/> |
+| [poisonBuff](Chen_ClassicItems_Items_Uncommon_FootMine_poisonBuff 'Chen.ClassicItems.Items.Uncommon.FootMine.poisonBuff') | The BuffDef poison debuff used by Dead Man's Foot.<br/> |
 | [poisonDot](Chen_ClassicItems_Items_Uncommon_FootMine_poisonDot 'Chen.ClassicItems.Items.Uncommon.FootMine.poisonDot') | The DotIndex poison debuff used by Dead Man's Foot.<br/> |

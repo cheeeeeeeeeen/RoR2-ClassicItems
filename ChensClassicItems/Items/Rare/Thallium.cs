@@ -16,7 +16,7 @@ namespace Chen.ClassicItems.Items.Rare
     public class Thallium : Item<Thallium>
     {
         /// <summary>
-        /// The BuffIndex of Thallium Poisoning debuff.
+        /// The BuffDef of Thallium Poisoning debuff.
         /// </summary>
         public static BuffDef poisonBuff { get; private set; }
 
