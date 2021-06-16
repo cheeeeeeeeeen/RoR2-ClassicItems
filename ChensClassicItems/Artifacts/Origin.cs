@@ -1,5 +1,6 @@
 ﻿#undef DEBUG
 
+using Chen.ClassicItems.Items.Rare;
 using Chen.Helpers.LogHelpers.Collections;
 using Chen.Helpers.UnityHelpers;
 using R2API;
@@ -286,7 +287,8 @@ namespace Chen.ClassicItems.Artifacts
         {
             RoR2Items.GoldOnHit, RoR2Items.LunarTrinket, RoR2Items.FocusConvergence, RoR2Items.MonstersOnShrineUse,
             RoR2Items.TitanGoldDuringTP, RoR2Items.SprintWisp, RoR2Items.ArtifactKey, RoR2Items.SiphonOnLowHealth, RoR2Items.ScrapYellow,
-            RoR2Items.AutoCastEquipment, RoR2Items.BonusGoldPackOnKill
+            RoR2Items.AutoCastEquipment, RoR2Items.BonusGoldPackOnKill, RoR2Items.ShockNearby, RoR2Items.ExtraLife,
+            Thallium.instance.itemDef
         };
 
         protected override int itemsPerFrame { get; set; } = 1;
