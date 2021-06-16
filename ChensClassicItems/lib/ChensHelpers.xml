@@ -154,6 +154,29 @@
             Place this in a BaseUnityPlugin.Update() to enable the listeners.
             </summary>
         </member>
+        <member name="T:Chen.Helpers.GeneralHelpers.GenericContentPackProvider">
+            <summary>
+            An Abstract class for easily implementing Content Pack Providers. It is used for adding new CharacterBody and CharacterMaster GameObjects.
+            It is recommended to use R2API for adding other objects like Projectiles, etc.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.GeneralHelpers.GenericContentPackProvider.contentPack">
+            <summary>
+            The Content Pack for this provider. Add here the new contents.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.GenericContentPackProvider.ContentIdentifier">
+            <summary>
+            The identifier for this content pack provider. Usually, a Mod GUID is enough for an identifier.
+            </summary>
+            <returns>The implemented identifier.</returns>
+        </member>
+        <member name="M:Chen.Helpers.GeneralHelpers.GenericContentPackProvider.LoadStaticContentAsyncActions(RoR2.ContentManagement.LoadStaticContentAsyncArgs)">
+            <summary>
+            The actions where new content can be added.
+            </summary>
+            <param name="args">Useful for declaring progress for content additions.</param>
+        </member>
         <member name="T:Chen.Helpers.GeneralHelpers.Instances">
             <summary>
             Helper static class that allows the fetching of an instance without the need to write long codes.
@@ -871,29 +894,6 @@
             </summary>
             <param name="originalClonedObject">The whole original cloned object</param>
             <param name="replacementModel">The replacement model loaded from an asset bundle</param>
-        </member>
-        <member name="T:GenericContentPackProvider">
-            <summary>
-            An Abstract class for easily implementing Content Pack Providers. It is used for adding new CharacterBody and CharacterMaster GameObjects.
-            It is recommended to use R2API for adding other objects like Projectiles, etc.
-            </summary>
-        </member>
-        <member name="F:GenericContentPackProvider.contentPack">
-            <summary>
-            The Content Pack for this provider. Add here the new contents.
-            </summary>
-        </member>
-        <member name="M:GenericContentPackProvider.ContentIdentifier">
-            <summary>
-            The identifier for this content pack provider. Usually, a Mod GUID is enough for an identifier.
-            </summary>
-            <returns>The implemented identifier.</returns>
-        </member>
-        <member name="M:GenericContentPackProvider.LoadStaticContentAsyncActions(RoR2.ContentManagement.LoadStaticContentAsyncArgs)">
-            <summary>
-            The actions where new content can be added.
-            </summary>
-            <param name="args">Useful for declaring progress for content additions.</param>
         </member>
     </members>
 </doc>

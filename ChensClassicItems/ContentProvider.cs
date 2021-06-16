@@ -1,4 +1,5 @@
 ﻿using Chen.ClassicItems.Artifacts;
+using Chen.Helpers.GeneralHelpers;
 using RoR2.ContentManagement;
 
 namespace Chen.ClassicItems
