@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>3.0.6</Version>
+    <Version>3.0.7</Version>
     <PackageProjectUrl>https://github.com/cheeeeeeeeeen/RoR2-ClassicItems</PackageProjectUrl>
     <RepositoryUrl>https://github.com/cheeeeeeeeeen/RoR2-ClassicItems</RepositoryUrl>
     <RootNamespace>Chen.ClassicItems</RootNamespace>
@@ -10,12 +10,14 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>true</Optimize>
-    <DocumentationFile>_docs\ChensClassicItems.xml</DocumentationFile>
+    <DocumentationFile>..\docs\ChensClassicItems.xml</DocumentationFile>
+    <DefaultDocumentationRemoveFileExtensionFromLinks>true</DefaultDocumentationRemoveFileExtensionFromLinks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>_docs\ChensClassicItems.xml</DocumentationFile>
     <WarningLevel>5</WarningLevel>
+    <DefaultDocumentationRemoveFileExtensionFromLinks>true</DefaultDocumentationRemoveFileExtensionFromLinks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -71,18 +73,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DefaultDocumentation" Version="0.6.12">
+    <PackageReference Include="DefaultDocumentation" Version="0.7.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.9.0">
+    <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.11.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir &quot;$(ProjectDir)Build&quot;&#xD;&#xA;cd &quot;$(ProjectDir)Build&quot;&#xD;&#xA;del * /Q&#xD;&#xA;xcopy &quot;$(TargetPath)&quot; /Y&#xD;&#xA;if '$(ConfigurationName)' == 'Debug' (&#xD;&#xA;  copy &quot;$(ProjectDir)ModMeta&quot; . /Y&#xD;&#xA;  copy &quot;$(SolutionDir)README.md&quot; . /Y&#xD;&#xA;  copy &quot;$(SolutionDir)LICENSE.txt&quot; . /Y&#xD;&#xA;  copy &quot;$(ProjectDir)_docs\$(TargetName).xml&quot; . /Y&#xD;&#xA;  7z a Build.zip .\* -x!Build.zip -x!old_*&#xD;&#xA;  copy &quot;$(TargetName).xml&quot; &quot;C:\Users\Chen\AppData\Roaming\Thunderstore Mod Manager\DataFolder\RiskOfRain2\profiles\Default\BepInEx\plugins\Chen-ChensClassicItems&quot; /Y&#xD;&#xA;  copy &quot;$(TargetFileName)&quot; &quot;C:\Users\Chen\AppData\Roaming\Thunderstore Mod Manager\DataFolder\RiskOfRain2\profiles\Default\BepInEx\plugins\Chen-ChensClassicItems&quot; /Y&#xD;&#xA;)" />
+    <Exec Command="mkdir &quot;$(ProjectDir)Build&quot;&#xD;&#xA;cd &quot;$(ProjectDir)Build&quot;&#xD;&#xA;del * /Q&#xD;&#xA;xcopy &quot;$(TargetPath)&quot; /Y&#xD;&#xA;if '$(ConfigurationName)' == 'Debug' (&#xD;&#xA;  copy &quot;$(ProjectDir)ModMeta&quot; . /Y&#xD;&#xA;  copy &quot;$(SolutionDir)README.md&quot; . /Y&#xD;&#xA;  copy &quot;$(SolutionDir)LICENSE.txt&quot; . /Y&#xD;&#xA;  copy &quot;$(SolutionDir)docs\$(TargetName).xml&quot; . /Y&#xD;&#xA;  7z a Build.zip .\* -x!Build.zip -x!old_*&#xD;&#xA;  copy &quot;$(TargetName).xml&quot; &quot;C:\Users\Chen\AppData\Roaming\Thunderstore Mod Manager\DataFolder\RiskOfRain2\profiles\Default\BepInEx\plugins\Chen-ChensClassicItems&quot; /Y&#xD;&#xA;  copy &quot;$(TargetFileName)&quot; &quot;C:\Users\Chen\AppData\Roaming\Thunderstore Mod Manager\DataFolder\RiskOfRain2\profiles\Default\BepInEx\plugins\Chen-ChensClassicItems&quot; /Y&#xD;&#xA;)" />
   </Target>
 
   <ProjectExtensions>

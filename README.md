@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-3.0.6-orange)
+![Version](https://img.shields.io/badge/Version-3.0.7-orange)
 ![Build](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/workflows/Build/badge.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Support Chen](https://img.shields.io/badge/Support-Chen-ff69b4)](https://ko-fi.com/cheeeeeeeeeen)
@@ -64,6 +64,11 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**3.0.7**
+- Integrate changes from ChensHelpers regarding GenericContentPackProvider.
+- Also update DefaultDocumentation so that there would be now a setup that is less tedious to deploy.
+- Ban Tesla Coil, Dio's Best Friend and Thallium from Origin Imps. These made people cry.
+
 **3.0.6**
 - Fix Arms Race Null Reference Exceptions.
 
@@ -75,8 +80,5 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 **3.0.3**
 - Fix a bug where Compat with BetterUI is being neglected due to using item index.
-
-**3.0.2**
-- Fix a bug where the console is complaining about Imps from Origin being invalid.
 
 *For the full changelog, check this [wiki page](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/wiki/Changelog)*.
