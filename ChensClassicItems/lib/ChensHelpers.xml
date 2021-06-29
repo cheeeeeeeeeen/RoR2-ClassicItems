@@ -85,12 +85,6 @@
             This is used by the AssetsManager.
             </summary>
         </member>
-        <member name="F:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.modPrefix">
-            <summary>
-            The mod prefix is defined to be the identifier to the bundle for accessing. It should always start with "@".
-            Do not use this as this is already unused.
-            </summary>
-        </member>
         <member name="F:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.source">
             <summary>
             The source is the resource path as defined by a mod. The bundle must be Embedded as Resource.
@@ -100,14 +94,6 @@
             <summary>
             Type of the bundle.
             </summary>
-        </member>
-        <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.#ctor(System.String,System.String,Chen.Helpers.GeneralHelpers.AssetsManager.BundleType)">
-            <summary>
-            Deprecated constructor used to build BundleInfo.
-            </summary>
-            <param name="modPrefix">The prefix used to access the bundle</param>
-            <param name="source">The resource path of the bundle</param>
-            <param name="type">Type of the bundle</param>
         </member>
         <member name="M:Chen.Helpers.GeneralHelpers.AssetsManager.BundleInfo.#ctor(System.String,Chen.Helpers.GeneralHelpers.AssetsManager.BundleType)">
             <summary>
@@ -682,6 +668,68 @@
             <param name="baseValue">Offset from the result</param>
             <returns>The computed value for the wave</returns>
         </member>
+        <member name="T:Chen.Helpers.RoR2Helpers.DefaultData">
+            <summary>
+            Static class containing the default set of values for some helpers to work, although an option to provide custom data is supported.
+            Mainly for doing shortcuts as long as work flow is followed.
+            </summary>
+        </member>
+        <member name="F:Chen.Helpers.RoR2Helpers.DefaultData.ShaderReplacements">
+            <summary>
+            Default Shader Replacements data. "Fake RoR" is used a prefix for this dictionary.
+            </summary>
+        </member>
+        <member name="T:Chen.Helpers.RoR2Helpers.Extensions">
+            <summary>
+            Extensions related to Components defined by Risk of Rain 2.
+            </summary>
+        </member>
+        <member name="M:Chen.Helpers.RoR2Helpers.Extensions.BuildRendererInfos(RoR2.CharacterModel,UnityEngine.GameObject)">
+            <summary>
+            Builds the renderer information data structure from scratch based on the given GameObject's MeshRenderer components.
+            This overload uses a ShadowCastingMode of Off and IgnoreOverlays of value false.
+            </summary>
+            <param name="model">Model to apply the new RendererInfos</param>
+            <param name="basisObject">The object basis of where the MeshRenderers will be used to build off with</param>
+            <returns>A new set of RendererInfos</returns>
+        </member>
+        <member name="M:Chen.Helpers.RoR2Helpers.Extensions.BuildRendererInfos(RoR2.CharacterModel,UnityEngine.GameObject,UnityEngine.Rendering.ShadowCastingMode,System.Boolean)">
+            <summary>
+            Builds the renderer information data structure from scratch based on the given GameObject's MeshRenderer components.
+            </summary>
+            <param name="model">Model to apply the new RendererInfos</param>
+            <param name="basisObject">The object basis of where the MeshRenderers will be used to build off with</param>
+            <param name="mode">Mode of shadow casting for each mesh</param>
+            <param name="ignoreOverlays">Determines whether to display effects over the mesh, such as elite prefixes</param>
+            <returns>A new set of RendererInfos</returns>
+        </member>
+        <member name="M:Chen.Helpers.RoR2Helpers.Extensions.ReplaceModel(UnityEngine.GameObject,UnityEngine.GameObject)">
+            <summary>
+            Replaces the model inside a GameObject's Model Base.
+            This is only applicable to GameObjects that have a "ModelBase" or "Model Base" object, as well as a ModelLocator component.
+            The method will do nothing if it cannot find the model base object.
+            </summary>
+            <param name="originalClonedObject">The whole original cloned object</param>
+            <param name="replacementModel">The replacement model loaded from an asset bundle</param>
+        </member>
+        <member name="M:Chen.Helpers.RoR2Helpers.Extensions.ConvertShaders(UnityEngine.AssetBundle,System.Collections.Generic.Dictionary{System.String,System.String},System.String)">
+            <summary>
+            Replaces all the shaders of the materials in the specified asset bundle.
+            The Replacement Dictionary should have keys that should be looked from materials for modification. It should include a prefix to determine which should be modified.
+            The respective values for each key will be the replacement.
+            </summary>
+            <param name="assetBundle">Asset bundle whose materials will be converted</param>
+            <param name="replacementDictionary">Dictionary used as reference for replacement</param>
+            <param name="shaderPrefix">The prefix of shaders in the bundle the will be replaced</param>
+        </member>
+        <member name="M:Chen.Helpers.RoR2Helpers.Extensions.ConvertShaders(UnityEngine.AssetBundle)">
+            <summary>
+            Replaces all the shaders of the materials in the specified asset bundle.
+            Uses the prefix "Fake RoR" as a prefix to match materials whose shaders will be replaced.
+            It also uses RoR2Helpers.DefaultData.ShaderReplacements dictionary as reference for replacements.
+            </summary>
+            <param name="assetBundle">Asset bundle whose materials will be converted</param>
+        </member>
         <member name="T:Chen.Helpers.UnityHelpers.Extensions">
             <summary>
             Extensions for Unity objects.
@@ -752,6 +800,33 @@
             <param name="getAction">Post-Processor code for fetching</param>
             <param name="addAction">Post-Processor code for adding</param>
             <returns>The component specified as T</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.Extensions.DeepCopyComponentsFrom``1(UnityEngine.GameObject,UnityEngine.GameObject)">
+            <summary>
+            Creates a deep copy of components from the source towards another Game Object.
+            </summary>
+            <typeparam name="T">A Unity Component</typeparam>
+            <param name="targetGameObject">The target Game Object where components will be copied to</param>
+            <param name="sourceGameObject">Source where the original components derived from</param>
+            <returns>List of deep copied components</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.Extensions.DeepCopyComponentsTo``1(UnityEngine.GameObject,UnityEngine.GameObject)">
+            <summary>
+            Creates a deep copy of components from the source towards the specified Game Object.
+            </summary>
+            <typeparam name="T">A Unity Component</typeparam>
+            <param name="targetGameObject">The target Game Object where components will be copied to</param>
+            <param name="sourceGameObject">Source where the original components derived from</param>
+            <returns>List of deep copied components</returns>
+        </member>
+        <member name="M:Chen.Helpers.UnityHelpers.Extensions.DeepCopy``1(``0,UnityEngine.GameObject)">
+            <summary>
+            Creates a deep copy of a component and attaches it to the target Game Object.
+            </summary>
+            <typeparam name="T">A Unity Component</typeparam>
+            <param name="originalComponent">The basis of the deep copy</param>
+            <param name="targetGameObject">The target Game Object where the deep copy component will be added to</param>
+            <returns>The deep copied component</returns>
         </member>
         <member name="T:Chen.Helpers.UnityHelpers.ListProcessor`1">
             <summary>
@@ -861,39 +936,6 @@
             A method powered by Unity's MonoBehaviour. This contains the logic processing the queue and its items.
             There is no need to override this, however if complex code is required, one may do so.
             </summary>
-        </member>
-        <member name="T:Chen.Helpers.UnityHelpers.RoR2Extensions">
-            <summary>
-            Extensions related to Components defined by Risk of Rain 2.
-            </summary>
-        </member>
-        <member name="M:Chen.Helpers.UnityHelpers.RoR2Extensions.BuildRendererInfos(RoR2.CharacterModel,UnityEngine.GameObject)">
-            <summary>
-            Builds the renderer information data structure from scratch based on the given GameObject's MeshRenderer components.
-            This overload uses a ShadowCastingMode of Off and IgnoreOverlays of value false.
-            </summary>
-            <param name="model">Model to apply the new RendererInfos</param>
-            <param name="basisObject">The object basis of where the MeshRenderers will be used to build off with</param>
-            <returns>A new set of RendererInfos</returns>
-        </member>
-        <member name="M:Chen.Helpers.UnityHelpers.RoR2Extensions.BuildRendererInfos(RoR2.CharacterModel,UnityEngine.GameObject,UnityEngine.Rendering.ShadowCastingMode,System.Boolean)">
-            <summary>
-            Builds the renderer information data structure from scratch based on the given GameObject's MeshRenderer components.
-            </summary>
-            <param name="model">Model to apply the new RendererInfos</param>
-            <param name="basisObject">The object basis of where the MeshRenderers will be used to build off with</param>
-            <param name="mode">Mode of shadow casting for each mesh</param>
-            <param name="ignoreOverlays">Determines whether to display effects over the mesh, such as elite prefixes</param>
-            <returns>A new set of RendererInfos</returns>
-        </member>
-        <member name="M:Chen.Helpers.UnityHelpers.RoR2Extensions.ReplaceModel(UnityEngine.GameObject,UnityEngine.GameObject)">
-            <summary>
-            Replaces the model inside a GameObject's Model Base.
-            This is only applicable to GameObjects that have a "ModelBase" or "Model Base" object, as well as a ModelLocator component.
-            The method will do nothing if it cannot find the model base object.
-            </summary>
-            <param name="originalClonedObject">The whole original cloned object</param>
-            <param name="replacementModel">The replacement model loaded from an asset bundle</param>
         </member>
     </members>
 </doc>

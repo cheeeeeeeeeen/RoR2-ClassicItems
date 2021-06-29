@@ -1564,6 +1564,15 @@
             Return true if the submodule is loaded.
             </summary>
         </member>
+        <member name="M:R2API.PrefabAPI.InstantiateClone(UnityEngine.GameObject,System.String)">
+            <summary>
+            Duplicates a GameObject and leaves it in a "sleeping" state where it is inactive, but becomes active when spawned.
+            Also registers the clone to network.
+            </summary>
+            <param name="g">The GameObject to clone</param>
+            <param name="nameToSet">The name to give the clone (Should be unique)</param>
+            <returns>The GameObject of the clone</returns>
+        </member>
         <member name="M:R2API.PrefabAPI.InstantiateClone(UnityEngine.GameObject,System.String,System.Boolean)">
             <summary>
             Duplicates a GameObject and leaves it in a "sleeping" state where it is inactive, but becomes active when spawned.
