@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-3.0.7-orange)
+![Version](https://img.shields.io/badge/Version-3.0.8-orange)
 ![Build](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/workflows/Build/badge.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Support Chen](https://img.shields.io/badge/Support-Chen-ff69b4)](https://ko-fi.com/cheeeeeeeeeen)
@@ -64,6 +64,9 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 ## Changelog
 
+**3.0.8**
+- Update the code so that it works after the breaking changes of Chen's Helpers.
+
 **3.0.7**
 - Integrate changes from ChensHelpers regarding GenericContentPackProvider.
 - Also update DefaultDocumentation so that there would be now a setup that is less tedious to deploy.
@@ -77,8 +80,5 @@ Check out the original ClassicItems made by **ThinkInvisible**.
 
 **3.0.4**
 - Update the code so that it works with latest R2API.
-
-**3.0.3**
-- Fix a bug where Compat with BetterUI is being neglected due to using item index.
 
 *For the full changelog, check this [wiki page](https://github.com/cheeeeeeeeeen/RoR2-ClassicItems/wiki/Changelog)*.
