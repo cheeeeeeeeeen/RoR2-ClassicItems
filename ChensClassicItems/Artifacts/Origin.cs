@@ -1,4 +1,4 @@
-﻿#undef DEBUG
+﻿#define DEBUG
 
 using Chen.ClassicItems.Items.Rare;
 using Chen.Helpers.LogHelpers.Collections;

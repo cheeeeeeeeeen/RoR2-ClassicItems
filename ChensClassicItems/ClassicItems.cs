@@ -95,6 +95,7 @@ namespace Chen.ClassicItems
             Log.Debug("Loading assets...");
             BundleInfo bundleInfo = new BundleInfo("Chen.ClassicItems.chensclassicitems_assets", BundleType.UnityAssetBundle);
             assetBundle = new AssetsManager(bundleInfo).Register();
+            assetBundle.ConvertShaders();
 
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 

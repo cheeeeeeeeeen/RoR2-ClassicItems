@@ -201,7 +201,7 @@
             <param name="ignoreOverlays">Determines whether to display effects over the mesh, such as elite prefixes</param>
             <returns>A new set of RendererInfos</returns>
         </member>
-        <member name="M:Chen.Helpers.GeneralHelpers.Extensions.ReplaceModel(UnityEngine.GameObject,UnityEngine.GameObject)">
+        <member name="M:Chen.Helpers.GeneralHelpers.Extensions.ReplaceModel(UnityEngine.GameObject,UnityEngine.GameObject,System.Boolean)">
             <summary>
             Replaces the model inside a GameObject's Model Base.
             This is only applicable to GameObjects that have a "ModelBase" or "Model Base" object, as well as a ModelLocator component.
@@ -209,6 +209,7 @@
             </summary>
             <param name="originalClonedObject">The whole original cloned object</param>
             <param name="replacementModel">The replacement model loaded from an asset bundle</param>
+            <param name="debug">Set to true to attach the Material Controller for modifying materials in-game.</param>
         </member>
         <member name="M:Chen.Helpers.GeneralHelpers.Extensions.ConvertShaders(UnityEngine.AssetBundle,System.Collections.Generic.Dictionary{System.String,System.String},System.String)">
             <summary>
