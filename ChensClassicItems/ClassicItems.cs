@@ -45,7 +45,7 @@ namespace Chen.ClassicItems
 #if DEBUG
             "0." +
 #endif
-            "3.0.8";
+            "3.0.9";
 
         /// <summary>
         /// This mod's name.
